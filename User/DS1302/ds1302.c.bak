@@ -1,0 +1,133 @@
+#include "bsp.h"
+
+
+static uint8_t readAddr[5]={0x8d, 0x89, 0x87, 0x85, 0x83};//读年、月、日、时、分的寄存器地址
+static uint8_t writeAddr[5]={0x8c, 0x88, 0x86, 0x84, 0x82};//写年、月、日、时、分的寄存器地址
+
+static void write_1302byte(uint8_t dat);//写一个字节的数据sck上升沿写数据
+static uint8_t read_1302(uint8_t add);//读数据
+static void write_1302(uint8_t add,uint8_t dat);//向指定寄存器写入一个字节的数据
+/*PA4.6为输出*/
+/*PA5配置为开漏模式，此模式下能够实现真正的双向IO口*/
+void ds1302_GPIO_Configuration(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct;
+  
+  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
+  GPIO_InitStruct.GPIO_Pin = ds1302clk|ds1302rst;
+  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOA, &GPIO_InitStruct);
+  
+  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_OD;
+  GPIO_InitStruct.GPIO_Pin = ds1302dat;
+  GPIO_Init(GPIOB, &GPIO_InitStruct);
+  
+}
+
+void write_1302byte(uint8_t dat)//写一个字节的数据sck上升沿写数据
+{
+  uint8_t i=0;
+  GPIO_ResetBits(GPIOA,ds1302clk);
+  //ds1302clk=0;
+  bsp_DelayUS(2);//延时大约2us
+  for(i=0;i<8;i++)
+  {
+    GPIO_ResetBits(GPIOA,ds1302clk);
+    //ds1302clk=0;
+    if(dat&0x01)
+      GPIO_SetBits(GPIOA,ds1302dat);
+    else
+      GPIO_ResetBits(GPIOA,ds1302dat);
+    //ds1302dat=(dat&0x01);
+    bsp_DelayUS(2);
+    GPIO_SetBits(GPIOA,ds1302clk);
+    //ds1302clk=1;
+    dat>>=1;
+    bsp_DelayUS(1);
+  }	
+}
+uint8_t read_1302(uint8_t add)//读数据
+{
+  uint8_t i=0,dat1=0x00;
+  GPIO_ResetBits(GPIOA,ds1302rst);
+  GPIO_ResetBits(GPIOA,ds1302clk);
+  //ds1302rst=0;
+  //ds1302clk=0;
+  bsp_DelayUS(3);//略微延时2us
+  GPIO_SetBits(GPIOA,ds1302rst);
+  //ds1302rst=1;
+  bsp_DelayUS(3);//时间要大约3us
+  write_1302byte(add);//先写寄存器的地址
+  for(i=0;i<8;i++)
+  {
+    GPIO_SetBits(GPIOA,ds1302clk);
+    //ds1302clk=1;
+    dat1>>=1;
+    GPIO_ResetBits(GPIOA,ds1302clk);
+    //ds1302clk=0;//拉低时钟线，以便于数据的读入
+    if(GPIO_ReadInputDataBit(GPIOA,ds1302dat)==1)//数据线此时为高电平
+    {dat1=dat1|0x80;}
+  }
+  bsp_DelayUS(1);
+  GPIO_ResetBits(GPIOA,ds1302rst);
+  //ds1302rst=0;
+  return dat1;
+}
+void write_1302(uint8_t add,uint8_t dat)//向指定寄存器写入一个字节的数据
+{
+  GPIO_ResetBits(GPIOA,ds1302rst);
+  GPIO_ResetBits(GPIOA,ds1302clk);
+  //ds1302rst=0;
+  //ds1302clk=0;
+  bsp_DelayUS(1);//略微延时
+  GPIO_SetBits(GPIOA,ds1302rst);
+  //ds1302rst=1;
+  bsp_DelayUS(2);//时间大约2us
+  write_1302byte(add);
+  write_1302byte(dat);
+  GPIO_ResetBits(GPIOA,ds1302rst);
+  GPIO_ResetBits(GPIOA,ds1302clk);
+  //ds1302clk=0;
+  //ds1302rst=0;
+  bsp_DelayUS(1);
+  
+}
+void ds1302_settime(uint8_t *time, uint8_t len)//初始化1302
+{
+  uint8_t i=0,j=0;
+  write_1302(0x8e,0x00);//去除写保护
+  for(i=0;i<len;i++)//转BCD码
+  {
+    j=time[i]%10;//个位数部分
+    time[i]=(time[i]/10)*16+j;	
+  }
+  for(i=0;i<len;i++)//进行对时
+  {
+    write_1302(writeAddr[i],time[i]);
+    
+  }
+  write_1302(0x8e,0x80);//加写保护
+}
+void ds1302_readtime(uint8_t *time, uint8_t len)//处理数据并通过串口打印
+{
+  uint8_t i=0;
+  //static uint8_t s=1;
+  for(i=0;i<len;i++)
+  {
+    time[i]=read_1302(readAddr[i]);
+  }//读数据已经完成
+  
+  //BCD转10进制
+  for(i=0;i<len;i++)
+  {
+    time[i]=time[i]%16 + (time[i]/16)*10;//秒个位数据+秒十位数据*10
+  }
+  //此时已转换成10进制数，g[i]里面存放的是秒分时日月周年的各个位数据
+  //而此时的time【i】里面存放的则是秒分时日月周年的十位数据
+  
+//  if(s!=(time[0]+g[0]))
+//    printf("20%d%d年%d%d月%d%d日%d%d:%d%d:%d%d 星期%d\r\n",\
+//      time[6],g[6],time[4],g[4],time[3],g[3],time[2],g[2],time[1],g[1],time[0],g[0],g[5]);
+//  s=time[0]+g[0];	
+}
+
