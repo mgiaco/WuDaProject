@@ -619,33 +619,9 @@
         </Group>
         <Group>
           <GroupName>Doc</GroupName>
-          <Files>
-            <File>
-              <FileName>1.门禁命令协议.txt</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\Doc\1.门禁命令协议.txt</FilePath>
-            </File>
-            <File>
-              <FileName>2.readMe.txt</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\Doc\2.readMe.txt</FilePath>
-            </File>
-          </Files>
         </Group>
         <Group>
           <GroupName>Wiegand</GroupName>
-          <Files>
-            <File>
-              <FileName>Wiegand.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\Reader\Wiegand.c</FilePath>
-            </File>
-            <File>
-              <FileName>Wiegand.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\Reader\Wiegand.h</FilePath>
-            </File>
-          </Files>
         </Group>
         <Group>
           <GroupName>IIC</GroupName>
@@ -698,129 +674,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Key</GroupName>
-          <Files>
-            <File>
-              <FileName>key.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\Key\key.c</FilePath>
-            </File>
-            <File>
-              <FileName>key.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\Key\key.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Net</GroupName>
-          <Files>
-            <File>
-              <FileName>device.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\Net\device.c</FilePath>
-            </File>
-            <File>
-              <FileName>device.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\Net\device.h</FilePath>
-            </File>
-            <File>
-              <FileName>socket.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\Net\socket.c</FilePath>
-            </File>
-            <File>
-              <FileName>socket.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\Net\socket.h</FilePath>
-            </File>
-            <File>
-              <FileName>spi2.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\Net\spi2.c</FilePath>
-            </File>
-            <File>
-              <FileName>spi2.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\Net\spi2.h</FilePath>
-            </File>
-            <File>
-              <FileName>types.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\Net\types.h</FilePath>
-            </File>
-            <File>
-              <FileName>w5500.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\Net\w5500.c</FilePath>
-            </File>
-            <File>
-              <FileName>w5500.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\Net\w5500.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>DS1302</GroupName>
-          <Files>
-            <File>
-              <FileName>ds1302.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\DS1302\ds1302.c</FilePath>
-            </File>
-            <File>
-              <FileName>ds1302.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\DS1302\ds1302.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>CRC8_16</GroupName>
-          <Files>
-            <File>
-              <FileName>CRC8_16.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\CRC8_16\CRC8_16.c</FilePath>
-            </File>
-            <File>
-              <FileName>CRC8_16.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\CRC8_16\CRC8_16.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Led</GroupName>
-          <Files>
-            <File>
-              <FileName>bsp_led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\Led\bsp_led.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_led.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\Led\bsp_led.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Protocal</GroupName>
-          <Files>
-            <File>
-              <FileName>protocal.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\Protocal\protocal.c</FilePath>
-            </File>
-            <File>
-              <FileName>protocal.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\Protocal\protocal.h</FilePath>
-            </File>
-          </Files>
         </Group>
         <Group>
           <GroupName>Timer</GroupName>
@@ -887,18 +741,6 @@
         </Group>
         <Group>
           <GroupName>Param</GroupName>
-          <Files>
-            <File>
-              <FileName>param.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\Param\param.c</FilePath>
-            </File>
-            <File>
-              <FileName>param.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\Param\param.h</FilePath>
-            </File>
-          </Files>
         </Group>
       </Groups>
     </Target>

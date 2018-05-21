@@ -26,17 +26,15 @@ N
 N#ifndef _BSP_H_
 N#define _BSP_H_
 N
+N#define LORA_ID 1        //  Éè±¸IDºÅ£¬Ò²ÓÃ×÷loraµÄµØÖ·
+N
+N#define VERSION 20180521 // °æ±¾ºÅ
+N
 N#define  USE_RTX    1
 N/* ¿ª¹ØÈ«¾ÖÖĞ¶ÏµÄºê */
 N#define ENABLE_INT()	__set_PRIMASK(0)	/* Ê¹ÄÜÈ«¾ÖÖĞ¶Ï */
 N#define DISABLE_INT()	__set_PRIMASK(1)	/* ½ûÖ¹È«¾ÖÖĞ¶Ï */
 N
-N/* Õâ¸öºê½öÓÃÓÚµ÷ÊÔ½×¶ÎÅÅ´í */
-N#define BSP_Printf		printf
-N//#define BSP_Printf(...)//¹Ø±Õprintf
-N#define DEBUG(...)		//comSendBuf//input:(COM_PORT_E _ucPort, uint8_t *_ucaBuf, uint16_t _usLen)
-N
-N#define TEST 0
 N
 N#include "stm32f10x.h"
 L 1 "..\..\Libraries\CMSIS\Device\ST\STM32F10x\Include\stm32f10x.h" 1
@@ -30191,7 +30189,7 @@ N  * @}
 N  */
 N
 N/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
-L 30 "..\..\User\bsp\bsp.h" 2
+L 28 "..\..\User\bsp\bsp.h" 2
 N#include <stdio.h>
 L 1 "D:\Keil\ARM\ARMCC\bin\..\include\stdio.h" 1
 N/* stdio.h: ANSI 'C' (X3J11 Oct 88) library header, section 4.9 */
@@ -31221,7 +31219,7 @@ N#endif /* ndef __stdio_h */
 N
 N/* end of stdio.h */
 N
-L 31 "..\..\User\bsp\bsp.h" 2
+L 29 "..\..\User\bsp\bsp.h" 2
 N#include <string.h>
 L 1 "D:\Keil\ARM\ARMCC\bin\..\include\string.h" 1
 N/* string.h: ANSI 'C' (X3J11 Oct 88) library header, section 4.11 */
@@ -31763,7 +31761,7 @@ N#endif
 N
 N/* end of string.h */
 N
-L 32 "..\..\User\bsp\bsp.h" 2
+L 30 "..\..\User\bsp\bsp.h" 2
 N#include <stdlib.h>
 L 1 "D:\Keil\ARM\ARMCC\bin\..\include\stdlib.h" 1
 N/* stdlib.h: ANSI draft (X3J11 May 88) library header, section 4.10 */
@@ -32705,7 +32703,7 @@ N
 N#endif
 N/* end of stdlib.h */
 N
-L 33 "..\..\User\bsp\bsp.h" 2
+L 31 "..\..\User\bsp\bsp.h" 2
 N
 N#include  <stdarg.h>
 L 1 "D:\Keil\ARM\ARMCC\bin\..\include\stdarg.h" 1
@@ -32841,7 +32839,7 @@ N#endif
 N
 N/* end of stdarg.h */
 N
-L 35 "..\..\User\bsp\bsp.h" 2
+L 33 "..\..\User\bsp\bsp.h" 2
 N#include  <math.h>
 L 1 "D:\Keil\ARM\ARMCC\bin\..\include\math.h" 1
 N/*
@@ -34218,7 +34216,7 @@ N#endif /* __math_h */
 N
 N/* end of math.h */
 N
-L 36 "..\..\User\bsp\bsp.h" 2
+L 34 "..\..\User\bsp\bsp.h" 2
 N#include "RTL.h"//OS
 L 1 "..\..\RTX\inc\RTL.h" 1
 N/*----------------------------------------------------------------------------
@@ -34956,7 +34954,7 @@ N *---------------------------------------------------------------------------*/
 N
 N#endif
 N 
-L 37 "..\..\User\bsp\bsp.h" 2
+L 35 "..\..\User\bsp\bsp.h" 2
 N
 N#ifndef TRUE
 N	#define TRUE  1
@@ -34966,93 +34964,8 @@ N#ifndef FALSE
 N	#define FALSE 0
 N#endif
 N
-N#define NC 0//¼ÌµçÆ÷³£±Õ--¹ØÃÅ
-N#define NO 1//¼ÌµçÆ÷³£¿ª--¿ªÃÅ
+N#define DATA_LEN 128
 N
-N#define DATA_LEN 1024
-N
-N//²âÊÔ1ppsÖĞ¶ÏºÍÌ½²âÆ÷ÖĞ¶ÏÖ®¼äµÄÊ±¼ä²î£¬¼ÇÂ¼´®¿Ú»ñµÃµÄGPSÊ±¼äĞÅÏ¢
-Ntypedef struct
-N{
-N    uint8_t gpsTime[6];
-N    uint32_t tStart;
-N    uint32_t tStop;
-N    uint8_t preciseSingleTime[3];
-N    uint8_t preciseTime[9];//Ç°6×Ö½Ú±íÊ¾Ğ¡Ê±£¬·ÖÖÓ£¬Ãë£¬ºó3×Ö½Ú±íÊ¾Î¢Ãë
-N}Detector_T;
-N
-N//°üº¬ÍøÂç×´Ì¬ºÍÊı¾İĞÅÏ¢
-Ntypedef struct
-N{
-N    uint8_t status;//ÍøÏßµÄlink×´Ì¬ 
-N    uint16_t len;
-N    uint8_t buf[DATA_LEN+13];//1024×Ö½ÚÊı¾İ+13×Ö½ÚĞ­Òé
-X    uint8_t buf[1024+13];
-N}NetData_T;
-N
-N//ÔËĞĞÊ±µÄĞÅÏ¢£¬°üÀ¨Ê±¼ä£¬»¥Ëø×´Ì¬£¬¶àÖØ¿¨×´Ì¬£¬Ê×¿¨µÈ×´Ì¬
-Ntypedef struct
-N{
-N    uint8_t isCardUsed;//¿¨ºÅÊÇ·ñÒÑ¾­±»ÆäËûÈÎÎñÊ¹ÓÃ
-N    uint8_t remoteOpen;//Ô¶³Ì¿ªÃÅ£¬µÍ4Î»Îª1¿ªaÃÅ£¬¸ß4Î»Îª1¿ªbÃÅ
-N    uint8_t firstCardStatus;//Ğ´1±íÊ¾Ê×¿¨ÒÑ¾­À´ÁË£¬Ğ´0±íÊ¾±ØĞëµÈ´ı
-N    uint16_t multipleCardStatus;//±íÊ¾Ë¢¿¨Êı
-N    uint8_t time[5];//Ê±¼ä
-N}RunInfo_T;
-N
-N//ÍøÂç²ÎÊıÃ¶¾Ù
-Nenum NetCfg_Enum
-N{
-N    e_local_port,
-N    e_server_port,
-N    e_local_ip,
-N    e_server_ip,
-N    e_Link,
-N    e_NoLink
-N};
-N
-N//¿ªÃÅ·½Ê½Ã¶¾Ù£¬4¸ö
-Nenum ReaderOrButton_Enum
-N{
-N    e_READER_A,//A¶ÁÍ·
-N    e_READER_B,//B¶ÁÍ·
-N    e_BUTTON_A,//A°´¼ü
-N    e_BUTTON_B //B°´¼ü
-N};
-N
-N//IDÀàĞÍÃ¶¾Ù,9¸ö
-Nenum ID_Enum
-N{
-N    e_firstCardID,
-N    
-N    e_superCardID,
-N    e_superPasswordID,
-N    
-N    e_threatCardID,
-N    e_threatPasswordID,
-N    
-N    e_keyBoardID,
-N    
-N    e_multipleCardID,
-N
-N    e_generalCardID,
-N    e_fingerID
-N};
-N
-N//¶àÖÖ¿ªÃÅ·½Ê½ºÍ¿ªÃÅ/µÈ´ıÊ±³¤µÄÃ¶¾Ù£¬10¸ö
-Nenum OpenCfg_Enum
-N{
-N    e_openTime,
-N    e_waitTime,
-N    e_interlock,
-N    e_firstCard,
-N    e_multipleCard,
-N    e_superCard,
-N    e_superPassword,
-N    e_threatCard,
-N    e_threatPassword,
-N    e_finger
-N};
 N
 N/* Í¨¹ıÈ¡Ïû×¢ÊÍ»òÕßÌí¼Ó×¢ÊÍµÄ·½Ê½¿ØÖÆÊÇ·ñ°üº¬µ×²ãÇı¶¯Ä£¿é */
 N#include "main.h"
@@ -35074,161 +34987,9 @@ Xextern U32 mailboxCardRX [4 + 8];
 N#endif
 N
 N/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
-L 135 "..\..\User\bsp\bsp.h" 2
+L 49 "..\..\User\bsp\bsp.h" 2
 N
-N//#include "bsp_uart_fifo.h"
-N#include "bsp_led.h"
-L 1 "..\..\User\Led\bsp_led.h" 1
-N/*
-N*********************************************************************************************************
-N*
-N*	Ä£¿éÃû³Æ : LEDÖ¸Ê¾µÆÇı¶¯Ä£¿é
-N*	ÎÄ¼şÃû³Æ : bsp_led.h
-N*	°æ    ±¾ : V1.0
-N*	Ëµ    Ã÷ : Í·ÎÄ¼ş
-N*
-N*	Copyright (C), 2013-2014, °²¸»À³µç×Ó www.armfly.com
-N*
-N*********************************************************************************************************
-N*/
-N
-N#ifndef __BSP_LED_H
-N#define __BSP_LED_H
-N
-N#include "param.h"  
-L 1 "..\..\User\Param\param.h" 1
-N#ifndef __PARAM_H
-N#define __PARAM_H
-N
-N#define HISTORY_START_SECTOR 64//Ç°Ãæ00-63ÓÃÀ´·ÅÉı¼¶³ÌĞò
-N#define HISTORY_START_ADDR 0
-N#define HISTORY_END_SECTOR 512//×îºóµÄÇø¿éÓëµØÖ·£¬ÈôµÈÓÚ£¬Ôò¸Ã´ÓÍ·¿ªÊ¼
-N#define HISTORY_END_ADDR 0
-N
-N#define MAX_CARD_NUM 500
-N#define MAX_FINGER_NUM 500
-N#define MAX_MULTIPLE_CARD_NUM 10
-N#define MAX_THREAT_CARD_NUM 3
-N
-N#define MAX_OPEN_CFG_NUM 8
-N//µ¥¸ö
-Ntypedef struct
-N{
-N    uint8_t reader_switcher;//¶ÁÍ·Óë¼ÌµçÆ÷¶ÔÓ¦¹ØÏµ£¬µÍ4Î»-¼ÌµçÆ÷a£¬¸ß4Î»-¼ÌµçÆ÷b£¬0±íÊ¾ÎŞ¶ÔÓ¦¹ØÏµ£¬1ÓĞ
-N    uint8_t button_switcher;//°´¼üÓë¼ÌµçÆ÷¶ÔÓ¦¹ØÏµ£¬µÍ4Î»-¼ÌµçÆ÷a£¬¸ß4Î»-¼ÌµçÆ÷b
-N}SingleRelation_T; 
-N
-N//ËùÓĞÃÅ
-Ntypedef struct
-N{
-N    SingleRelation_T relationA;//¹ØÏµA£¨¶ÁÍ·A/°´¼üA£©
-N    SingleRelation_T relationB;//¹ØÏµB£¨¶ÁÍ·B/°´¼üB£©
-N}Relation_T;
-N
-N//ÍøÂçÅäÖÃ
-Ntypedef struct 
-N{   
-N    uint16_t local_port;// ³õÊ¼»¯Ò»¸ö±¾µØ¶Ë¿Ú
-N    uint16_t server_port;// ÅäÖÃÔ¶³Ì·şÎñÆ÷¶Ë¿Ú
-N    uint8_t local_ip[4];
-N    uint8_t server_ip[4];// ÅäÖÃÔ¶³Ì·şÎñÆ÷IPµØÖ·,ÀıÈç[192][168][1][100]
-N    uint8_t mcuID[4];//Ğ¾Æ¬µÄÎ¨Ò»ID //ÓÃ×÷macµØÖ·
-N}NetCfg_T;
-N
-N//ÏµÍ³ÅäÖÃ
-Ntypedef struct
-N{
-N    uint8_t openTime;//¿ªÃÅÊ±³¤
-N    uint8_t waitTime;//µÈ´ıÊ±³¤  
-N    //¶àÖØ¿¨µÄĞŞ¶©£º¸ß4Î»±íÊ¾¿¨ºÅÊı£¨2-10£©£¬µÍ4Î»±íÊ¾ÆôÓÃ»ò²»ÆôÓÃ
-N    uint8_t multipleOpenCfg[MAX_OPEN_CFG_NUM];//¶àÖÖ¿ªÃÅ¹¦ÄÜÊÇ·ñ¿ªÆô£¬0-»¥Ëø£¬1-Ê×¿¨£¬2-¶àÖØ¿¨£¬3-³¬¼¶¿¨£¬4-³¬¼¶ÃÜÂë£¬5-Ğ²ÆÈ¿¨£¬6-Ğ²ÆÈÂë£¬7-Ö¸ÎÆÄ£¿é(Ö¸ÎÆidºÍ°´¼üÃÜÂëid)      
-X    uint8_t multipleOpenCfg[8];
-N}SystemCfg_T;
-N
-N//ÀúÊ·¼ÇÂ¼µÄÏÂÒ»´ÎĞ´ÈëµØÖ·
-Ntypedef struct 
-N{
-N    //µÚÒ»¸ö×Ö½Ú´æ¸ß8Î»£¬µÚ¶ş¸ö×Ö½Ú´æµÍ8Î»
-N    uint8_t nextStartSector[2];//ÏÂÒ»´ÎÒªĞ´ÈëÀúÊ·¼ÇÂ¼µÄÇø¿é
-N    uint8_t nextStartAddr[2];//ÏÂÒ»´ÎÒªĞ´ÈëÀúÊ·¼ÇÂ¼µÄµØÖ·(ÔÚÇø¿éÖĞ)
-N}NextStartAddr_T;
-N
-N//¼ÇÂ¼¿¨ºÅµÄ½á¹¹Ìå
-Ntypedef struct
-N{
-N    //9¸ö
-N    uint8_t firstCardID[3];//Ê×¿¨  
-N    uint8_t superCardID[3];//³¬¼¶¿¨
-N    uint8_t superPasswordID[3];//³¬¼¶ÃÜÂë
-N    uint8_t threatCardID[MAX_THREAT_CARD_NUM*3];//Ğ²ÆÈ¿¨,3ÕÅ
-X    uint8_t threatCardID[3*3];
-N    uint8_t threatPasswordID[3];//Ğ²ÆÈÂë
-N    uint8_t keyBoardID[3];//°´¼üÃÜÂëID
-N    uint8_t multipleCardID[MAX_MULTIPLE_CARD_NUM*3];//¶àÖØ¿¨,10ÕÅ 
-X    uint8_t multipleCardID[10*3];
-N    uint8_t fingerID[MAX_FINGER_NUM*3];//Ö¸ÎÆID
-X    uint8_t fingerID[500*3];
-N    uint8_t generalCardID[MAX_CARD_NUM*3];//ÆÕÍ¨¿¨
-X    uint8_t generalCardID[500*3];
-N}MultipleCardID_T;
-N
-Ntypedef struct
-N{
-N    void (*updateRelation)(Relation_T *relation, enum ReaderOrButton_Enum type);
-N    void (*updateNetCfg)(NetCfg_T *netCfg, enum NetCfg_Enum type);
-N    void (*updateSystemCfg)(SystemCfg_T *systemCfg, enum OpenCfg_Enum type);
-N    void (*updateNextStartAddr)(NextStartAddr_T *nextStartAddr);
-N    void (*updateMultipleCardID)(uint8_t *data, uint16_t len, enum ID_Enum type);
-N    Relation_T relation;
-N    NetCfg_T netCfg;
-N    SystemCfg_T systemCfg;
-N    NextStartAddr_T nextStartAddr;
-N    MultipleCardID_T multipleCardID;
-N}Param_T;
-N
-N/* ¹©Íâ²¿µ÷ÓÃµÄº¯ÊıÉùÃ÷ */
-N 
-Nextern Param_T g_tParam;
-Nvoid paramInit(void);//´ÓIICÖĞ¶ÁÈ¡²ÎÊı
-Nvoid resetParam(void);//ÖØÖÃ²ÎÊıÎª0xFF
-Nuint8_t searchID(uint8_t *id);//¼ì²éidÊÇ·ñÏà·û£¬ÄÜ·ñ¿ªÃÅ
-N#endif
-N
-L 18 "..\..\User\Led\bsp_led.h" 2
-N
-N//µ¥¸öÃÅ
-Ntypedef struct
-N{
-N    uint8_t switcherStatus;//¼ÌµçÆ÷×´Ì¬
-N    uint8_t feedBackStatus;//ÃÅÎü·´À¡×´Ì¬
-N}SingleDoor_T;   
-N
-N//ËùÓĞÃÅ
-Ntypedef struct
-N{
-N    SingleDoor_T doorA;//¶ÁÍ·A
-N    SingleDoor_T doorB;//¶ÁÍ·B
-N    void (*readFeedBack)(void);//¶ÁÈ¡ÃÅÎü·´À¡£¬½á¹û´æÈë½á¹¹Ìå
-N    void (*openDoor)(SingleRelation_T *singleRelation, enum ReaderOrButton_Enum openWay);//´«½øÀ´µÄÊÇ¶ÁÍ·A/°´¼üA»òÕßBµÄ¶ÔÓ¦¹ØÏµ
-N    void (*closeDoor)(SingleRelation_T *singleRelation, enum ReaderOrButton_Enum openWay);
-N}DoorStatus_T;
-N
-N
-N//¹ØµÆ£¨¸ßµçÆ½£©±íÊ¾¼ÌµçÆ÷£¨NC³£±Õ£©¹ØÃÅ£¬·´Ö®¿ªÃÅ
-N/* ¹©Íâ²¿µ÷ÓÃµÄº¯ÊıÉùÃ÷ */
-Nextern DoorStatus_T g_tDoorStatus;
-N
-Nvoid bsp_InitLed(void);
-Nvoid bsp_LedOn(uint8_t _no);
-Nvoid bsp_LedOff(uint8_t _no);
-Nvoid bsp_LedToggle(uint8_t _no);//½áºÏºÁÃëÑÓÊ±¿ÉÒÔÓÃÀ´Ê¹ÏµÍ³×´Ì¬µÆÉÁË¸
-N
-Nvoid alarmOn(enum ReaderOrButton_Enum type);
-Nvoid alarmOff(enum ReaderOrButton_Enum type);
-N#endif
-N
-N/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
-L 138 "..\..\User\bsp\bsp.h" 2
+N//#include "bsp_uart.h"
 N#include "bsp_timer.h"
 L 1 "..\..\User\Timer\bsp_timer.h" 1
 N/*
@@ -35291,16 +35052,7 @@ N
 N#endif
 N
 N/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
-L 139 "..\..\User\bsp\bsp.h" 2
-N#include "key.h"
-L 1 "..\..\User\Key\key.h" 1
-N#ifndef __KEY_H
-N#define __KEY_H	 
-N
-Nvoid bsp_InitKey(void);//IO³õÊ¼»¯
-Nvoid KEY_Scan(void);  	//°´¼üÉ¨Ãèº¯Êı					    
-N#endif
-L 140 "..\..\User\bsp\bsp.h" 2
+L 52 "..\..\User\bsp\bsp.h" 2
 N#include "bsp_cpu_flash.h"
 L 1 "..\..\User\CpuFlash\bsp_cpu_flash.h" 1
 N/*
@@ -35338,9 +35090,9 @@ N
 N
 N/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
 N
-L 141 "..\..\User\bsp\bsp.h" 2
+L 53 "..\..\User\bsp\bsp.h" 2
 N
-N#include "param.h"
+N//#include "param.h"
 N
 N#include "bsp_i2c_gpio.h"
 L 1 "..\..\User\IIC\bsp_i2c_gpio.h" 1
@@ -35374,7 +35126,7 @@ Nvoid i2c_NAck(void);
 Nuint8_t i2c_CheckDevice(uint8_t _Address);
 N
 N#endif
-L 145 "..\..\User\bsp\bsp.h" 2
+L 57 "..\..\User\bsp\bsp.h" 2
 N#include "bsp_eeprom_24xx.h"
 L 1 "..\..\User\IIC\bsp_eeprom_24xx.h" 1
 N/*
@@ -35442,7 +35194,7 @@ N
 N#endif
 N
 N/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
-L 146 "..\..\User\bsp\bsp.h" 2
+L 58 "..\..\User\bsp\bsp.h" 2
 N
 N#include "bsp_spi_bus.h"
 L 1 "..\..\User\SPI\bsp_spi_bus.h" 1
@@ -35497,7 +35249,7 @@ N
 N#endif
 N
 N/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
-L 148 "..\..\User\bsp\bsp.h" 2
+L 60 "..\..\User\bsp\bsp.h" 2
 N#include "bsp_spi_flash.h"
 L 1 "..\..\User\SPI\bsp_spi_flash.h" 1
 N/*
@@ -35550,727 +35302,10 @@ N
 N#endif
 N
 N/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
-L 149 "..\..\User\bsp\bsp.h" 2
+L 61 "..\..\User\bsp\bsp.h" 2
 N
-N#include "device.h"
-L 1 "..\..\User\Net\device.h" 1
-N#ifndef _DEVICE_H_
-N#define _DEVICE_H_
-N
-N#define DEVICE_ID "W5500"
-N
-N#define FW_VER_HIGH   	1
-N#define FW_VER_LOW    	0
-N#define NORMAL_STATE          0
-N
-N#define ON										1
-N#define OFF										0
-N#define HIGH									1
-N#define LOW										0
-N
-N#define WIZ_SCS			    GPIO_Pin_12	// out
-N#define WIZ_SCLK				GPIO_Pin_13	// out
-N#define WIZ_MISO				GPIO_Pin_14	// in
-N#define WIZ_MOSI				GPIO_Pin_15	// out
-N
-N#define WIZ_RESET		    GPIO_Pin_7	// out
-N#define WIZ_INT			    GPIO_Pin_6	// in
-N
-N/* Private function prototypes -----------------------------------------------*/
-N
-N//void GPIO_Configuration(void);
-N//void NVIC_Configuration(void);
-N//typedef  void (*pFunction)(void);
-Nvoid set_network(void);
-N//void write_config_to_eeprom(void);
-Nvoid set_default(NetCfg_T *NetCfg);
-Nvoid Reset_W5500(void);
-N
-N//void reboot(void);
-N//void get_config(void);
-N
-Ntypedef struct _CONFIG_MSG
-N{
-N  uint8_t op[4];//header: FIND;SETT;FACT...
-N  uint8_t mac[6];
-N  uint8_t sw_ver[2];
-N  uint8_t lip[4];
-N  uint8_t sub[4];
-N  uint8_t gw[4];
-N  uint8_t dns[4];	
-N  uint8_t dhcp;
-N  uint8_t debug;
-N
-N  uint16_t fw_len;
-N  uint8_t state;
-N  
-N}CONFIG_MSG;
-N
-N#endif
-N
-L 151 "..\..\User\bsp\bsp.h" 2
-N#include "spi2.h"
-L 1 "..\..\User\Net\spi2.h" 1
-N#ifndef __SPI2_H
-N#define __SPI2_H
-N
-Nvoid WIZ_SPI_Init(void);
-Nvoid WIZ_CS(uint8_t val);
-Nuint8_t SPI2_SendByte(uint8_t byte);
-N#endif
-N
-L 152 "..\..\User\bsp\bsp.h" 2
-N#include "w5500.h"
-L 1 "..\..\User\Net\w5500.h" 1
-N#ifndef  _W5500_H_
-N#define  _W5500_H_
-N
-N#include "Types.h"
-L 1 "..\..\User\Net\Types.h" 1
-N
-N#ifndef _TYPE_H_
-N#define _TYPE_H_
-N
-N
-N/***************************************************
-N * attribute for mcu ( types, ... ) 
-N ***************************************************/
-N
-N#define	MAX_SOCK_NUM		8	/**< Maxmium number of socket  */
-N
-N/**
-N@brief	 __DEF_IINCHIP_MAP_xxx__ : define memory map for iinchip 
-N*/
-N#define __DEF_IINCHIP_MAP_BASE__ 0x0000
-N #define COMMON_BASE 0x0000
-N#define __DEF_IINCHIP_MAP_TXBUF__ (COMMON_BASE + 0x8000) /* Internal Tx buffer address of the iinchip */
-N#define __DEF_IINCHIP_MAP_RXBUF__ (COMMON_BASE + 0xC000) /* Internal Rx buffer address of the iinchip */
-N//#define __DEF_IINCHIP_PPP
-N
-N#define IINCHIP_ISR_DISABLE()
-N#define IINCHIP_ISR_ENABLE()	
-N
-N#ifndef NULL
-S#define NULL		((void *) 0)
-N#endif
-N
-N//typedef enum { false, true } bool;
-N
-N#ifndef _SIZE_T
-N#define _SIZE_T
-Ntypedef unsigned int size_t;
-N#endif
-N
-N/**
-N * The 8-bit signed data type.
-N */
-Ntypedef char int8;
-N/**
-N * The volatile 8-bit signed data type.
-N */
-Ntypedef volatile char vint8;
-N/**
-N * The 8-bit unsigned data type.
-N */
-Ntypedef unsigned char uint8;
-N/**
-N * The volatile 8-bit unsigned data type.
-N */
-Ntypedef volatile unsigned char vuint8;
-N
-N/**
-N * The 16-bit signed data type.
-N */
-Ntypedef int int16;
-N/**
-N * The volatile 16-bit signed data type.
-N */
-N//typedef volatile int vint16;
-N/**
-N * The 16-bit unsigned data type.
-N */
-Ntypedef unsigned short uint16;
-N/**
-N * The volatile 16-bit unsigned data type.
-N */
-N//typedef volatile unsigned int vuint16;
-N/**
-N * The 32-bit signed data type.
-N */
-Ntypedef long int32;
-N/**
-N * The volatile 32-bit signed data type.
-N */
-N//typedef volatile long vint32;
-N/**
-N * The 32-bit unsigned data type.
-N */
-Ntypedef unsigned long uint32;
-N/**
-N * The volatile 32-bit unsigned data type.
-N */
-N//typedef volatile unsigned long vuint32;
-N
-N/* bsd */
-Ntypedef uint8			u_char;		/**< 8-bit value */
-Ntypedef uint8 			SOCKET;
-Ntypedef uint16			u_short;	/**< 16-bit value */
-Ntypedef uint16			u_int;		/**< 16-bit value */
-Ntypedef uint32			u_long;		/**< 32-bit value */
-N
-Ntypedef union _un_l2cval {
-N	u_long	lVal;
-N	u_char	cVal[4];
-N}un_l2cval;
-N
-Ntypedef union _un_i2cval {
-N	u_int	iVal;
-N	u_char	cVal[2];
-N}un_i2cval;
-N
-N
-N
-N
-N#endif		/* _TYPE_H_ */
-L 5 "..\..\User\Net\w5500.h" 2
-N
-Nextern void setkeepalive(SOCKET s);
-N
-N/**
-N @brief Mode Register address
-N * W5500 SPI Frame consists of 16bits Offset Address in Address Phase, 
-N * 8bits Control Phase and N bytes Data Phase.
-N * 0                8                16               24                   ~
-N * |----------------|----------------|----------------|----------------------
-N * |        16bit offset Address     | Control Bits   |  Data Phase
-N *
-N * The 8bits Control Phase is reconfigured with Block Select bits (BSB[4:0]), 
-N * Read/Write Access Mode bit (RWB) and SPI Operation Mode (OM[1:0]). 
-N * Block Select bits select a block as like common register, socket register, tx buffer and tx buffer.
-N * Address value is defined as 16bit offset Address, BSB[4:0] and the three bits of zero-padding.(The RWB and OM [1:0] are '0 'padding)
-N * Please, refer to W5500 datasheet for more detail about Memory Map.
-N *
-N */
-N
-N/**
-N @brief Mode Register address
-N */
-N#define MR                          (0x000000)
-N
-N/**
-N @brief Gateway IP Register address
-N */
-N#define GAR0                        (0x000100)
-N#define GAR1                        (0x000200)
-N#define GAR2                        (0x000300)
-N#define GAR3                        (0x000400)
-N/**
-N @brief Subnet mask Register address
-N */
-N#define SUBR0                       (0x000500)
-N#define SUBR1                       (0x000600)
-N#define SUBR2                       (0x000700)
-N#define SUBR3                       (0x000800)
-N
-N/**
-N @brief Source MAC Register address
-N */
-N#define SHAR0                       (0x000900)
-N#define SHAR1                       (0x000A00)
-N#define SHAR2                       (0x000B00)
-N#define SHAR3                       (0x000C00)
-N#define SHAR4                       (0x000D00)
-N#define SHAR5                       (0x000E00)
-N/**
-N @brief Source IP Register address
-N */
-N#define SIPR0                       (0x000F00)
-N#define SIPR1                       (0x001000)
-N#define SIPR2                       (0x001100)
-N#define SIPR3                       (0x001200)
-N/**
-N @brief set Interrupt low level timer register address
-N */
-N#define INTLEVEL0                   (0x001300)
-N#define INTLEVEL1                   (0x001400)
-N/**
-N @brief Interrupt Register
-N */
-N#define IR                          (0x001500)
-N/**
-N @brief Interrupt mask register
-N */
-N#define IMR                         (0x001600)
-N/**
-N @brief Socket Interrupt Register
-N */
-N#define SIR                         (0x001700) 
-N/**
-N @brief Socket Interrupt Mask Register
-N */
-N#define SIMR                        (0x001800)
-N/**
-N @brief Timeout register address( 1 is 100us )
-N */
-N#define RTR0                        (0x001900)
-N#define RTR1                        (0x001A00)
-N/**
-N @brief Retry count reigster
-N */
-N#define WIZ_RCR                         (0x001B00)
-N/**
-N @briefPPP LCP Request Timer register  in PPPoE mode
-N */
-N#define PTIMER                      (0x001C00)
-N/**
-N @brief PPP LCP Magic number register  in PPPoE mode
-N */
-N#define PMAGIC                      (0x001D00)
-N/**
-N @brief PPP Destination MAC Register address
-N */
-N#define PDHAR0                      (0x001E00)
-N#define PDHAR1                      (0x001F00)
-N#define PDHAR2                      (0x002000)
-N#define PDHAR3                      (0x002100)
-N#define PDHAR4                      (0x002200)
-N#define PDHAR5                      (0x002300)
-N/**
-N @brief PPP Session Identification Register
-N */
-N#define PSID0                       (0x002400)
-N#define PSID1                       (0x002500)
-N/**
-N @brief PPP Maximum Segment Size(MSS) register
-N */
-N#define PMR0                        (0x002600)
-N#define PMR1                        (0x002700)
-N/**
-N @brief Unreachable IP register address in UDP mode
-N */
-N#define UIPR0                       (0x002800)
-N#define UIPR1                       (0x002900)
-N#define UIPR2                       (0x002A00)
-N#define UIPR3                       (0x002B00)
-N/**
-N @brief Unreachable Port register address in UDP mode
-N */
-N#define UPORT0                      (0x002C00)
-N#define UPORT1                      (0x002D00)
-N/**
-N @brief PHY Configuration Register
-N */
-N#define PHYCFGR                      (0x002E00)
-N/**
-N @brief chip version register address
-N */
-N#define VERSIONR                    (0x003900)   
-N
-N
-N/*"0x00XXXX"¼´"0000 0000 XXXX XXXX XXXX XXXX"¡£¸ß16Î»ÎªµØÖ·¶Î£¨Æ«ÒÆµØÖ·£©£¬¶¨ÒåÁË¿ØÖÆ¶ÎËùÖ¸¶¨¼Ä´æÆ÷µÄÆ«ÒÆµØÖ·£»
-NµÍ8Î»Îª¿ØÖÆ¶Î£¨ÆäÖĞÇ°5Î»ÎªÇøÓòÑ¡ÔñÎ»BSB£¬ÖĞ1Î»ÎªR/W£¬ºó2Î»ÎªOMÎ»£©£¬Ö¸¶¨Òª¶ÔÄÄ¸ö¼Ä´æÆ÷²Ù×÷¡£
-N"ch"¶¨ÒåÎªSocket¼Ä´æÆ÷µÄ±àºÅ£¬´Ó0~7¡£
-N		BSB£º	00000 Í¨ÓÃ¼Ä´æÆ÷   			
-N					00001	Socket0¼Ä´æÆ÷			ch=0
-N					00101	Socket1¼Ä´æÆ÷			ch=1
-N					01001	Socket2¼Ä´æÆ÷			ch=2
-N					01101 Socket3¼Ä´æÆ÷			ch=3
-N					10001 Socket4¼Ä´æÆ÷			ch=4
-N					10101 Socket5¼Ä´æÆ÷			ch=5
-N					11001 Socket6¼Ä´æÆ÷			ch=6
-N					11101 Socket7¼Ä´æÆ÷			ch=7		*/
-N
-N
-N/**
-N @brief socket Mode register
-N */
-N#define Sn_MR(ch)                       (0x000008 + (ch<<5))
-N
-N/**
-N @brief channel Sn_CR register
-N */
-N#define Sn_CR(ch)                       (0x000108 + (ch<<5))
-N/**
-N @brief channel interrupt register
-N */
-N#define Sn_IR(ch)                       (0x000208 + (ch<<5))
-N/**
-N @brief channel status register
-N */
-N#define Sn_SR(ch)                       (0x000308 + (ch<<5))
-N/**
-N @brief source port register
-N */
-N#define Sn_PORT0(ch)                    (0x000408 + (ch<<5))
-N#define Sn_PORT1(ch)                    (0x000508 + (ch<<5))
-N/**
-N @brief Peer MAC register address
-N */
-N#define Sn_DHAR0(ch)                    (0x000608 + (ch<<5))
-N#define Sn_DHAR1(ch)                    (0x000708 + (ch<<5))
-N#define Sn_DHAR2(ch)                    (0x000808 + (ch<<5))
-N#define Sn_DHAR3(ch)                    (0x000908 + (ch<<5))
-N#define Sn_DHAR4(ch)                    (0x000A08 + (ch<<5))
-N#define Sn_DHAR5(ch)                    (0x000B08 + (ch<<5))
-N/**
-N @brief Peer IP register address
-N */
-N#define Sn_DIPR0(ch)                    (0x000C08 + (ch<<5))
-N#define Sn_DIPR1(ch)                    (0x000D08 + (ch<<5))
-N#define Sn_DIPR2(ch)                    (0x000E08 + (ch<<5))
-N#define Sn_DIPR3(ch)                    (0x000F08 + (ch<<5))
-N/**
-N @brief Peer port register address
-N */
-N#define Sn_DPORT0(ch)                   (0x001008 + (ch<<5))
-N#define Sn_DPORT1(ch)                   (0x001108 + (ch<<5))
-N/**
-N @brief Maximum Segment Size(Sn_MSSR0) register address
-N */
-N#define Sn_MSSR0(ch)                    (0x001208 + (ch<<5))
-N#define Sn_MSSR1(ch)                    (0x001308 + (ch<<5))
-N/** 
-N @brief IP Type of Service(TOS) Register 
-N */
-N#define Sn_TOS(ch)                      (0x001508 + (ch<<5))
-N/**
-N @brief IP Time to live(TTL) Register 
-N */
-N#define Sn_TTL(ch)                      (0x001608 + (ch<<5))
-N/**
-N @brief Receive memory size reigster
-N */
-N#define Sn_RXMEM_SIZE(ch)               (0x001E08 + (ch<<5))
-N/**
-N @brief Transmit memory size reigster
-N */
-N#define Sn_TXMEM_SIZE(ch)               (0x001F08 + (ch<<5))
-N/**
-N @brief Transmit free memory size register
-N */
-N#define Sn_TX_FSR0(ch)                  (0x002008 + (ch<<5))
-N#define Sn_TX_FSR1(ch)                  (0x002108 + (ch<<5))
-N/**
-N @brief Transmit memory read pointer register address
-N */
-N#define Sn_TX_RD0(ch)                   (0x002208 + (ch<<5))
-N#define Sn_TX_RD1(ch)                   (0x002308 + (ch<<5))
-N/**
-N @brief Transmit memory write pointer register address
-N */
-N#define Sn_TX_WR0(ch)                   (0x002408 + (ch<<5))
-N#define Sn_TX_WR1(ch)                   (0x002508 + (ch<<5))
-N/**
-N @brief Received data size register
-N */
-N#define Sn_RX_RSR0(ch)                  (0x002608 + (ch<<5))
-N#define Sn_RX_RSR1(ch)                  (0x002708 + (ch<<5))
-N/**
-N @brief Read point of Receive memory
-N */
-N#define Sn_RX_RD0(ch)                   (0x002808 + (ch<<5))
-N#define Sn_RX_RD1(ch)                   (0x002908 + (ch<<5))
-N/**
-N @brief Write point of Receive memory
-N */
-N#define Sn_RX_WR0(ch)                   (0x002A08 + (ch<<5))
-N#define Sn_RX_WR1(ch)                   (0x002B08 + (ch<<5))
-N/**
-N @brief socket interrupt mask register
-N */
-N#define Sn_IMR(ch)                      (0x002C08 + (ch<<5))
-N/**
-N @brief frag field value in IP header register
-N */
-N#define Sn_FRAG(ch)                     (0x002D08 + (ch<<5))
-N/**
-N @brief Keep Timer register
-N */
-N#define Sn_KPALVTR(ch)                  (0x002F08 + (ch<<5))
-N
-N/* MODE register values */
-N#define MR_RST                       0x80 /**< reset */
-N#define MR_WOL                       0x20 /**< Wake on Lan */
-N#define MR_PB                        0x10 /**< ping block */
-N#define MR_PPPOE                     0x08 /**< enable pppoe */
-N#define MR_UDP_FARP                  0x02 /**< enbale FORCE ARP */
-N
-N
-N/* IR register values */
-N#define IR_CONFLICT                  0x80 /**< check ip confict */
-N#define IR_UNREACH                   0x40 /**< get the destination unreachable message in UDP sending */
-N#define IR_PPPoE                     0x20 /**< get the PPPoE close message */
-N#define IR_MAGIC                     0x10 /**< get the magic packet interrupt */
-N
-N/* Sn_MR values */
-N#define Sn_MR_CLOSE                  0x00     /**< unused socket */
-N#define Sn_MR_TCP                    0x01     /**< TCP */
-N#define Sn_MR_UDP                    0x02     /**< UDP */
-N#define Sn_MR_IPRAW                  0x03      /**< IP LAYER RAW SOCK */
-N#define Sn_MR_MACRAW                 0x04      /**< MAC LAYER RAW SOCK */
-N#define Sn_MR_PPPOE                  0x05     /**< PPPoE */
-N#define Sn_MR_UCASTB                 0x10     /**< Unicast Block in UDP Multicating*/
-N#define Sn_MR_ND                     0x20     /**< No Delayed Ack(TCP) flag */
-N#define Sn_MR_MC                     0x20     /**< Multicast IGMP (UDP) flag */
-N#define Sn_MR_BCASTB                 0x40     /**< Broadcast blcok in UDP Multicating */
-N#define Sn_MR_MULTI                  0x80     /**< support UDP Multicating */
-N
-N /* Sn_MR values on MACRAW MODE */
-N#define Sn_MR_MIP6N                  0x10     /**< IPv6 packet Block */
-N#define Sn_MR_MMB                    0x20     /**< IPv4 Multicasting Block */
-N//#define Sn_MR_BCASTB                 0x40     /**< Broadcast blcok */
-N#define Sn_MR_MFEN                   0x80     /**< support MAC filter enable */
-N
-N
-N/* Sn_CR values */
-N#define Sn_CR_OPEN                   0x01     /**< initialize or open socket */
-N#define Sn_CR_LISTEN                 0x02     /**< wait connection request in tcp mode(Server mode) */
-N#define Sn_CR_CONNECT                0x04     /**< send connection request in tcp mode(Client mode) */
-N#define Sn_CR_DISCON                 0x08     /**< send closing reqeuset in tcp mode */
-N#define Sn_CR_CLOSE                  0x10     /**< close socket */
-N#define Sn_CR_SEND                   0x20     /**< update txbuf pointer, send data */
-N#define Sn_CR_SEND_MAC               0x21     /**< send data with MAC address, so without ARP process */
-N#define Sn_CR_SEND_KEEP              0x22     /**<  send keep alive message */
-N#define Sn_CR_RECV                   0x40     /**< update rxbuf pointer, recv data */
-N
-N#ifdef __DEF_IINCHIP_PPP__
-S   #define Sn_CR_PCON                0x23      
-S   #define Sn_CR_PDISCON             0x24      
-S   #define Sn_CR_PCR                 0x25      
-S   #define Sn_CR_PCN                 0x26     
-S   #define Sn_CR_PCJ                 0x27     
-N#endif
-N
-N/* Sn_IR values */
-N#ifdef __DEF_IINCHIP_PPP__
-S   #define Sn_IR_PRECV               0x80     
-S   #define Sn_IR_PFAIL               0x40     
-S   #define Sn_IR_PNEXT               0x20     
-N#endif
-N
-N#define Sn_IR_SEND_OK                0x10     /**< complete sending */
-N#define Sn_IR_TIMEOUT                0x08     /**< assert timeout */
-N#define Sn_IR_RECV                   0x04     /**< receiving data */
-N#define Sn_IR_DISCON                 0x02     /**< closed socket */
-N#define Sn_IR_CON                    0x01     /**< established connection */
-N
-N/* Sn_SR values */
-N#define SOCK_CLOSED                  0x00     /**< closed */
-N#define SOCK_INIT                    0x13     /**< init state */
-N#define SOCK_LISTEN                  0x14     /**< listen state */
-N#define SOCK_SYNSENT                 0x15     /**< connection state */
-N#define SOCK_SYNRECV                 0x16     /**< connection state */
-N#define SOCK_ESTABLISHED             0x17     /**< success to connect */
-N#define SOCK_FIN_WAIT                0x18     /**< closing state */
-N#define SOCK_CLOSING                 0x1A     /**< closing state */
-N#define SOCK_TIME_WAIT               0x1B     /**< closing state */
-N#define SOCK_CLOSE_WAIT              0x1C     /**< closing state */
-N#define SOCK_LAST_ACK                0x1D     /**< closing state */
-N#define SOCK_UDP                     0x22     /**< udp socket */
-N#define SOCK_IPRAW                   0x32     /**< ip raw mode socket */
-N#define SOCK_MACRAW                  0x42     /**< mac raw mode socket */
-N#define SOCK_PPPOE                   0x5F     /**< pppoe socket */
-N
-N/* IP PROTOCOL */
-N#define IPPROTO_IP                   0        /**< Dummy for IP */
-N#define IPPROTO_ICMP                 1        /**< Control message protocol */
-N#define IPPROTO_IGMP                 2        /**< Internet group management protocol */
-N#define IPPROTO_GGP                  3        /**< Gateway^2 (deprecated) */
-N#define IPPROTO_TCP                  6        /**< TCP */
-N#define IPPROTO_PUP                  12       /**< PUP */
-N#define IPPROTO_UDP                  17       /**< UDP */
-N#define IPPROTO_IDP                  22       /**< XNS idp */
-N#define IPPROTO_ND                   77       /**< UNOFFICIAL net disk protocol */
-N#define IPPROTO_RAW                  255      /**< Raw IP packet */
-N
-N/*********************************************************
-N* iinchip access function
-N*********************************************************/
-Nvoid IINCHIP_WRITE( uint32 addrbsb,  uint8 data);
-Nuint8 IINCHIP_READ(uint32 addrbsb);
-Nuint16 wiz_write_buf(uint32 addrbsb,uint8* buf,uint16 len);
-Nuint16 wiz_read_buf(uint32 addrbsb, uint8* buf,uint16 len);
-N
-N
-Nvoid iinchip_init(void); // reset iinchip
-Nvoid sysinit(uint8 * tx_size, uint8 * rx_size); // setting tx/rx buf size
-Nuint8 getISR(uint8 s);
-Nvoid putISR(uint8 s, uint8 val);
-Nuint16 getIINCHIP_RxMAX(uint8 s);
-Nuint16 getIINCHIP_TxMAX(uint8 s);
-Nvoid setMR(uint8 val);
-Nvoid setRTR(uint16 timeout); // set retry duration for data transmission, connection, closing ...
-Nvoid setRCR(uint8 retry); // set retry count (above the value, assert timeout interrupt)
-Nvoid clearIR(uint8 mask); // clear interrupt
-Nuint8 getIR( void );
-Nvoid setSn_MSS(SOCKET s, uint16 Sn_MSSR); // set maximum segment size
-Nuint8 getSn_IR(SOCKET s); // get socket interrupt status
-Nuint8 getSn_SR(SOCKET s); // get socket status
-Nuint16 getSn_TX_FSR(SOCKET s); // get socket TX free buf size
-Nuint16 getSn_RX_RSR(SOCKET s); // get socket RX recv buf size
-Nuint8 getSn_SR(SOCKET s);
-Nvoid setSn_TTL(SOCKET s, uint8 ttl);
-Nvoid send_data_processing(SOCKET s, uint8 *wizdata, uint16 len);
-Nvoid recv_data_processing(SOCKET s, uint8 *wizdata, uint16 len);
-N
-Nvoid setGAR(uint8 * addr); // set gateway address
-Nvoid setSUBR(uint8 * addr); // set subnet mask address
-Nvoid setSHAR(uint8 * addr); // set local MAC address
-Nvoid setSIPR(uint8 * addr); // set local IP address
-Nvoid getGAR(uint8 * addr);
-Nvoid getSUBR(uint8 * addr);
-Nvoid getSHAR(uint8 * addr);
-Nvoid getSIPR(uint8 * addr);
-N
-Nvoid setSn_IR(uint8 s, uint8 val);
-N/**
-N @brief WIZCHIP_OFFSET_INC on IINCHIP_READ/WRITE
-N * case1.
-N *  IINCHIP_WRITE(RTR0,val);
-N *  IINCHIP_WRITE(RTR1,val);
-N * case1. 
-N *  IINCHIP_WRITE(RTR0,val);
-N *  IINCHIP_WRITE(WIZCHIP_OFFSET_INC(RTR0,1)); 
-N */
-N//#define WIZCHIP_OFFSET_INC(ADDR, N)    (ADDR + (N<<8)) //< Increase offset address
-N
-N#endif
-L 153 "..\..\User\bsp\bsp.h" 2
-N#include "socket.h"
-L 1 "..\..\User\Net\socket.h" 1
-N
-N#ifndef	_SOCKET_H_
-N#define	_SOCKET_H_
-N
-N//#include "stm32f10x.h"
-N#include "Types.h"
-N
-N/*Socket ç«¯å£é€‰æ‹©ï¼Œå¯è‡ªå·±å®šä¹‰*/
-N#define SOCK_TCPS             0
-N#define SOCK_HUMTEM			  0
-N#define SOCK_PING			  0
-N#define SOCK_TCPC             1
-N#define SOCK_UDPS             2
-N#define SOCK_WEIBO      	  2
-N#define SOCK_DHCP             3
-N#define SOCK_HTTPS            4
-N#define SOCK_DNS              5
-N#define SOCK_SMTP             6
-N#define SOCK_NTP              7
-N
-Nextern uint8 socket(SOCKET s, uint8 protocol, uint16 port, uint8 flag); // Opens a socket(TCP or UDP or IP_RAW mode)
-Nextern void close(SOCKET s); // Close socket
-Nextern uint8 connect(SOCKET s, uint8 * addr, uint16 port); // Establish TCP connection (Active connection)
-Nextern void disconnect(SOCKET s); // disconnect the connection
-Nextern uint8 listen(SOCKET s);	// Establish TCP connection (Passive connection)
-Nextern uint16 send(SOCKET s, const uint8 * buf, uint16 len); // Send data (TCP)
-Nextern uint16 recv(SOCKET s, uint8 * buf, uint16 len);	// Receive data (TCP)
-Nextern uint16 sendto(SOCKET s, const uint8 * buf, uint16 len, uint8 * addr, uint16 port); // Send data (UDP/IP RAW)
-Nextern uint16 recvfrom(SOCKET s, uint8 * buf, uint16 len, uint8 * addr, uint16  *port); // Receive data (UDP/IP RAW)
-Nvoid send_ka(SOCKET s);
-N
-N#ifdef __MACRAW__
-Svoid macraw_open(void);
-Suint16 macraw_send( const uint8 * buf, uint16 len ); //Send data (MACRAW)
-Suint16 macraw_recv( uint8 * buf, uint16 len ); //Recv data (MACRAW)
-N#endif
-N
-N#endif
-N/* _SOCKET_H_ */
-N
-L 154 "..\..\User\bsp\bsp.h" 2
-N#include "Wiegand.h"
-L 1 "..\..\User\Reader\Wiegand.h" 1
-N#ifndef _WIEGAND_H_
-N#define	_WIEGAND_H_
-N
-N//å•ä¸ªè¯»å¤´çš„æ•°æ®ç»“æ„ä½“
-Ntypedef struct
-N{
-N    uint8_t readerID;
-N    uint8_t status;//è¯»å¤´çŠ¶æ€ï¼Œæ¥ä¸Šæˆ–æ²¡æ¥
-N	volatile uint8_t writeIndex;//ç¼“å†²åŒºå†™ä½ç½®	
-N    volatile uint8_t isDelayTimerOpen;//å»¶æ—¶å®šæ—¶å™¨æ˜¯å¦å¼€å¯
-N    uint8_t ID[3];	//3å­—èŠ‚IDå·   
-N    uint8_t buf[26];//æ¥æ”¶ç¼“å†²åŒº
-N}SingleReader_T;
-N
-N//æ‰€æœ‰è¯»å¤´
-Ntypedef struct
-N{
-N    SingleReader_T readerA;//è¯»å¤´A
-N    SingleReader_T readerB;//è¯»å¤´B
-N    uint8_t (*dataCheck)(SingleReader_T *reader);//åˆå§‹åŒ–
-N}Reader_T;
-N
-Nextern Reader_T g_tReader;//æä¾›ç»™å…¶ä»–å‡½æ•°ä½¿ç”¨
-Nvoid WiegandInit(void); 
-Nvoid DetectReader(void);
-N#endif
-L 155 "..\..\User\bsp\bsp.h" 2
-N#include "CRC8_16.h"
-L 1 "..\..\User\CRC8_16\CRC8_16.h" 1
-N#ifndef __CRC8_16_H
-N#define __CRC8_16_H
-N//#include "sys.h"	 
-N
-Nu16 Get_Crc16(u8 *puchMsg,u16 usDataLen);
-Nu8 Get_Crc8(u8 *ptr,u16 len);
-N#endif
-L 156 "..\..\User\bsp\bsp.h" 2
-N#include "protocal.h"
-L 1 "..\..\User\Protocal\protocal.h" 1
-N#ifndef __PROTOCAL_H
-N#define __PROTOCAL_H
-N
-N///* ä¾›å¤–éƒ¨è°ƒç”¨çš„å‡½æ•°å£°æ˜ */
-Nextern NetData_T g_tNetData;
-N//æ„é€ å‘½ä»¤æ ¼å¼
-Nvoid makeCommmand(uint8_t cmdFlag, uint8_t rw, uint8_t *data, uint16_t len);
-N//æ‰§è¡Œå‘½ä»¤
-Nvoid processCommand(uint8_t *data, uint16_t len);
-N//å‘é€ç½‘ç»œæ•°æ®
-Nvoid SendDataToServer(uint8_t flag, uint8_t rw, uint8_t *data, uint16_t len);
-N#endif
-N
-L 157 "..\..\User\bsp\bsp.h" 2
-N#include "ds1302.h"
-L 1 "..\..\User\DS1302\ds1302.h" 1
-N/*******************************************************************************
-N** ÎÄ¼şÃû³Æ : ds1302.h
-N** Èí¼ş°æ±¾ : 1.0
-N** ±àÒë»·¾³ : RealView MDK-ARM 4.20
-N** ÎÄ¼ş×÷Õß : 	
-N** ¹¦ÄÜËµÃ÷ : ÔÚ¸ÃÎÄ¼şÖĞ°üº¬³ÌĞòĞèÒªÓÃµ½µÄÍ·ÎÄ¼ş
-N**
-N**                       (c) Copyright 2007-2012, viewtool
-N**                            http://www.viewtool.com
-N**                               All Rights Reserved
-N**
-N*******************************************************************************/
-N/* ·ÀÖ¹ÖØ¶¨Òå-----------------------------------------------------------------*/
-N#ifndef _DS1302_H
-N#define _DS1302_H
-N/* °üº¬Í·ÎÄ¼ş *****************************************************************/
-N//#include <stm32f10x.h>
-N
-N/* ÀàĞÍÉùÃ÷ ------------------------------------------------------------------*/
-N/* ºê¶¨Òå --------------------------------------------------------------------*/
-N#define DS1302_PORT    GPIOB
-N#define ds1302clk GPIO_Pin_0
-N#define ds1302dat GPIO_Pin_1
-N#define ds1302rst GPIO_Pin_2    
-N/* ±äÁ¿ ----------------------------------------------------------------------*/
-N/* º¯ÊıÉùÃ÷ ------------------------------------------------------------------*/
-N/* º¯Êı¶¨Òå ------------------------------------------------------------------*/
-N
-Nvoid ds1302_GPIO_Configuration(void);
-N
-Nvoid ds1302_settime(uint8_t *time, uint8_t len);//³õÊ¼»¯1302,»ñÈ¡Ê±¼ä
-Nvoid ds1302_readtime(uint8_t *time, uint8_t len);//´¦ÀíÊı¾İ²¢Í¨¹ı´®¿Ú´òÓ¡
-N#endif
-N
-L 158 "..\..\User\bsp\bsp.h" 2
+N//#include "Wiegand.h"
+N//#include "protocal.h"
 N
 N#include "bsp_dwt.h"
 L 1 "..\..\User\DWT\bsp_dwt.h" 1
@@ -36300,7 +35335,7 @@ N
 N#endif
 N
 N/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
-L 160 "..\..\User\bsp\bsp.h" 2
+L 66 "..\..\User\bsp\bsp.h" 2
 N#include "bsp_iwdg.h"
 L 1 "..\..\User\IWDG\bsp_iwdg.h" 1
 N/*
@@ -36332,13 +35367,12 @@ N/** ÃèÊö    : Î¹¶ÀÁ¢¿´ÃÅ¹·*/
 Nvoid IWDG_Feed(void);
 N
 N#endif
-L 161 "..\..\User\bsp\bsp.h" 2
+L 67 "..\..\User\bsp\bsp.h" 2
 N
 N/* Ìá¹©¸øÆäËûCÎÄ¼şµ÷ÓÃµÄº¯Êı */
 Nvoid bsp_Init(void);
 Nvoid bsp_Idle(void);
 N
-Nextern RunInfo_T g_tRunInfo;
 N#endif
 N
 N/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
@@ -36348,14 +35382,11 @@ N*******************************************************************************
 N											º¯ÊıÉùÃ÷
 N**********************************************************************************************************
 N*/
-N#define HEART_TIME 5//ĞÄÌø°üÖÜÆÚÎª5s
+N//#define HEART_TIME 15//ĞÄÌø°üÖÜÆÚÎª15s
 N
 Nstatic void AppTaskCreate (void);//´´½¨³ıstartÈÎÎñÍâµÄÆäËûÈÎÎñ
 Nstatic void AppObjCreate (void);//ÓÃÀ´³õÊ¼»¯ÓÊÏäºÍÈí¼ş¶¨Ê±Æ÷
 N
-Nstatic void ReaderAlarm(enum ReaderOrButton_Enum type);//¶ÁÍ·±¨¾¯
-Nstatic void SysLed(void);//ÏµÍ³×´Ì¬µÆÉÁË¸
-Nstatic void OpenTips(enum ReaderOrButton_Enum type);//¿ªÃÅÌáÊ¾Òô
 N    
 N//ÈÎÎñº¯Êı
 N__task void AppTaskReader(void);
@@ -36430,7 +35461,6 @@ NOS_ID  OneTimerB;//²Ù×÷¼ÌµçÆ÷B
 N
 Nuint8_t FB_data;
 N
-Nextern Detector_T g_tDetector;
 N/*
 N*********************************************************************************************************
 N*	º¯ Êı Ãû: main
@@ -36443,11 +35473,6 @@ Nint main(void)
 N{	
 N	/* ³õÊ¼»¯ÍâÉè */
 N	bsp_Init();
-N    
-N    #if Test
-S//    bsp_LedOn(1);
-S//    bsp_LedOn(2);
-N    #endif
 N    
 N	/* ´´½¨Æô¶¯ÈÎÎñ */
 N 	os_sys_init_user(AppTaskStart,             /* ÈÎÎñº¯Êı */
@@ -36468,181 +35493,11 @@ N*/
 N__task void AppTaskReader(void)
 X__declspec(noreturn) void AppTaskReader(void)
 N{
-N    uint8_t type;
-N    SingleReader_T *readerMsg;
 N    const uint16_t usMaxBlockTime = 100; /* ÑÓ³ÙÖÜÆÚ */
 N    while(1)
 N    {
-N        //×îÖØÒªµÄ²¿·Ö
-N//        1.µÈ´ıÎ¤¸ùº¯Êı·¢À´µÄÓÊÏäÏûÏ¢£¬ÏÈ×ª·¢Ò»´Î£¬È»ºó×Ô¼ºÔÙ´¦Àí
-N//        2.ÅĞ¶Ï¶àÖÖ¿ªÃÅ¹¦ÄÜµÄ¿ª¹Ø£¬°ÑSingleReader_T·Åµ½ÆäËûÓÊÏäÖĞ
-N//        3¡£Ê×¿¨»ò¶àÖØ¿¨»ò»¥ËøÊÕµ½ÓÊÏäÏûÏ¢ºó£¬½âÎöID£¬×ö³ö¿ªÃÅ·´Ó¦£¨¶à¼Ó¼¸¸öÓÊÏäºÍÈÎÎñ£© 
-N//        if(A)//Ê×¿¨
-N//        {×ª·¢¸øA}
-N//        if(B)//¶àÖØ¿¨
-N//        {×ª·¢¸øB}
-N//        if(C)//»¥Ëø
-N//        {×ª·¢¸øC}
-N//        
-N//        type = searchID(readerMsg->ID);
-N//        if(type Îª³¬¼¶¿¨/Âë»òĞ²ÆÈ¿¨/Âë)
-N//        {ÅĞ¶ÏAB¶ÁÍ·ºÍAB¼ÌµçÆ÷ºó£¬¿ªÃÅ»ò±¨¾¯}
-N        
-N        if(os_mbx_wait(&mailboxCardRX, (void *)&readerMsg, usMaxBlockTime) != OS_R_TMO)
-X        if(_os_mbx_wait((U32)rt_mbx_wait,&mailboxCardRX,(void *)&readerMsg,usMaxBlockTime) != 0x01)
-N        {
-N            
-N            if(g_tParam.systemCfg.multipleOpenCfg[1] == 1)//Ê×¿¨ÒÑÆôÓÃ
-N            {
-N                g_tRunInfo.isCardUsed = 1;
-N                os_mbx_send(&mailboxCardFirst, readerMsg, 100);//ÏòÏûÏ¢ÓÊÏä·¢Êı¾İ£¬Èç¹ûÏûÏ¢ÓÊÏäÂúÁË£¬µÈ´ı100¸öÊ±ÖÓ½ÚÅÄ
-X                _os_mbx_send((U32)rt_mbx_send,&mailboxCardFirst,readerMsg,100);
-N            }
-N            else if((g_tParam.systemCfg.multipleOpenCfg[2]&0x0F) == 1)//¶àÖØ¿¨ÒÑÆôÓÃ//¸ßËÄÎ»±íÊ¾¿¨Êı
-N            {
-N                g_tRunInfo.isCardUsed = 1;
-N                os_mbx_send(&mailboxCardMulti, readerMsg, 100);//ÏòÏûÏ¢ÓÊÏä·¢Êı¾İ£¬Èç¹ûÏûÏ¢ÓÊÏäÂúÁË£¬µÈ´ı100¸öÊ±ÖÓ½ÚÅÄ
-X                _os_mbx_send((U32)rt_mbx_send,&mailboxCardMulti,readerMsg,100);
-N            }
-N            else if(g_tParam.systemCfg.multipleOpenCfg[0] == 1)//»¥ËøÒÑÆôÓÃ
-N            {
-N                g_tRunInfo.isCardUsed = 1;
-N                os_mbx_send(&mailboxCardInterLock, readerMsg, 100);//ÏòÏûÏ¢ÓÊÏä·¢Êı¾İ£¬Èç¹ûÏûÏ¢ÓÊÏäÂúÁË£¬µÈ´ı100¸öÊ±ÖÓ½ÚÅÄ
-X                _os_mbx_send((U32)rt_mbx_send,&mailboxCardInterLock,readerMsg,100);
-N            }
-N            else g_tRunInfo.isCardUsed = 0;
-N            
-N            if(!g_tRunInfo.isCardUsed)
-N            {
-N                //´¦Àí³¬¼¶¿¨¡¢ÂëºÍĞ²ÆÈ¿¨¡¢Âë
-N                switch(readerMsg->readerID)
-N                {
-N                case e_READER_A:                    
-N                    g_tReader.dataCheck(readerMsg);
-N                    type = searchID(readerMsg->ID);//searchIDº¯ÊıÏÈ¶ÁÅäÖÃ£¬ÔÙ¼ì²â¿¨ºÅÓĞÃ»ÓĞ
-N
-N                    if(type == e_superCardID || type == e_superPasswordID)//³¬¼¶¿¨»ò³¬¼¶ÃÜÂëËæ±ã¿ª
-N                    {
-N                        if(g_tDoorStatus.doorA.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorA.switcherStatus == 0)
-N                        {
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationA, e_READER_A);
-N                            OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 1);
-X                            OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,1);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_A);
-N                            //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                            SendDataToServer(0x06, e_READER_A, g_tReader.readerA.ID, 3);
-N                        }
-N                    }
-N                    if(type == e_threatCardID || type == e_threatPasswordID)//Ğ²ÆÈ¿¨ºÍĞ²ÆÈÂë
-N                    {
-N                        if(g_tDoorStatus.doorA.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorA.switcherStatus == 0)
-N                        {
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationA, e_READER_A);
-N                            OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 1);
-X                            OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,1);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_A);
-N                            
-N                            SendDataToServer(0x22, e_READER_A, g_tReader.readerA.ID, 3);//ÉÏ´«±¨¾¯ÏûÏ¢
-N                        }
-N                    }
-N                    if(type==e_keyBoardID || type==e_generalCardID || type==e_fingerID)
-N                    {
-N                        if(g_tDoorStatus.doorA.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorA.switcherStatus == 0)
-N                        {   
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationA, e_READER_A);
-N                            
-N                            OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 1);
-X                            OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,1);
-N                            OpenTips(e_READER_A);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_A);
-N                            //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                            //add3-8 ¶ÁĞ´Î»0±íÊ¾A£¬1±íÊ¾B
-N                            SendDataToServer(0x06, e_READER_A, g_tReader.readerA.ID, 3);
-N                        }
-N                    }
-N                    if(type == 0xFF)
-N                    {
-N                        //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                        SendDataToServer(0x06, e_READER_A, g_tReader.readerA.ID, 3);
-N                    }
-N                    break;
-N                
-N                case e_READER_B:
-N                    g_tReader.dataCheck(readerMsg);
-N                    type = searchID(readerMsg->ID);//searchIDº¯ÊıÏÈ¶ÁÅäÖÃ£¬ÔÙ¼ì²â¿¨ºÅÓĞÃ»ÓĞ
-N
-N                    if(type == e_superCardID || type == e_superPasswordID)//³¬¼¶¿¨»ò³¬¼¶ÃÜÂëËæ±ã¿ª
-N                    {
-N                        if(g_tDoorStatus.doorB.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorB.switcherStatus == 0)
-N                        { 
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationB, e_READER_B);
-N                            OneTimerB = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 2);
-X                            OneTimerB = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,2);
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_B);
-N                            //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                            SendDataToServer(0x06, e_READER_B, g_tReader.readerB.ID, 3);
-N                        }
-N                    }
-N                    if(type == e_threatCardID || type == e_threatPasswordID)//Ğ²ÆÈ¿¨ºÍĞ²ÆÈÂë
-N                    {
-N                        if(g_tDoorStatus.doorB.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorB.switcherStatus == 0)
-N                        {
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationB, e_READER_B);
-N                            OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 2);
-X                            OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,2);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_B);
-N                            
-N                            SendDataToServer(0x22, e_READER_B, g_tReader.readerB.ID, 3);//ÉÏ´«±¨¾¯ÏûÏ¢
-N                        }
-N                    }
-N                    if(type==e_keyBoardID || type==e_generalCardID || type==e_fingerID)
-N                    {
-N                        if(g_tDoorStatus.doorB.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorB.switcherStatus == 0)
-N                        {              
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationB, e_READER_B);
-N                            
-N                            OneTimerB = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 3);
-X                            OneTimerB = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,3);
-N                            OpenTips(e_READER_B);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_B);
-N                            //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                            SendDataToServer(0x06, e_READER_B, g_tReader.readerB.ID, 3);
-N                        }
-N                    }
-N                    if(type == 0xFF)
-N                    {
-N                        //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                        SendDataToServer(0x06, e_READER_B, g_tReader.readerB.ID, 3);
-N                    }
-N                    break;
-N                    
-N                
-N                default:
-N                    break;
-N            }//end of switch
-N        }//end of if
-N           
-N        //·­×ªÏµÍ³×´Ì¬µÆ
-N        SysLed();
-N            
-N        }//end of if
+N        os_dly_wait(usMaxBlockTime);
+X        _os_dly_wait((U32)rt_dly_wait,usMaxBlockTime);
 N    }//end of while
 N}
 N
@@ -36650,161 +35505,13 @@ N//´¦ÀíÊ×¿¨µÄÈÎÎñ
 N__task void AppTaskFirst(void)
 X__declspec(noreturn) void AppTaskFirst(void)
 N{
-N    uint8_t type;
-N    SingleReader_T *readerMsg;
+N
 N    const uint16_t usMaxBlockTime = 100; /* ÑÓ³ÙÖÜÆÚ */
 N    while(1)
 N    {
-N        if(os_mbx_wait(&mailboxCardFirst, (void *)&readerMsg, usMaxBlockTime) != OS_R_TMO)
-X        if(_os_mbx_wait((U32)rt_mbx_wait,&mailboxCardFirst,(void *)&readerMsg,usMaxBlockTime) != 0x01)
-N        {
-N            switch(readerMsg->readerID)
-N            {
-N                case e_READER_A:
-N                    g_tReader.dataCheck(readerMsg);
-N                    type = searchID(readerMsg->ID);//searchIDº¯ÊıÏÈ¶ÁÅäÖÃ£¬ÔÙ¼ì²â¿¨ºÅÓĞÃ»ÓĞ
-N                    if(type == e_firstCardID)//Ê×¿¨
-N                    {
-N                        g_tRunInfo.firstCardStatus = 1;//Ê×¿¨ÒÑË¢£¬ÆäËû¿¨¿ÉÒÔ¼ÌĞøË¢
-N                        if(g_tDoorStatus.doorA.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorA.switcherStatus == 0)
-N                        {
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationA, e_READER_A);
-N                            OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 1);
-X                            OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,1);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_A);
-N                            //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                            SendDataToServer(0x06, 0, g_tReader.readerA.ID, 3);
-N                        }
-N                    }
-N                    //È¨ÏŞ¸ßµÄ¿¨ºÅ´¦Àí
-N                    if(type == e_superCardID || type == e_superPasswordID)//³¬¼¶¿¨»ò³¬¼¶ÃÜÂëËæ±ã¿ª
-N                    {
-N                        if(g_tDoorStatus.doorA.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorA.switcherStatus == 0)
-N                        {
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationA, e_READER_A);
-N                            OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 1);
-X                            OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,1);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_A);
-N                            //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                            SendDataToServer(0x06, e_READER_A, g_tReader.readerA.ID, 3);
-N                        }
-N                    }
-N                    if(type == e_threatCardID || type == e_threatPasswordID)//Ğ²ÆÈ¿¨ºÍĞ²ÆÈÂë
-N                    {
-N                        if(g_tDoorStatus.doorA.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorA.switcherStatus == 0)
-N                        {
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationA, e_READER_A);
-N                            OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 1);
-X                            OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,1);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_A);
-N                            
-N                            SendDataToServer(0x22, e_READER_A, g_tReader.readerA.ID, 3);//ÉÏ´«±¨¾¯ÏûÏ¢
-N                        }
-N                    }
-N                    //·ûºÏÊ×¿¨Ìõ¼ş
-N                    if(g_tRunInfo.firstCardStatus == 1)
-N                    {
-N                        if(type==e_keyBoardID || type==e_generalCardID || type==e_fingerID)
-N                        {
-N                            if(g_tDoorStatus.doorA.switcherStatus == NC)
-X                            if(g_tDoorStatus.doorA.switcherStatus == 0)
-N                            {
-N                                g_tDoorStatus.openDoor(&g_tParam.relation.relationA, e_READER_A);
-N                                OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 1);
-X                                OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,1);
-N                                
-N                                //´æ´¢¼ÇÂ¼µ½spi
-N                                storeRecord(readerMsg->ID, e_READER_A);
-N                                //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                                SendDataToServer(0x06, 0, g_tReader.readerA.ID, 3);
-N                            }
-N                        }
-N                    }
-N                    break;
-N                
-N                case e_READER_B:
-N                    g_tReader.dataCheck(readerMsg);
-N                    type = searchID(readerMsg->ID);//searchIDº¯ÊıÏÈ¶ÁÅäÖÃ£¬ÔÙ¼ì²â¿¨ºÅÓĞÃ»ÓĞ
-N                    if(type == e_firstCardID)//Ê×¿¨
-N                    {
-N                        g_tRunInfo.firstCardStatus = 1;//Ê×¿¨ÒÑË¢£¬ÆäËû¿¨¿ÉÒÔ¼ÌĞøË¢
-N                        if(g_tDoorStatus.doorB.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorB.switcherStatus == 0)
-N                        {
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationB, e_READER_B);
-N                            OneTimerB = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 2);
-X                            OneTimerB = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,2);
-N                                                              
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_B);
-N                            //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                            SendDataToServer(0x06, 0, g_tReader.readerB.ID, 3);
-N                        }
-N                    }
-N                    //È¨ÏŞ¸ßµÄ¿¨ºÅ´¦Àí
-N                    if(type == e_superCardID || type == e_superPasswordID)//³¬¼¶¿¨»ò³¬¼¶ÃÜÂëËæ±ã¿ª
-N                    {
-N                        if(g_tDoorStatus.doorB.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorB.switcherStatus == 0)
-N                        { 
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationB, e_READER_B);
-N                            OneTimerB = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 2);
-X                            OneTimerB = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,2);
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_B);
-N                            //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                            SendDataToServer(0x06, e_READER_B, g_tReader.readerB.ID, 3);
-N                        }
-N                    }
-N                    if(type == e_threatCardID || type == e_threatPasswordID)//Ğ²ÆÈ¿¨ºÍĞ²ÆÈÂë
-N                    {
-N                        if(g_tDoorStatus.doorB.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorB.switcherStatus == 0)
-N                        {
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationB, e_READER_B);
-N                            OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 2);
-X                            OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,2);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_B);
-N                            
-N                            SendDataToServer(0x22, e_READER_B, g_tReader.readerB.ID, 3);//ÉÏ´«±¨¾¯ÏûÏ¢
-N                        }
-N                    }
-N                    //·ûºÏÊ×¿¨Ìõ¼ş
-N                    if(g_tRunInfo.firstCardStatus == 1)
-N                    {
-N                        if(type==e_keyBoardID || type==e_generalCardID || type==e_fingerID)
-N                        {
-N                            if(g_tDoorStatus.doorB.switcherStatus == NC)
-X                            if(g_tDoorStatus.doorB.switcherStatus == 0)
-N                            {
-N                                g_tDoorStatus.openDoor(&g_tParam.relation.relationB, e_READER_B);
-N                                OneTimerB = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 2);
-X                                OneTimerB = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,2);
-N                                                                  
-N                                //´æ´¢¼ÇÂ¼µ½spi
-N                                storeRecord(readerMsg->ID, e_READER_B);
-N                                //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                                SendDataToServer(0x06, 0, g_tReader.readerB.ID, 3);
-N                            }
-N                        }
-N                    }                 
-N                    break;
-N                
-N                default:
-N                    break;
-N            }//end of switch
-N        }//if
+N           
+N        os_dly_wait(usMaxBlockTime);
+X        _os_dly_wait((U32)rt_dly_wait,usMaxBlockTime);
 N    }//end of while
 N}
 N
@@ -36812,136 +35519,12 @@ N//´¦Àí¶àÖØ¿¨µÄÈÎÎñ
 N__task void AppTaskMulti(void)
 X__declspec(noreturn) void AppTaskMulti(void)
 N{
-N    uint8_t type;
-N    SingleReader_T *readerMsg;
+N
 N    const uint16_t usMaxBlockTime = 100; /* ÑÓ³ÙÖÜÆÚ */
 N    while(1)
 N    {
-N        if(os_mbx_wait(&mailboxCardMulti, (void *)&readerMsg, usMaxBlockTime) != OS_R_TMO)
-X        if(_os_mbx_wait((U32)rt_mbx_wait,&mailboxCardMulti,(void *)&readerMsg,usMaxBlockTime) != 0x01)
-N        {
-N            switch(readerMsg->readerID)
-N            {
-N                case e_READER_A:
-N                    g_tReader.dataCheck(readerMsg);
-N                    type = searchID(readerMsg->ID);//searchIDº¯ÊıÏÈ¶ÁÅäÖÃ£¬ÔÙ¼ì²â¿¨ºÅÓĞÃ»ÓĞ
-N                    if(type == e_multipleCardID)//Ê×¿¨
-N                    {
-N                        //TODO:²»ÄÜÖ±½ÓÀÛ¼Ó¼ÆÊı
-N                        g_tRunInfo.multipleCardStatus++;//¿¨ÒÑË¢£¬ÀÛ¼Ó¼ÆÊı
-N                    }
-N                    //È¨ÏŞ¸ßµÄ¿¨ºÅ´¦Àí
-N                    if(type == e_superCardID || type == e_superPasswordID)//³¬¼¶¿¨»ò³¬¼¶ÃÜÂëËæ±ã¿ª
-N                    {
-N                        if(g_tDoorStatus.doorA.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorA.switcherStatus == 0)
-N                        {
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationA, e_READER_A);
-N                            OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 1);
-X                            OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,1);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_A);
-N                            //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                            SendDataToServer(0x06, e_READER_A, g_tReader.readerA.ID, 3);
-N                        }
-N                    }
-N                    if(type == e_threatCardID || type == e_threatPasswordID)//Ğ²ÆÈ¿¨ºÍĞ²ÆÈÂë
-N                    {
-N                        if(g_tDoorStatus.doorA.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorA.switcherStatus == 0)
-N                        {
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationA, e_READER_A);
-N                            OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 1);
-X                            OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,1);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_A);
-N                            
-N                            SendDataToServer(0x22, e_READER_A, g_tReader.readerA.ID, 3);//ÉÏ´«±¨¾¯ÏûÏ¢
-N                        }
-N                    }
-N                    //·ûºÏ¶àÖØ¿¨Ìõ¼ş
-N                    if(g_tRunInfo.multipleCardStatus == (g_tParam.systemCfg.multipleOpenCfg[2]>>4))
-N                    {
-N                        
-N                        if(g_tDoorStatus.doorA.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorA.switcherStatus == 0)
-N                        {
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationA, e_READER_A);
-N                            OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 1);
-X                            OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,1);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_A);
-N                            //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                            SendDataToServer(0x06, 0, g_tReader.readerA.ID, 3);      
-N                        }
-N                        g_tRunInfo.multipleCardStatus = 0;//¿ªÃÅºó¸´Î»×´Ì¬
-N                    }                 
-N                    break;
-N                
-N                case e_READER_B:
-N                    g_tReader.dataCheck(readerMsg);
-N                    type = searchID(readerMsg->ID);//searchIDº¯ÊıÏÈ¶ÁÅäÖÃ£¬ÔÙ¼ì²â¿¨ºÅÓĞÃ»ÓĞ
-N                    if(type == e_multipleCardID)//Ê×¿¨
-N                    {
-N                        g_tRunInfo.multipleCardStatus++;//¿¨ÒÑË¢£¬ÀÛ¼Ó¼ÆÊı
-N                    }
-N                    //È¨ÏŞ¸ßµÄ¿¨ºÅ´¦Àí
-N                    if(type == e_superCardID || type == e_superPasswordID)//³¬¼¶¿¨»ò³¬¼¶ÃÜÂëËæ±ã¿ª
-N                    {
-N                        if(g_tDoorStatus.doorB.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorB.switcherStatus == 0)
-N                        { 
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationB, e_READER_B);
-N                            OneTimerB = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 2);
-X                            OneTimerB = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,2);
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_B);
-N                            //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                            SendDataToServer(0x06, e_READER_B, g_tReader.readerB.ID, 3);
-N                        }
-N                    }
-N                    if(type == e_threatCardID || type == e_threatPasswordID)//Ğ²ÆÈ¿¨ºÍĞ²ÆÈÂë
-N                    {
-N                        if(g_tDoorStatus.doorB.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorB.switcherStatus == 0)
-N                        {
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationB, e_READER_B);
-N                            OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 2);
-X                            OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,2);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_B);
-N                            
-N                            SendDataToServer(0x22, e_READER_B, g_tReader.readerB.ID, 3);//ÉÏ´«±¨¾¯ÏûÏ¢
-N                        }
-N                    }
-N                    //·ûºÏ¶àÖØ¿¨Ìõ¼ş
-N                    if(g_tRunInfo.multipleCardStatus == (g_tParam.systemCfg.multipleOpenCfg[2]>>4))
-N                    {
-N                        
-N                        if(g_tDoorStatus.doorB.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorB.switcherStatus == 0)
-N                        {
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationB, e_READER_B);
-N                            OneTimerB = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 2);
-X                            OneTimerB = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,2);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_B);
-N                            //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                            SendDataToServer(0x06, 0, g_tReader.readerB.ID, 3);
-N                        }
-N                        g_tRunInfo.multipleCardStatus = 0;//¿ªÃÅºó¸´Î»×´Ì¬
-N                    }
-N                    break;
-N                
-N                default:
-N                    break;
-N            }//end of switch
-N        }//if
+N        os_dly_wait(usMaxBlockTime);
+X        _os_dly_wait((U32)rt_dly_wait,usMaxBlockTime);
 N    }//end of while
 N}
 N
@@ -36949,126 +35532,12 @@ N
 N//´¦Àí»¥ËøµÄÈÎÎñ
 N__task void AppTaskInterLock(void)
 X__declspec(noreturn) void AppTaskInterLock(void)
-N{
-N    uint8_t type;
-N    SingleReader_T *readerMsg;
+N{  
 N    const uint16_t usMaxBlockTime = 100; /* ÑÓ³ÙÖÜÆÚ */
 N    while(1)
 N    {
-N        if(os_mbx_wait(&mailboxCardInterLock, (void *)&readerMsg, usMaxBlockTime) != OS_R_TMO)
-X        if(_os_mbx_wait((U32)rt_mbx_wait,&mailboxCardInterLock,(void *)&readerMsg,usMaxBlockTime) != 0x01)
-N        {
-N            switch(readerMsg->readerID)
-N            {
-N                case e_READER_A:
-N                    g_tReader.dataCheck(readerMsg);
-N                    type = searchID(readerMsg->ID);//searchIDº¯ÊıÏÈ¶ÁÅäÖÃ£¬ÔÙ¼ì²â¿¨ºÅÓĞÃ»ÓĞ
-N                    //È¨ÏŞ¸ßµÄ¿¨ºÅ´¦Àí
-N                    if(type == e_superCardID || type == e_superPasswordID)//³¬¼¶¿¨»ò³¬¼¶ÃÜÂëËæ±ã¿ª
-N                    {
-N                        if(g_tDoorStatus.doorA.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorA.switcherStatus == 0)
-N                        {
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationA, e_READER_A);
-N                            OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 1);
-X                            OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,1);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_A);
-N                            //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                            SendDataToServer(0x06, e_READER_A, g_tReader.readerA.ID, 3);
-N                        }
-N                    }
-N                    if(type == e_threatCardID || type == e_threatPasswordID)//Ğ²ÆÈ¿¨ºÍĞ²ÆÈÂë
-N                    {
-N                        if(g_tDoorStatus.doorA.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorA.switcherStatus == 0)
-N                        {
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationA, e_READER_A);
-N                            OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 1);
-X                            OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,1);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_A);
-N                            
-N                            SendDataToServer(0x22, e_READER_A, g_tReader.readerA.ID, 3);//ÉÏ´«±¨¾¯ÏûÏ¢
-N                        }
-N                    }
-N                    //ÅĞ¶Ï»¥ËøÌõ¼ş
-N                    if(type==e_keyBoardID || type==e_generalCardID || type==e_fingerID)
-N                    {
-N                        //¿ªAÃÅÊ±£¬BÃÅ²»ÄÜÊÇ´ò¿ªµÄ
-N                        if(g_tDoorStatus.doorA.switcherStatus == NC && g_tDoorStatus.doorB.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorA.switcherStatus == 0 && g_tDoorStatus.doorB.switcherStatus == 0)
-N                        {
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationA, e_READER_A);
-N                            OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 1);
-X                            OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,1);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_A);
-N                            //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                            SendDataToServer(0x06, 0, g_tReader.readerA.ID, 3);
-N                        }
-N                    }
-N                    break;
-N                
-N                case e_READER_B:
-N                    g_tReader.dataCheck(readerMsg);
-N                    type = searchID(readerMsg->ID);//searchIDº¯ÊıÏÈ¶ÁÅäÖÃ£¬ÔÙ¼ì²â¿¨ºÅÓĞÃ»ÓĞ
-N                    //È¨ÏŞ¸ßµÄ¿¨ºÅ´¦Àí
-N                    if(type == e_superCardID || type == e_superPasswordID)//³¬¼¶¿¨»ò³¬¼¶ÃÜÂëËæ±ã¿ª
-N                    {
-N                        if(g_tDoorStatus.doorB.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorB.switcherStatus == 0)
-N                        { 
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationB, e_READER_B);
-N                            OneTimerB = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 2);
-X                            OneTimerB = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,2);
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_B);
-N                            //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                            SendDataToServer(0x06, e_READER_B, g_tReader.readerB.ID, 3);
-N                        }
-N                    }
-N                    if(type == e_threatCardID || type == e_threatPasswordID)//Ğ²ÆÈ¿¨ºÍĞ²ÆÈÂë
-N                    {
-N                        if(g_tDoorStatus.doorB.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorB.switcherStatus == 0)
-N                        {
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationB, e_READER_B);
-N                            OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 2);
-X                            OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,2);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_B);
-N                            
-N                            SendDataToServer(0x22, e_READER_B, g_tReader.readerB.ID, 3);//ÉÏ´«±¨¾¯ÏûÏ¢
-N                        }
-N                    }
-N                    //ÅĞ¶Ï»¥ËøÌõ¼ş
-N                    if(type==e_keyBoardID || type==e_generalCardID || type==e_fingerID)
-N                    {
-N                        //¿ªBÃÅÊ±£¬BÃÅ²»ÄÜÊÇ´ò¿ªµÄ
-N                        if(g_tDoorStatus.doorA.switcherStatus == NC && g_tDoorStatus.doorB.switcherStatus == NC)
-X                        if(g_tDoorStatus.doorA.switcherStatus == 0 && g_tDoorStatus.doorB.switcherStatus == 0)
-N                        {
-N                            g_tDoorStatus.openDoor(&g_tParam.relation.relationB, e_READER_B);
-N                            OneTimerB = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 2);
-X                            OneTimerB = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,2);
-N                            
-N                            //´æ´¢¼ÇÂ¼µ½spi
-N                            storeRecord(readerMsg->ID, e_READER_B);
-N                            //°Ñ¿¨ºÅÉÏ´«µ½·şÎñÆ÷
-N                            SendDataToServer(0x06, 0, g_tReader.readerB.ID, 3);
-N                        } 
-N                    }                        
-N                    break;
-N                
-N                default:
-N                    break;
-N            }//end of switch
-N        }//if
+N        os_dly_wait(usMaxBlockTime);
+X        _os_dly_wait((U32)rt_dly_wait,usMaxBlockTime);
 N    }//end of while
 N}
 N
@@ -37081,120 +35550,19 @@ N*/
 N__task void AppTaskButton(void)
 X__declspec(noreturn) void AppTaskButton(void)
 N{
-N    uint16_t ret_flags;
-N    SingleRelation_T t_remoteOpen;
+N
 N    while(1)
 N    {
-N        //²ÉÓÃ»òµÈ´ı·½Ê½;ÍË³öÇ°bitÎ»±»Çå³ı
-N        if(os_evt_wait_or(BIT_ALL, 0xFFFF) == OS_R_EVT)
-X        if(_os_evt_wait((U32)rt_evt_wait,0xFF,0xFFFF,0) == 0x02)
-N        {
-N            ret_flags = os_evt_get();//·µ»ØÖµÎª¶ÔÓ¦µÄbit
-X            ret_flags = _os_evt_get((U32)rt_evt_get);
-N            SysLed();
-N            
-N            switch(ret_flags)
-N            {
-N                case REMOTE_OPEN_BIT://Ô¶³Ì¿ªÃÅ,Ì×ÓÃ°´¼ü¿ªÃÅ·½Ê½                   
-X                case (1 << 3):
-N                    t_remoteOpen.button_switcher = g_tRunInfo.remoteOpen;
-N                    g_tDoorStatus.openDoor(&t_remoteOpen, e_BUTTON_A);
-N                    OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 0);  /* ¶¨Ê±1000*n¸öÏµÍ³Ê±ÖÓ½ÚÅÄ £»0ÊÇ»Øµ÷º¯ÊıµÄ²ÎÊı£¬¿ÉÓÃÓÚÇø·Ö²»Í¬µÄ¶¨Ê±Æ÷ */
-X                    OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,0);   
-N                    break;
-N                
-N                case BUTTON_A_BIT://°´¼üA
-X                case (1 << 1):
-N                    if(g_tDoorStatus.doorA.switcherStatus == NC)
-X                    if(g_tDoorStatus.doorA.switcherStatus == 0)
-N                    {
-N                        g_tDoorStatus.openDoor(&g_tParam.relation.relationA, e_BUTTON_A);
-N                        OneTimerA = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 4);  /* ¶¨Ê±1000*n¸öÏµÍ³Ê±ÖÓ½ÚÅÄ £»1ÊÇ»Øµ÷º¯ÊıµÄ²ÎÊı£¬¿ÉÓÃÓÚÇø·Ö²»Í¬µÄ¶¨Ê±Æ÷ */
-X                        OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,4);   
-N                    }
-N                    break;
-N                
-N                case BUTTON_B_BIT://°´¼üB
-X                case (1 << 2):
-N                    if(g_tDoorStatus.doorB.switcherStatus == NC)
-X                    if(g_tDoorStatus.doorB.switcherStatus == 0)
-N                    {
-N                        g_tDoorStatus.openDoor(&g_tParam.relation.relationB, e_BUTTON_B);
-N                        OneTimerB = os_tmr_create(1000 * g_tParam.systemCfg.openTime, 2);  /* ¶¨Ê±1000*n¸öÏµÍ³Ê±ÖÓ½ÚÅÄ £»2ÊÇ»Øµ÷º¯ÊıµÄ²ÎÊı£¬¿ÉÓÃÓÚÇø·Ö²»Í¬µÄ¶¨Ê±Æ÷ */
-X                        OneTimerB = _os_tmr_create((U32)rt_tmr_create,1000 * g_tParam . systemCfg . openTime,2);   
-N                    }
-N                    break; 
-N                
-N                default:
-N                    break;
-N            }//end of switch
-N            
-N            
-N        //·­×ªÏµÍ³×´Ì¬µÆ
-N        SysLed();
-N            
-N        }//end of if
-N    }
+N        
+N    }//end of while
 N}
 N
 N//°´¼üºÍ·´À¡µÄÉ¨ÃèÈÎÎñ
 N__task void AppTaskKey(void)
 X__declspec(noreturn) void AppTaskKey(void)
 N{
-N    static uint16_t timesA, timesB;
 N    while(1)
-N    {
-N        
-N        DetectReader();//¼ì²â¶ÁÍ·Á¬½Ó×´Ì¬
-N        g_tDoorStatus.readFeedBack();//¶ÁÈ¡ÃÅÎü·´À¡
-N        //Èç¹ûÃÅ·´À¡ÊÇ¿ªµÄÇÒ¼ÌµçÆ÷ÊÇ¹ØµÄ£¬ÄÇÃ´NÃëºóµ÷ÓÃ±¨¾¯£¬Ö±µ½×´Ì¬¶Ô
-N        //¸ù¾İ¼ì²âµ½µÄ¶ÁÍ·×´Ì¬À´£¬¿ÉÄÜÓĞÎ´Á¬½ÓµÄ£¬Ö»¶ÔÒÑÁ¬ÉÏµÄ±¨¾¯
-N        if(g_tReader.readerA.status == 1)
-N        {
-N            if(g_tDoorStatus.doorA.feedBackStatus == NO && g_tDoorStatus.doorA.switcherStatus == NC)
-X            if(g_tDoorStatus.doorA.feedBackStatus == 1 && g_tDoorStatus.doorA.switcherStatus == 0)
-N            {
-N                timesA++;
-N                //TODO:Èç¹ûwaitTimeÅä³É0£¬Ôò²»±¨¾¯
-N                if((g_tParam.systemCfg.waitTime!=0) && (timesA >= g_tParam.systemCfg.waitTime*10))
-N                {
-N                    if(timesA == g_tParam.systemCfg.waitTime*10*25)
-N                    {
-N                        timesA = g_tParam.systemCfg.waitTime*10;//±ÜÃâtimesÒç³ö
-N                    }
-N                    //alram±¨¾¯£¬os_dlyºÍ·­×ª
-N                    //ÀûÓÃ¶ÁÍ·ÉÏµÄ·äÃùÆ÷ºÍled
-N                    ReaderAlarm(e_READER_A);
-N                }
-N            }
-N            else 
-N            {
-N                timesA = 0;
-N            }
-N        }
-N        
-N        if(g_tReader.readerB.status == 1)
-N        {
-N            if(g_tDoorStatus.doorB.feedBackStatus == NO && g_tDoorStatus.doorB.switcherStatus == NC)
-X            if(g_tDoorStatus.doorB.feedBackStatus == 1 && g_tDoorStatus.doorB.switcherStatus == 0)
-N            {
-N                timesB++;
-N                if((g_tParam.systemCfg.waitTime!=0) && (timesB >= g_tParam.systemCfg.waitTime*10))
-N                {
-N                    if(timesB == g_tParam.systemCfg.waitTime*10*25)
-N                    {
-N                        timesB = g_tParam.systemCfg.waitTime*10;//±ÜÃâtimesÒç³ö
-N                    }
-N                    //alram±¨¾¯£¬os_dlyºÍ·­×ª
-N                    //ÀûÓÃ¶ÁÍ·ÉÏµÄ·äÃùÆ÷ºÍled
-N                    ReaderAlarm(e_READER_B);
-N                }
-N            }
-N            else 
-N            {
-N                timesB = 0;
-N            }
-N        }
+N    {     
 N        
 N        os_dly_wait(100);
 X        _os_dly_wait((U32)rt_dly_wait,100);
@@ -37212,83 +35580,13 @@ N*/
 N__task void AppTaskNet(void)
 X__declspec(noreturn) void AppTaskNet(void)
 N{
-N    static uint16_t n;
-N    static uint8_t data;
-N    static const uint8_t netDelayTime = 50;//ÍøÂçÈÎÎñÃ¿50msÒ»´Î
-N    
-N    static uint16_t heartNum = (HEART_TIME*1000)/netDelayTime;//ĞÄÌø°üÑÓÊ±´ÎÊı
-X    static uint16_t heartNum = (5*1000)/netDelayTime;
-N    
-N    
-N    
 N    while(1)
-N    {
-N        
-N        KEY_Scan();//°´¼ü¼ì²â
-N        //¶ÁÈ¡ÍøÂç×´Ì¬
-N        wiz_read_buf(PHYCFGR, &data, 1);//¶ÁÈ¡phy£¬ÅĞ¶ÏÍøÏßÊÇ·ñ²åºÃ
-X        wiz_read_buf((0x002E00), &data, 1);
-N        if(data & 0x01 == 1)
-N        {
-N            g_tNetData.status = e_Link;//ÍøÏß²åºÃÁË
-N
-N        }
-N        else g_tNetData.status = e_NoLink;//ÍøÏßÃ»²åºÃ
-N        
-N        if(g_tNetData.status == e_Link)
-N        {
-N            /*Socket×´Ì¬»ú£¬MCUÍ¨¹ı¶ÁSn_SR(0)µÄÖµ½øĞĞÅĞ¶ÏSocketÓ¦¸Ã´¦ÓÚºÎÖÖ×´Ì¬*/
-N            switch(getSn_SR(0))	// »ñÈ¡socket0µÄ×´Ì¬
-N            {
-N            case SOCK_UDP:		// Socket´¦ÓÚ³õÊ¼»¯Íê³É(´ò¿ª)×´Ì¬
-X            case 0x22:		
-N                if(getSn_IR(0) & Sn_IR_RECV)
-X                if(getSn_IR(0) & 0x04)
-N                {
-N                    setSn_IR(0, Sn_IR_RECV);// Sn_IRµÄRECVÎ»ÖÃ1
-X                    setSn_IR(0, 0x04);
-N                }
-N                //Êı¾İ½ÓÊÕ
-N                g_tNetData.len = getSn_RX_RSR(0);
-N                if((g_tNetData.len>0) && (g_tNetData.len <= (DATA_LEN+13+8)))
-X                if((g_tNetData.len>0) && (g_tNetData.len <= (1024+13+8)))
-N                { 
-N                    g_tNetData.len -= 8;//È¥³ı8×Ö½Ú³¤¶ÈµÄipÍ·ĞÅÏ¢
-N                    // W5500½ÓÊÕÀ´×ÔÔ¶³ÌÉÏÎ»»úµÄÊı¾İ£¬²¢Í¨¹ıSPI·¢ËÍ¸øMCU
-N                    recvfrom(0, g_tNetData.buf, g_tNetData.len, g_tParam.netCfg.server_ip ,&g_tParam.netCfg.server_port);
-N                    DEBUG(COM1, g_tNetData.buf, g_tNetData.len);
-X                    ;
-N                    processCommand(g_tNetData.buf, g_tNetData.len);
-N                }
-N                break;
-N                
-N            case SOCK_CLOSED:// Socket´¦ÓÚ¹Ø±Õ×´Ì¬
-X            case 0x00:
-N                socket(0, Sn_MR_UDP, g_tParam.netCfg.local_port, 0);	// ´ò¿ªSocket0£¬²¢ÅäÖÃÎªUDPÄ£Ê½£¬´ò¿ªÒ»¸ö±¾µØ¶Ë¿Ú
-X                socket(0, 0x02, g_tParam.netCfg.local_port, 0);	
-N                break;
-N            
-N            default:
-N                break;         
-N            }//end of switch
-N            
-N            if(n >= heartNum)//µÈµ½ÍøÂçÈÎÎñ´ïµ½Ò»¶¨´ÎÊıºó·¢ËÍĞÄÌø°ü
-N            {
-N                n = 0;
-N                //FB_data = g_tDoorStatus.doorA.feedBackStatus;
-N                //FB_data += g_tDoorStatus.doorB.feedBackStatus << 4;
-N                
-N                
-N                SendDataToServer(0, 0, g_tDetector.preciseSingleTime, 3);//·¢ËÍĞÄÌø°ü
-N                memset(g_tDetector.preciseSingleTime, 0, sizeof(g_tDetector.preciseSingleTime));//ÇåÁã
-N            }
-N            n++;
-N        }
+N    {    
 N        
 N        /* os_itv_waitÊÇÖÜÆÚĞÔÑÓ³Ù£¬os_dly_waitÊÇÏà¶ÔÑÓ³Ù¡£*/
-N		os_dly_wait(netDelayTime);
-X		_os_dly_wait((U32)rt_dly_wait,netDelayTime);
-N    }
+N		os_dly_wait(100);
+X		_os_dly_wait((U32)rt_dly_wait,100);
+N    }//end of while
 N}
 N
 N/*
@@ -37314,18 +35612,6 @@ N    while(1)
 N    {
 N        IWDG_Feed();//Î¹¹·
 N        
-N        ds1302_readtime(g_tRunInfo.time, 5);//¶ÁÈ¡Ê±¼ä
-N
-N        //ÅĞ¶ÏÊÇ·ñµ½0µã£¬ĞèÒª¸´Î»Ê×¿¨»òÕß¶àÖØ¿¨µÄ×´Ì¬
-N        if(g_tRunInfo.time[3] == 0 && (g_tRunInfo.firstCardStatus != 0 || g_tRunInfo.multipleCardStatus != 0))
-N        {
-N            //×´Ì¬ÖÃ0
-N            g_tRunInfo.firstCardStatus = 0;
-N            g_tRunInfo.multipleCardStatus = 0;
-N        }
-N 
-N        //·­×ªÏµÍ³×´Ì¬µÆ
-N        SysLed();
 N        os_dly_wait(15000);
 X        _os_dly_wait((U32)rt_dly_wait,15000);
 N    }
@@ -37406,45 +35692,5 @@ N    os_mbx_init(&mailboxCardInterLock, sizeof(mailboxCardInterLock));
 X    _os_mbx_init((U32)rt_mbx_init,&mailboxCardInterLock,sizeof(mailboxCardInterLock));
 N}
 N
-N//±¨¾¯
-Nstatic void ReaderAlarm(enum ReaderOrButton_Enum type)
-N{
-N    alarmOn(type);
-N    os_dly_wait(500);
-X    _os_dly_wait((U32)rt_dly_wait,500);
-N    alarmOff(type);
-N}
-N
-N//ÏµÍ³×´Ì¬µÆÉÁË¸
-Nstatic void SysLed(void)
-N{
-N    bsp_LedToggle(3);
-N    os_dly_wait(500);
-X    _os_dly_wait((U32)rt_dly_wait,500);
-N    bsp_LedToggle(3);
-N}
-N
-N//¿ªÃÅÌáÊ¾Òô
-Nstatic void OpenTips(enum ReaderOrButton_Enum type)
-N{
-N//    uint8_t delayTime = 50;
-N//    os_dly_wait(200);
-N//    
-N//    alarmOn(type);
-N//    os_dly_wait(delayTime);
-N//    alarmOff(type);
-N//    
-N//    os_dly_wait(delayTime);
-N//    
-N//    alarmOn(type);
-N//    os_dly_wait(delayTime);
-N//    alarmOff(type);
-N//    
-N//    os_dly_wait(delayTime);
-N//    
-N//    alarmOn(type);
-N//    os_dly_wait(delayTime);
-N//    alarmOff(type);
-N}
 N
 N/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/

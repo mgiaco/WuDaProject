@@ -847,46 +847,6 @@ void sf_exWriteOnePage(uint8_t* _pBuf, uint32_t _uiWriteAddr)
 	sf_WaitForWriteEnd();							/* 等待串行Flash内部写操作完成 */
 }
 
-//写入刷卡记录
-void storeRecord(uint8_t *id, uint8_t reader)
-{
-    uint8_t record[8];
-    uint16_t sector = (g_tParam.nextStartAddr.nextStartSector[0]<<8) + g_tParam.nextStartAddr.nextStartSector[1];
-    uint16_t addr = (g_tParam.nextStartAddr.nextStartAddr[0]<<8) + g_tParam.nextStartAddr.nextStartAddr[1];
-    uint32_t _uiWriteAddr = sector*g_tSF.PageSize + addr;
-    
-    if(addr == 0)
-    {
-        sf_EraseSector(sector*g_tSF.PageSize);
-    }
-    
-    memcpy(&record[0], id, 3);
-    
-    memcpy(&record[3], g_tRunInfo.time, sizeof(g_tRunInfo.time));
-    
-    //月份1-12，则id[1]的高4位用来表示读头，0--A，1--B
-    if(reader == e_READER_A)
-    {
-        record[4] += 0;
-    }
-    else if(reader == e_READER_B)
-    {
-        record[4] += 1<<4;
-    }
-    
-    sf_exWrite8Bytes(record, _uiWriteAddr);
-    
-    _uiWriteAddr += 8;
-    sector = _uiWriteAddr/g_tSF.PageSize;
-    addr = _uiWriteAddr%g_tSF.PageSize;
-    
-    g_tParam.nextStartAddr.nextStartSector[0] = sector>>8;
-    g_tParam.nextStartAddr.nextStartSector[1] = sector&0xFF;
-    
-    g_tParam.nextStartAddr.nextStartAddr[0] = addr>>8;
-    g_tParam.nextStartAddr.nextStartAddr[1] = addr&0xFF;
-    
-    g_tParam.updateNextStartAddr(&g_tParam.nextStartAddr);
-}
+
 
 /***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/

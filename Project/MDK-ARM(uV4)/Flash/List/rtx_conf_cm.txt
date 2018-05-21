@@ -5,18 +5,18 @@
                           AREA ||i.os_error||, CODE, READONLY, ALIGN=1
 
                   os_error PROC
-;;;219    
-;;;220    void os_error (U32 err_code) {
+;;;195    
+;;;196    void os_error (U32 err_code) {
 000000  bf00              NOP      
                   |L1.2|
-;;;221      /* This function is called when a runtime error is detected. Parameter */
-;;;222      /* 'err_code' holds the runtime error code (defined in RTL.H).         */
-;;;223    
-;;;224      /* HERE: include optional code to be executed on runtime error. */
-;;;225      for (;;);
+;;;197      /* This function is called when a runtime error is detected. Parameter */
+;;;198      /* 'err_code' holds the runtime error code (defined in RTL.H).         */
+;;;199    
+;;;200      /* HERE: include optional code to be executed on runtime error. */
+;;;201      for (;;);
 000002  e7fe              B        |L1.2|
-;;;226    }
-;;;227    
+;;;202    }
+;;;203    
                           ENDP
 
 
@@ -39,13 +39,12 @@
                           ENDP
 
 
-                          AREA ||i.os_tmr_call||, CODE, READONLY, ALIGN=2
+                          AREA ||i.os_tmr_call||, CODE, READONLY, ALIGN=1
 
                   os_tmr_call PROC
 ;;;177    
 ;;;178    void os_tmr_call (U16 info) {
-000000  b538              PUSH     {r3-r5,lr}
-000002  4604              MOV      r4,r0
+000000  bf00              NOP      
 ;;;179      /* This function is called when the user timer has expired. Parameter   */
 ;;;180      /* 'info' holds the value, defined when the timer was created.          */
 ;;;181    
@@ -55,87 +54,15 @@
 ;;;185      */
 ;;;186      
 ;;;187      switch(info)
-000004  2c05              CMP      r4,#5
-000006  d228              BCS      |L3.90|
-000008  e8dff004          TBB      [pc,r4]
-00000c  030d131a          DCB      0x03,0x0d,0x13,0x1a
-000010  2100              DCB      0x21,0x00
+000002  bf00              NOP      
 ;;;188      {
-;;;189        case 0:          /* 参数为0,远程开门后关门 */
-;;;190        {
-;;;191          SingleRelation_T t_remoteOpen;//add3-9 为了能够在case标签后面声明结构体变量，加上了大括号
-;;;192          t_remoteOpen.button_switcher = g_tRunInfo.remoteOpen;
-000012  4813              LDR      r0,|L3.96|
-000014  7840              LDRB     r0,[r0,#1]  ; g_tRunInfo
-000016  f88d0001          STRB     r0,[sp,#1]
-;;;193          g_tDoorStatus.closeDoor(&t_remoteOpen, e_BUTTON_A);//e_BUTTON_A和 e_BUTTON_B在closeDoor函数中情况一样，不必区分
-00001a  4812              LDR      r0,|L3.100|
-00001c  2102              MOVS     r1,#2
-00001e  68c2              LDR      r2,[r0,#0xc]  ; g_tDoorStatus
-000020  4668              MOV      r0,sp
-000022  4790              BLX      r2
-;;;194        }
-;;;195          break;
-000024  e019              B        |L3.90|
-;;;196          
-;;;197    	case 1:          /* 参数为1 ,关系A-读头*/
-;;;198          g_tDoorStatus.closeDoor(&g_tParam.relation.relationA, e_READER_A);//e_BUTTON_A和 e_BUTTON_B在closeDoor函数中情况一样，不必区分
-000026  480f              LDR      r0,|L3.100|
-000028  2100              MOVS     r1,#0
-00002a  68c2              LDR      r2,[r0,#0xc]  ; g_tDoorStatus
-00002c  480e              LDR      r0,|L3.104|
-00002e  4790              BLX      r2
-;;;199          break;
-000030  e013              B        |L3.90|
-;;;200    	
-;;;201    	case 2:          /* 参数为2，关系B-按键 */
-;;;202    	  g_tDoorStatus.closeDoor(&g_tParam.relation.relationB, e_BUTTON_A);//同上      
-000032  480c              LDR      r0,|L3.100|
-000034  2102              MOVS     r1,#2
-000036  68c2              LDR      r2,[r0,#0xc]  ; g_tDoorStatus
-000038  480b              LDR      r0,|L3.104|
-00003a  1c80              ADDS     r0,r0,#2
-00003c  4790              BLX      r2
-;;;203          break;
-00003e  e00c              B        |L3.90|
-;;;204        
-;;;205        case 3:          /* 参数为3 ,关系B-读头*/
-;;;206          g_tDoorStatus.closeDoor(&g_tParam.relation.relationB, e_READER_A);//e_BUTTON_A和 e_BUTTON_B在closeDoor函数中情况一样，不必区分
-000040  4808              LDR      r0,|L3.100|
-000042  2100              MOVS     r1,#0
-000044  68c2              LDR      r2,[r0,#0xc]  ; g_tDoorStatus
-000046  4808              LDR      r0,|L3.104|
-000048  1c80              ADDS     r0,r0,#2
-00004a  4790              BLX      r2
-;;;207          break;
-00004c  e005              B        |L3.90|
-;;;208    	
-;;;209    	case 4:          /* 参数为4，关系A-按键 */
-;;;210    	  g_tDoorStatus.closeDoor(&g_tParam.relation.relationA, e_BUTTON_A);//同上      
-00004e  4805              LDR      r0,|L3.100|
-000050  2102              MOVS     r1,#2
-000052  68c2              LDR      r2,[r0,#0xc]  ; g_tDoorStatus
-000054  4804              LDR      r0,|L3.104|
-000056  4790              BLX      r2
-;;;211          break;
-000058  bf00              NOP      
-                  |L3.90|
-00005a  bf00              NOP                            ;195
-;;;212        
-;;;213        
-;;;214      }
-;;;215    }
-00005c  bd38              POP      {r3-r5,pc}
-;;;216    
+;;;189    
+;;;190      }
+;;;191    }
+000004  4770              BX       lr
+;;;192    
                           ENDP
 
-00005e  0000              DCW      0x0000
-                  |L3.96|
-                          DCD      g_tRunInfo
-                  |L3.100|
-                          DCD      g_tDoorStatus
-                  |L3.104|
-                          DCD      g_tParam+0x14
 
                           AREA ||.bss||, DATA, NOINIT, ALIGN=3
 
@@ -167,7 +94,7 @@
                   ||__tagsym$$used||
                           DCD      0x000003e8
                   os_timernum
-                  |symbol_number.16|
+                  |symbol_number.13|
                           DCD      0x00000002
                   mp_tcb_size
 00001c  01cc              DCW      0x01cc

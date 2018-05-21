@@ -132,7 +132,8 @@
      Internal SRAM. */ 
 /* #define VECT_TAB_SRAM */
 #define VECT_TAB_OFFSET  0x4000 /*!< Vector Table base offset field. This value must be a multiple of 0x200. */
-  //0x44000      default                          
+  //0x44000      factory app address
+    //0x4000    default app address (and update app address)
 
 
 /**

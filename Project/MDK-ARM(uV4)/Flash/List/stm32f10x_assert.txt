@@ -7,9 +7,9 @@
 #line 1 "..\\..\\User\\bsp\\stm32f10x_assert.c"
 	AREA ||.rev16_text||, CODE, READONLY
 	THUMB
-	EXPORT |__asm___18_stm32f10x_assert_c_9c7cc66d____REV16|
+	EXPORT |__asm___18_stm32f10x_assert_c_68507d9e____REV16|
 #line 114 "..\\..\\Libraries\\CMSIS\\Include\\core_cmInstr.h"
-|__asm___18_stm32f10x_assert_c_9c7cc66d____REV16| PROC
+|__asm___18_stm32f10x_assert_c_68507d9e____REV16| PROC
 #line 115
 
  rev16 r0, r0
@@ -17,9 +17,9 @@
 	ENDP
 	AREA ||.revsh_text||, CODE, READONLY
 	THUMB
-	EXPORT |__asm___18_stm32f10x_assert_c_9c7cc66d____REVSH|
+	EXPORT |__asm___18_stm32f10x_assert_c_68507d9e____REVSH|
 #line 128
-|__asm___18_stm32f10x_assert_c_9c7cc66d____REVSH| PROC
+|__asm___18_stm32f10x_assert_c_68507d9e____REVSH| PROC
 #line 129
 
  revsh r0, r0
