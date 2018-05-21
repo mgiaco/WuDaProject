@@ -7,6 +7,9 @@
 *.obj
 *.elf
 
+#keil output
+/Project/MDK-ARM(uV4)/Flash/
+
 # Linker output
 *.ilk
 *.map
@@ -50,3 +53,4 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+*.bak
