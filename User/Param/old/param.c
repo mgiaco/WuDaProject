@@ -67,8 +67,8 @@ void paramInit(void)
     {
         //若IP没有配置过，则重置
         resetParam();
-        //把普通卡号数组全置为0xFF
-        memset(g_tParam.multipleCardID.generalCardID, 0xFF, sizeof(g_tParam.multipleCardID.generalCardID));
+        //把普通卡号数组全置为0xFF,已在重置函数中完成
+        //memset(g_tParam.multipleCardID.generalCardID, 0xFF, sizeof(g_tParam.multipleCardID.generalCardID));
         return;
     }
 
@@ -87,18 +87,21 @@ void paramInit(void)
     memcpy(&g_tParam.relation.relationA.button_switcher, &temp[ADDR_RELATION_BUTTON_A], sizeof(g_tParam.relation.relationA.reader_switcher));
     memcpy(&g_tParam.relation.relationB.button_switcher, &temp[ADDR_RELATION_BUTTON_B], sizeof(g_tParam.relation.relationB.reader_switcher));
     
+    //i = sizeof(g_tParam.nextStartAddr.nextStartSector);
     memcpy(g_tParam.nextStartAddr.nextStartSector, &temp[NEXT_START_SECTOR_H], sizeof(g_tParam.nextStartAddr.nextStartSector));
+    //i = sizeof(g_tParam.nextStartAddr.nextStartAddr);
     memcpy(g_tParam.nextStartAddr.nextStartAddr, &temp[NEXT_START_ADDR_H], sizeof(g_tParam.nextStartAddr.nextStartAddr));
     
     //第二页及以后
     //8个配置开关
-    memcpy(&g_tParam.systemCfg.multipleOpenCfg[0], &temp[IS_OPEN_FIRST_CARD], 1);
-    memcpy(&g_tParam.systemCfg.multipleOpenCfg[1], &temp[IS_OPEN_SUPER_CARD], 1);
-    memcpy(&g_tParam.systemCfg.multipleOpenCfg[2], &temp[IS_OPEN_THREAT_CARD], 1);
-    memcpy(&g_tParam.systemCfg.multipleOpenCfg[3], &temp[IS_OPEN_INTERLOCK], 1);
-    memcpy(&g_tParam.systemCfg.multipleOpenCfg[4], &temp[IS_OPEN_THREAT_PASSWORD], 1);
-    memcpy(&g_tParam.systemCfg.multipleOpenCfg[5], &temp[IS_OPEN_SUPER_PASSWORD], 1);
-    memcpy(&g_tParam.systemCfg.multipleOpenCfg[6], &temp[IS_OPEN_MULTIPLE_CARD], 1);
+    //modify 3-9 顺序修正
+    memcpy(&g_tParam.systemCfg.multipleOpenCfg[0], &temp[IS_OPEN_INTERLOCK], 1);
+    memcpy(&g_tParam.systemCfg.multipleOpenCfg[1], &temp[IS_OPEN_FIRST_CARD], 1);
+    memcpy(&g_tParam.systemCfg.multipleOpenCfg[2], &temp[IS_OPEN_MULTIPLE_CARD], 1);
+    memcpy(&g_tParam.systemCfg.multipleOpenCfg[3], &temp[IS_OPEN_SUPER_CARD], 1);
+    memcpy(&g_tParam.systemCfg.multipleOpenCfg[4], &temp[IS_OPEN_SUPER_PASSWORD], 1);
+    memcpy(&g_tParam.systemCfg.multipleOpenCfg[5], &temp[IS_OPEN_THREAT_CARD], 1);
+    memcpy(&g_tParam.systemCfg.multipleOpenCfg[6], &temp[IS_OPEN_THREAT_PASSWORD], 1);
     memcpy(&g_tParam.systemCfg.multipleOpenCfg[7], &temp[IS_OPEN_FINGER], 1);
     
     //last page
@@ -113,24 +116,25 @@ void paramInit(void)
     //一次读300字节，有100个卡号，分5次读取
     for(i=0;i<5;i++)
     {
-        ee_ReadBytes(temp, len, FINGER_ID+i*300);//指纹ID
+        ee_ReadBytes(temp, FINGER_ID+i*300, len);//指纹ID
         memcpy(&g_tParam.multipleCardID.fingerID[i*len], temp, sizeof(temp));
     }
     for(i=0;i<5;i++)
     {
-        ee_ReadBytes(temp, len, GENERAL_CARD_ID+i*300);//普通卡ID
+        ee_ReadBytes(temp, GENERAL_CARD_ID+i*300, len);//普通卡ID
         memcpy(&g_tParam.multipleCardID.generalCardID[i*len], temp, sizeof(temp));
     }
        
 }
 
+//复位参数, 需要重新设置w5500
 void resetParam(void)
 {
-    uint8_t i;
+    uint16_t i;
     uint8_t buf[EE_PAGE_SIZE];
-    uint8_t temp[2];
+    uint8_t temp[2]; 
+    //uint8_t card[3];    
     
-    memset(&g_tParam, 0xFF, sizeof(g_tParam));
     for(i = 0; i < EE_PAGE_SIZE; i++)
 	{
 		buf[i] = 0xFF;
@@ -145,18 +149,18 @@ void resetParam(void)
     g_tParam.netCfg.local_ip[0]=192;
     g_tParam.netCfg.local_ip[1]=168;
     g_tParam.netCfg.local_ip[2]=3;
-    g_tParam.netCfg.local_ip[3]=100;        
-    //g_tParam.netCfg.local_port[0]=(6000>>8);//high
-    //g_tParam.netCfg.local_port[0]=(6000&0xFF);//low
+    g_tParam.netCfg.local_ip[3]=100;
     g_tParam.netCfg.local_port = 6000;
     
     //server IP:255.255.255.255,broadcast
-    //g_tParam.netCfg.server_port[0]=(8080>>8);//high
-    //g_tParam.netCfg.server_port[1]=(8080&0xFF);//low
-    g_tParam.netCfg.server_port = 8080;
+    g_tParam.netCfg.server_ip[0]=255;
+    g_tParam.netCfg.server_ip[1]=255;
+    g_tParam.netCfg.server_ip[2]=255;
+    g_tParam.netCfg.server_ip[3]=255; 
+    g_tParam.netCfg.server_port = 8085;
     
     g_tParam.systemCfg.openTime = 5;
-    g_tParam.systemCfg.waitTime = 10;
+    g_tParam.systemCfg.waitTime = 0;
     memset(g_tParam.systemCfg.multipleOpenCfg, 0, sizeof(g_tParam.systemCfg.multipleOpenCfg));
     
     g_tParam.relation.relationA.reader_switcher = 1;
@@ -192,14 +196,17 @@ void resetParam(void)
     ee_WriteOneBytes(g_tParam.systemCfg.multipleOpenCfg[7], IS_OPEN_FINGER);
     //对应关系
     ee_WriteOneBytes(g_tParam.relation.relationA.reader_switcher, ADDR_RELATION_READER_A);
-    ee_WriteOneBytes(g_tParam.relation.relationA.button_switcher, ADDR_RELATION_READER_B);
-    ee_WriteOneBytes(g_tParam.relation.relationB.reader_switcher, ADDR_RELATION_BUTTON_A);
+    ee_WriteOneBytes(g_tParam.relation.relationB.reader_switcher, ADDR_RELATION_READER_B);
+    ee_WriteOneBytes(g_tParam.relation.relationA.button_switcher, ADDR_RELATION_BUTTON_A);
     ee_WriteOneBytes(g_tParam.relation.relationB.button_switcher, ADDR_RELATION_BUTTON_B);
     //下一次历史记录地址
     ee_WriteOneBytes(g_tParam.nextStartAddr.nextStartSector[0], NEXT_START_SECTOR_H);
     ee_WriteOneBytes(g_tParam.nextStartAddr.nextStartSector[1], NEXT_START_SECTOR_L);
     ee_WriteOneBytes(g_tParam.nextStartAddr.nextStartAddr[0], NEXT_START_ADDR_H);
     ee_WriteOneBytes(g_tParam.nextStartAddr.nextStartAddr[1], NEXT_START_ADDR_L);
+    
+    //重新设置网络
+    set_default(&g_tParam.netCfg);
 }
 
 //更新参数--对应关系
@@ -211,10 +218,10 @@ void updateRelation(Relation_T *relation, enum ReaderOrButton_Enum type)
             ee_WriteOneBytes(relation->relationA.reader_switcher, ADDR_RELATION_READER_A);
             break;
         case e_READER_B:
-            ee_WriteOneBytes(relation->relationA.button_switcher, ADDR_RELATION_READER_B);
+            ee_WriteOneBytes(relation->relationB.reader_switcher, ADDR_RELATION_READER_B);
             break;
         case e_BUTTON_A:
-            ee_WriteOneBytes(relation->relationB.reader_switcher, ADDR_RELATION_BUTTON_A);
+            ee_WriteOneBytes(relation->relationA.button_switcher, ADDR_RELATION_BUTTON_A);
             break;
         case e_BUTTON_B:
             ee_WriteOneBytes(relation->relationB.button_switcher, ADDR_RELATION_BUTTON_B);
@@ -304,41 +311,49 @@ void updateNextStartAddr(NextStartAddr_T *nextStartAddr)
 void updateMultipleCardID(uint8_t *data, uint16_t len, enum ID_Enum type)
 {
     uint8_t i = 0;
+    //uint8_t temp[300]={0};
     switch(type)
     {
         case e_firstCardID:
-            ee_WriteBytes(data, len, FIRST_CARD_ID);
+            ee_WriteBytes(data, FIRST_CARD_ID, len);
             break;
         case e_superCardID:
-            ee_WriteBytes(data, len, SUPER_CARD_ID);
+            ee_WriteBytes(data, SUPER_CARD_ID, len);
             break;
         case e_superPasswordID:
-            ee_WriteBytes(data, len, SUPER_PASSWORD_ID);
+            ee_WriteBytes(data, SUPER_PASSWORD_ID, len);
             break;
         case e_threatCardID:
-            ee_WriteBytes(data, len, THREAT_CARD_ID);
+            ee_WriteBytes(data, THREAT_CARD_ID, len);
             break;
         case e_threatPasswordID:
-            ee_WriteBytes(data, len, THREAT_PASSWORD_ID);
+            ee_WriteBytes(data, THREAT_PASSWORD_ID, len);
             break;
         case e_keyBoardID:
-            ee_WriteBytes(data, len, KEY_BOARD_ID);
+            ee_WriteBytes(data, KEY_BOARD_ID, len);
             break;
         case e_multipleCardID:
-            ee_WriteBytes(data, len, MULTIPLE_CARD_ID);
+            ee_WriteBytes(data, MULTIPLE_CARD_ID, len);
             break;
         case e_generalCardID://len=300
+            len=len/5;
             //一次写300字节，有100个卡号，分5次写入
             for(i=0;i<5;i++)
             {
-                ee_WriteBytes(data, len, GENERAL_CARD_ID+i*300);
+                ee_WriteBytes(data, GENERAL_CARD_ID+i*300, len);
+                data += 300;
             }
+            //test
+            //bsp_DelayMS(100);
+            //ee_ReadBytes(temp, GENERAL_CARD_ID, 300);
             break;
         case e_fingerID://len=300
+            len=len/5;
             //一次写300字节，有100个卡号，分5次写入
             for(i=0;i<5;i++)
             {
-                ee_WriteBytes(data, len, GENERAL_CARD_ID+i*300);
+                ee_WriteBytes(data, GENERAL_CARD_ID+i*300, len);
+                data += 300;
             }
             break;
         default:
@@ -354,7 +369,7 @@ uint8_t searchID(uint8_t *id)
     
     for(i = 0; i<sizeof(g_tParam.systemCfg.multipleOpenCfg); i++)
     {
-        if(g_tParam.systemCfg.multipleOpenCfg[i]==1)
+        if(g_tParam.systemCfg.multipleOpenCfg[i]!=0)
         {
             switch(i)
             {

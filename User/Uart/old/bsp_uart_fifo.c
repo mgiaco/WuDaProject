@@ -346,7 +346,7 @@ void bsp_Set485Baud(uint32_t _baud)
 */
 void RS485_SendBefor(void)
 {
-	RS485_TX_EN();	/* 切换RS485收发芯片为发送模式 */
+	//RS485_TX_EN();	/* 切换RS485收发芯片为发送模式 */
 }
 
 /*
@@ -360,7 +360,7 @@ void RS485_SendBefor(void)
 */
 void RS485_SendOver(void)
 {
-	RS485_RX_EN();	/* 切换RS485收发芯片为接收模式 */
+	//RS485_RX_EN();	/* 切换RS485收发芯片为接收模式 */
 }
 
 
@@ -374,7 +374,7 @@ void RS485_SendOver(void)
 */
 void RS485_SendBuf(uint8_t *_ucaBuf, uint16_t _usLen)
 {
-	comSendBuf(COM3, _ucaBuf, _usLen);
+	//comSendBuf(COM3, _ucaBuf, _usLen);
 }
 
 
@@ -389,7 +389,7 @@ void RS485_SendBuf(uint8_t *_ucaBuf, uint16_t _usLen)
 */
 void RS485_SendStr(char *_pBuf)
 {
-	RS485_SendBuf((uint8_t *)_pBuf, strlen(_pBuf));
+	//RS485_SendBuf((uint8_t *)_pBuf, strlen(_pBuf));
 }
 
 /*

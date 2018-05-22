@@ -30,14 +30,18 @@
 ".\flash\obj\rt_timer.o"
 ".\flash\obj\hal_cm3.o"
 ".\flash\obj\svc_table.o"
+".\flash\obj\reader.o"
 ".\flash\obj\bsp_eeprom_24xx.o"
 ".\flash\obj\bsp_i2c_gpio.o"
 ".\flash\obj\bsp_spi_bus.o"
 ".\flash\obj\bsp_spi_flash.o"
+".\flash\obj\protocal.o"
 ".\flash\obj\bsp_timer.o"
+".\flash\obj\uart.o"
 ".\flash\obj\bsp_cpu_flash.o"
 ".\flash\obj\bsp_dwt.o"
 ".\flash\obj\bsp_iwdg.o"
+".\flash\obj\param.o"
 --library_type=microlib --strict --scatter ".\Flash\Obj\output.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

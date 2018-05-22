@@ -619,9 +619,28 @@
         </Group>
         <Group>
           <GroupName>Doc</GroupName>
+          <Files>
+            <File>
+              <FileName>1.命令协议.txt</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\Doc\1.命令协议.txt</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
-          <GroupName>Wiegand</GroupName>
+          <GroupName>Reader</GroupName>
+          <Files>
+            <File>
+              <FileName>reader.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\Reader\reader.c</FilePath>
+            </File>
+            <File>
+              <FileName>reader.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\Reader\reader.h</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>IIC</GroupName>
@@ -675,6 +694,18 @@
         </Group>
         <Group>
           <GroupName>Protocal</GroupName>
+          <Files>
+            <File>
+              <FileName>protocal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\Protocal\protocal.c</FilePath>
+            </File>
+            <File>
+              <FileName>protocal.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\Protocal\protocal.h</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>Timer</GroupName>
@@ -693,6 +724,18 @@
         </Group>
         <Group>
           <GroupName>Uart</GroupName>
+          <Files>
+            <File>
+              <FileName>uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\Uart\uart.c</FilePath>
+            </File>
+            <File>
+              <FileName>uart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\Uart\uart.h</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>CpuFlash</GroupName>
@@ -741,6 +784,18 @@
         </Group>
         <Group>
           <GroupName>Param</GroupName>
+          <Files>
+            <File>
+              <FileName>param.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\Param\param.c</FilePath>
+            </File>
+            <File>
+              <FileName>param.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\Param\param.h</FilePath>
+            </File>
+          </Files>
         </Group>
       </Groups>
     </Target>

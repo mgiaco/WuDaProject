@@ -87,6 +87,6 @@ typedef struct
 extern Param_T g_tParam;
 void paramInit(void);//从IIC中读取参数
 void resetParam(void);//重置参数为0xFF
-uint8_t searchID(uint8_t *id, uint16_t len);//检查id是否相符，能否开门
+uint8_t searchID(uint8_t *id);//检查id是否相符，能否开门
 #endif
 

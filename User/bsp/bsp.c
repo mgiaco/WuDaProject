@@ -17,17 +17,6 @@
 *********************************************************************************************************
 */
 #include "bsp.h"
-//static void GetCPU_ID(uint8_t *data, uint8_t len);
-
-//RunInfo_T g_tRunInfo;
-
-//static void GetCPU_ID(uint8_t *data, uint8_t len)  
-//{
-//    data[0]=mac_Code&0x000000FF;
-//    data[1]=(mac_Code&0x0000FF00)>>8;
-//    data[2]=(mac_Code&0x00FF0000)>>16;
-//    data[3]=(mac_Code&0xFF000000)>>24;
-//}
 
 /*
 *********************************************************************************************************
@@ -52,9 +41,7 @@ void bsp_Init(void)
 
     bsp_InitDWT();//用来做精确微秒延时
     
-	//bsp_InitUart(); 	/* 初始化串口 */
-	//bsp_InitLed(); 		/* 初始LED指示灯端口 */
-	//bsp_InitKey();		/* 初始化按键 */
+	//uartInit(); 	/* 初始化串口 */
 	bsp_InitHardTimer();    /* 硬件定时器初始化*/   
     
     bsp_InitSPIBus();	/* 配置SPI总线 */		
@@ -62,22 +49,12 @@ void bsp_Init(void)
     
     bsp_InitI2C();		/* 配置I2C总线 */
     
-    //WiegandInit();		//初始化韦根信号线
+    ReaderInit();		//初始化韦根信号线
     
-    //ds1302_GPIO_Configuration();//1302模拟时序引脚初始化   
-    
-    //WIZ_SPI_Init();//初始化w5500用到的GPIO口和spi功能
-    //Reset_W5500();//硬重启w5500
-    
-    //paramInit();//读取参数
-    //GetCPU_ID(g_tParam.netCfg.mcuID, 4);//获取cpuID
-    //set_default(&g_tParam.netCfg);//设置默认的MAC，IP，GW，SUB，DNS,并初始化
+    paramInit();//读取参数
     
     bsp_InitIwdg(0xC35);//看门狗溢出时间为20s
     
-    //状态置0
-   // g_tRunInfo.firstCardStatus = 0;
-    //g_tRunInfo.multipleCardStatus = 0;
 }
 
 /***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/

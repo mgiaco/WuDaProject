@@ -1,8 +1,16 @@
 #include "bsp.h"
+#define VERSION 0x10//版本号
 
 void SendDataToServer(uint8_t flag, uint8_t rw, uint8_t *data, uint16_t len);
 
 NetData_T g_tNetData;
+
+//软复位
+void MCU_Reset(void)
+{
+    __disable_fault_irq();      
+    NVIC_SystemReset();// STM32 软复位
+}
 
 //构造命令格式,把数据写入网络的buf数组中
 void makeCommmand(uint8_t cmdFlag, uint8_t rw, uint8_t *data, uint16_t len)
@@ -38,6 +46,15 @@ void processCommand(uint8_t *data, uint16_t len)
 {
     uint8_t ret=0;
     //uint8_t temp[512];
+    
+    //响应服务器的广播命令
+    if(data[2] == 0x00)
+    {
+        ret = g_tDoorStatus.doorA.feedBackStatus;
+        ret = g_tDoorStatus.doorB.feedBackStatus << 4;
+        SendDataToServer(data[2], 0, &ret, 1);
+    }
+    
     //先判断ID号
     if(data[0] != 0xA5 || data[1] != 0xA5  || \
        data[3] != g_tParam.netCfg.mcuID[0] || \
@@ -53,11 +70,13 @@ void processCommand(uint8_t *data, uint16_t len)
     switch(data[2])
     {
     
-    case 0x00://心跳包和echo
+    /*
+        *移到上面
+        case 0x00://心跳包和echo
         ret = g_tDoorStatus.doorA.feedBackStatus;
         ret = g_tDoorStatus.doorB.feedBackStatus << 4;
         SendDataToServer(data[2], 0, &ret, 1);
-        break;
+        break;*/
     
     //0x01用来主动上传刷卡的卡号和读头号
     
@@ -174,12 +193,8 @@ void processCommand(uint8_t *data, uint16_t len)
         }
         else if(data[7] == 1)
         {
-            if(data[10]==0)
-            {
-                ret = 0xAA;
-                SendDataToServer(data[2], 1, &ret, 1);
-                return;
-            }
+            //add 3-6
+            //关闭时长为0，表示不检测反馈
             memcpy(&g_tParam.systemCfg.waitTime, &data[10], 1);
             g_tParam.updateSystemCfg(&g_tParam.systemCfg, e_waitTime);
             ret = 0x55;
@@ -297,7 +312,7 @@ void processCommand(uint8_t *data, uint16_t len)
         else if(data[7] == 1)
         {
             //互锁、首卡、多重卡不能同时开启
-            if((data[10]>>4)<2 || (data[10]>>4)>10 || \
+            if((data[10]>>4)<2 || (data[10]>>4)>10 ||(data[10]&0x0F)>1 || \
                 g_tParam.systemCfg.multipleOpenCfg[0]==1 || \
                 g_tParam.systemCfg.multipleOpenCfg[1]==1)           
             {
@@ -511,16 +526,19 @@ void processCommand(uint8_t *data, uint16_t len)
         }
         break;
         
-    case 0x1C://指纹ID，数据的第一个字节表示第几包,1+300
+    case 0x1C://指纹ID，第9个字节表示第几包
         if(data[7] == 0)
         {
-            memcpy(&data[11], &g_tParam.multipleCardID.fingerID[data[10]*300], 300);
-            SendDataToServer(data[2], 0, &data[10], 301);
+            memcpy(&data[10], &g_tParam.multipleCardID.fingerID[data[9]*300], 300);
+            SendDataToServer(data[2], 0, &data[10], 300);
         }
         else if(data[7] == 1)
         {
-            memcpy(&g_tParam.multipleCardID.fingerID[data[10]*300], &data[11], 300);
-            if(data[10] == 4)//0,1,2,3,4
+            if(data[9] <= 4)
+            {
+                memcpy(&g_tParam.multipleCardID.fingerID[data[9]*300], &data[10], 300);
+            }
+            if(data[9] == 4)//0,1,2,3,4
             {
                 //5个包发完
                 g_tParam.updateMultipleCardID(g_tParam.multipleCardID.fingerID, 1500, e_fingerID);
@@ -530,16 +548,19 @@ void processCommand(uint8_t *data, uint16_t len)
         }
         break;
         
-    case 0x1D://普通卡，数据的第一个字节表示第几包,1+300
+    case 0x1D://普通卡，第9个字节表示第几包
         if(data[7] == 0)
         {
-            memcpy(&data[11], &g_tParam.multipleCardID.generalCardID[data[10]*300], 300);
-            SendDataToServer(data[2], 0, &data[10], 301);
+            memcpy(&data[10], &g_tParam.multipleCardID.generalCardID[data[9]*300], 300);
+            SendDataToServer(data[2], 0, &data[10], 300);
         }
         else if(data[7] == 1)
         {
-            memcpy(&g_tParam.multipleCardID.generalCardID[data[10]*300], &data[11], 300);
-            if(data[10] == 4)//0,1,2,3,4
+            if(data[9] <= 4)
+            {
+                memcpy(&g_tParam.multipleCardID.generalCardID[data[9]*300], &data[10], 300);
+            }
+            if(data[9] == 4)//0,1,2,3,4
             {
                 //5个包发完
                 g_tParam.updateMultipleCardID(g_tParam.multipleCardID.generalCardID, 1500, e_generalCardID);
@@ -550,23 +571,17 @@ void processCommand(uint8_t *data, uint16_t len)
         break;
         
     case 0x1E://升级文件
-        //读写位用来表示第几包
-        if(data[7] < 64)//spi分配前256k字节,(0--63)
+        //length的2位用来表示第几包
+        //spi分配前256k字节,(0--255)
+        //ret = data[9];//page num
+        if(data[9]%4 == 0)
         {
-            if(data[7]%4 == 0)
-            {
-                sf_EraseSector(data[7]*1024);//扇区擦除4k字节
-            }
-            sf_PageWrite(&data[10], data[7]*1024, 1024);//按照每包1024字节大小顺序写入spi flash
-            ret = 0x55;
-            SendDataToServer(data[2], 1, &ret, 1);
+            sf_EraseSector(data[9]*1024);//扇区擦除4k字节
         }
-        else
-        {
-            ret = 0xAA;
-            SendDataToServer(data[2], 1, &ret, 1);
-            return;
-        }
+        sf_PageWrite(&data[10], data[9]*1024, 1024);//按照每包1024字节大小顺序写入spi flash
+        ret = 0x55;
+        SendDataToServer(data[2], 1, &ret, 1);
+
         break;
     
     case 0x1F://重置所有参数
@@ -576,16 +591,53 @@ void processCommand(uint8_t *data, uint16_t len)
         break;
     
     case 0x20://远程开门,A/B        
-        g_tRunInfo.remoteOpen = data[10];//低a高b
-        //发送远程开门的事件标志 
-        os_evt_set(REMOTE_OPEN_BIT, HandleTaskButton);
+        if((data[10]==0x01) && (g_tDoorStatus.doorA.switcherStatus == NC)&& (g_tDoorStatus.doorB.switcherStatus == NC))
+        {           
+            g_tRunInfo.remoteOpen = data[10];//低a高b
+            //发送远程开门的事件标志 
+            os_evt_set(REMOTE_OPEN_BIT, HandleTaskButton);
+            ret = 0x55;
+        }
+        else if((data[10]==0x10) && (g_tDoorStatus.doorA.switcherStatus == NC)&& (g_tDoorStatus.doorB.switcherStatus == NC))
+        {           
+            g_tRunInfo.remoteOpen = data[10];//低a高b
+            //发送远程开门的事件标志 
+            os_evt_set(REMOTE_OPEN_BIT, HandleTaskButton);
+            ret = 0x55;
+        }
+        else ret = 0xAA;
+        SendDataToServer(data[2], 1, &ret, 1);
         break;
         
     case 0x21://重启（并升级）
         ret = 0x55;
         SendDataToServer(data[2], 1, &ret, 1);
+        //改写升级标志
+        ee_WriteOneBytes(1, 0);//1表示需要升级,0表示在iic的首地址
         //关门放狗
-        bsp_DelayMS(25000);//25>20
+        //bsp_DelayMS(25000);//25>20
+        //add 3-7调用系统复位指令   
+        MCU_Reset();
+        break;
+    
+    //0x22作为报警消息
+    case 0x23://历史记录
+        //length两位作为第几包
+        if(((data[8]<<8) + data[9]) > (g_tSF.TotalSize/1024 - 256))
+        {
+            ret = 0xAA;
+            SendDataToServer(data[2], 0, &ret, 1);
+        }
+        else
+        {
+            sf_ReadBuffer(&data[10], ((data[8]<<8) + data[9] + 256)*1024, 1024);//读spi的数据
+            SendDataToServer(data[2], 0, &data[10], 1024);
+        }
+        break;
+        
+    case 0x24://读取版本信息
+        ret=VERSION;
+        SendDataToServer(data[2], 1, &ret, 1);
         break;
                       
     default:
@@ -596,10 +648,12 @@ void processCommand(uint8_t *data, uint16_t len)
 //把数据发送到服务器
 void SendDataToServer(uint8_t flag, uint8_t rw, uint8_t *data, uint16_t len)
 {
+    //uint8_t ret;
     if(g_tNetData.status == e_Link)
     {
         makeCommmand(flag, rw, data, len);
         sendto(0, g_tNetData.buf, 10+len+3, g_tParam.netCfg.server_ip, g_tParam.netCfg.server_port);//在断网情况下调用发送会延时
+//        DEBUG(COM1, &ret, 1);
     }
 }
 

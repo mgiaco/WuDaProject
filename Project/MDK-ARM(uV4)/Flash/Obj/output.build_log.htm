@@ -4,15 +4,212 @@
 <h1>礦ision Build Log</h1>
 <h2>Project:</h2>
 F:\LW_files\武大--激光足印探测器项目\WuDaProject\Project\MDK-ARM(uV4)\project.uvproj
-Project File Date:  04/21/2018
+Project File Date:  05/22/2018
 
 <h2>Output:</h2>
 Build target 'Flash'
+compiling reader.c...
 linking...
-Program Size: Code=24620 RO-data=380 RW-data=172 ZI-data=10980  
+Program Size: Code=7356 RO-data=380 RW-data=136 ZI-data=6656  
 FromELF: creating hex file...
 After Build - User command #1: CopyHex_Flash.bat
 F:\LW_files\武大--激光足印探测器项目\WuDaProject\Project\MDK-ARM(uV4)>copy Flash\Obj\output.hex ..\output(mdk).hex 
 已复制         1 个文件。
-After Build - User command #2: fromelf.exe --bin -o ./Flash/Obj/output.bin  ./Flash/Obj/output.axf
 ".\Flash\Obj\output.axf" - 0 Error(s), 0 Warning(s).
+ 
+..\..\User\Reader\reader.c(87): error:  #20: identifier "g_tDetector" is undefined
+          g_tDetector.tStart = DWT_CYCCNT;
+..\..\User\Reader\reader.c: 0 warnings, 3 errors
+compiling bsp_eeprom_24xx.c...
+compiling bsp_i2c_gpio.c...
+compiling bsp_spi_bus.c...
+compiling bsp_spi_flash.c...
+compiling bsp_timer.c...
+compiling bsp_cpu_flash.c...
+compiling bsp_dwt.c...
+compiling bsp_iwdg.c...
+compiling param.c...
+".\Flash\Obj\output.axf" - 3 Error(s), 0 Warning(s).
+Target not created
+me, sizeof(g_tGPS.time));     
+..\..\User\Reader\reader.c(87): error:  #20: identifier "g_tDetector" is undefined
+          g_tDetector.tStart = DWT_CYCCNT;
+..\..\User\Reader\reader.c: 1 warning, 3 errors
+compiling bsp_eeprom_24xx.c...
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\IIC\bsp_eeprom_24xx.c: 1 warning, 0 errors
+compiling bsp_i2c_gpio.c...
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\IIC\bsp_i2c_gpio.c: 1 warning, 0 errors
+compiling bsp_spi_bus.c...
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\SPI\bsp_spi_bus.c: 1 warning, 0 errors
+compiling bsp_spi_flash.c...
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\SPI\bsp_spi_flash.c: 1 warning, 0 errors
+compiling bsp_timer.c...
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Timer\bsp_timer.c: 1 warning, 0 errors
+compiling bsp_cpu_flash.c...
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\CpuFlash\bsp_cpu_flash.c: 1 warning, 0 errors
+compiling bsp_dwt.c...
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\DWT\bsp_dwt.c: 1 warning, 0 errors
+".\Flash\Obj\output.axf" - 3 Error(s), 11 Warning(s).
+Project build/rebuild aborted.
+ine
+  #endif
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\SPI\bsp_spi_flash.c: 2 warnings, 0 errors
+compiling bsp_timer.c...
+..\..\User\Param\param.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Timer\bsp_timer.c: 2 warnings, 0 errors
+compiling bsp_cpu_flash.c...
+..\..\User\Param\param.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\CpuFlash\bsp_cpu_flash.c: 2 warnings, 0 errors
+compiling bsp_dwt.c...
+..\..\User\Param\param.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\DWT\bsp_dwt.c: 2 warnings, 0 errors
+compiling bsp_iwdg.c...
+..\..\User\Param\param.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\IWDG\bsp_iwdg.c: 2 warnings, 0 errors
+".\Flash\Obj\output.axf" - 3 Error(s), 24 Warning(s).
+Project build/rebuild aborted.
+13): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Param\param.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\CpuFlash\bsp_cpu_flash.c: 3 warnings, 0 errors
+compiling bsp_dwt.c...
+..\..\User\Uart\uart.h(13): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Param\param.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\DWT\bsp_dwt.c: 3 warnings, 0 errors
+compiling bsp_iwdg.c...
+..\..\User\Uart\uart.h(13): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Param\param.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\IWDG\bsp_iwdg.c: 3 warnings, 0 errors
+compiling param.c...
+..\..\User\Uart\uart.h(13): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Param\param.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Param\param.c: 3 warnings, 0 errors
+".\Flash\Obj\output.axf" - 3 Error(s), 39 Warning(s).
+Target not created
+}
+..\..\User\Timer\bsp_timer.h(53): error:  #40: expected an identifier
+  void bsp_InitHardTimer(void);
+..\..\User\Timer\bsp_timer.h(53): error:  #65: expected a ";"
+  void bsp_InitHardTimer(void);
+..\..\User\Param\param.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\SPI\bsp_spi_flash.c: 3 warnings, 3 errors
+compiling protocal.c...
+compiling bsp_timer.c...
+..\..\User\Uart\uart.h(14): error:  #169: expected a declaration
+  }
+..\..\User\Uart\uart.h(14): warning:  #2770-D: definition at end of file not followed by a semicolon or a declarator
+  }
+..\..\User\Timer\bsp_timer.h(53): error:  #40: expected an identifier
+  void bsp_InitHardTimer(void);
+..\..\User\Timer\bsp_timer.h(53): error:  #65: expected a ";"
+  void bsp_InitHardTimer(void);
+..\..\User\Param\param.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Timer\bsp_timer.c: 3 warnings, 3 errors
+compiling uart.c...
+compiling bsp_cpu_flash.c...
+..\..\User\Uart\uart.h(14): error:  #169: expected a declaration
+  }
+..\..\User\Uart\uart.h(14): warning:  #2770-D: definition at end of file not followed by a semicolon or a declarator
+  }
+..\..\User\Timer\bsp_timer.h(53): error:  #40: expected an identifier
+  void bsp_InitHardTimer(void);
+..\..\User\Timer\bsp_timer.h(53): error:  #65: expected a ";"
+  void bsp_InitHardTimer(void);
+..\..\User\Param\param.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\CpuFlash\bsp_cpu_flash.c: 3 warnings, 3 errors
+compiling bsp_dwt.c...
+..\..\User\Uart\uart.h(14): error:  #169: expected a declaration
+  }
+..\..\User\Uart\uart.h(14): warning:  #2770-D: definition at end of file not followed by a semicolon or a declarator
+  }
+..\..\User\Timer\bsp_timer.h(53): error:  #40: expected an identifier
+  void bsp_InitHardTimer(void);
+..\..\User\Timer\bsp_timer.h(53): error:  #65: expected a ";"
+  void bsp_InitHardTimer(void);
+..\..\User\Param\param.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\DWT\bsp_dwt.c: 3 warnings, 3 errors
+compiling bsp_iwdg.c...
+..\..\User\Uart\uart.h(14): error:  #169: expected a declaration
+  }
+..\..\User\Uart\uart.h(14): warning:  #2770-D: definition at end of file not followed by a semicolon or a declarator
+  }
+..\..\User\Timer\bsp_timer.h(53): error:  #40: expected an identifier
+  void bsp_InitHardTimer(void);
+..\..\User\Timer\bsp_timer.h(53): error:  #65: expected a ";"
+  void bsp_InitHardTimer(void);
+..\..\User\Param\param.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\IWDG\bsp_iwdg.c: 3 warnings, 3 errors
+compiling param.c...
+..\..\User\Uart\uart.h(14): error:  #169: expected a declaration
+  }
+..\..\User\Uart\uart.h(14): warning:  #2770-D: definition at end of file not followed by a semicolon or a declarator
+  }
+..\..\User\Timer\bsp_timer.h(53): error:  #40: expected an identifier
+  void bsp_InitHardTimer(void);
+..\..\User\Timer\bsp_timer.h(53): error:  #65: expected a ";"
+  void bsp_InitHardTimer(void);
+..\..\User\Param\param.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Reader\Reader.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\Param\param.c: 3 warnings, 3 errors
+".\Flash\Obj\output.axf" - 42 Error(s), 39 Warning(s).
+Target not created

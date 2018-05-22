@@ -38,15 +38,10 @@ N
 N#ifndef _BSP_H_
 N#define _BSP_H_
 N
-N#define LORA_ID 1        //  设备ID号，也用作lora的地址
-N
-N#define VERSION 20180521 // 版本号
-N
 N#define  USE_RTX    1
 N/* 开关全局中断的宏 */
 N#define ENABLE_INT()	__set_PRIMASK(0)	/* 使能全局中断 */
 N#define DISABLE_INT()	__set_PRIMASK(1)	/* 禁止全局中断 */
-N
 N
 N#include "stm32f10x.h"
 L 1 "..\..\Libraries\CMSIS\Device\ST\STM32F10x\Include\stm32f10x.h" 1
@@ -30201,7 +30196,7 @@ N  * @}
 N  */
 N
 N/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
-L 28 "..\..\User\bsp\bsp.h" 2
+L 23 "..\..\User\bsp\bsp.h" 2
 N#include <stdio.h>
 L 1 "D:\Keil\ARM\ARMCC\bin\..\include\stdio.h" 1
 N/* stdio.h: ANSI 'C' (X3J11 Oct 88) library header, section 4.9 */
@@ -31231,7 +31226,7 @@ N#endif /* ndef __stdio_h */
 N
 N/* end of stdio.h */
 N
-L 29 "..\..\User\bsp\bsp.h" 2
+L 24 "..\..\User\bsp\bsp.h" 2
 N#include <string.h>
 L 1 "D:\Keil\ARM\ARMCC\bin\..\include\string.h" 1
 N/* string.h: ANSI 'C' (X3J11 Oct 88) library header, section 4.11 */
@@ -31773,7 +31768,7 @@ N#endif
 N
 N/* end of string.h */
 N
-L 30 "..\..\User\bsp\bsp.h" 2
+L 25 "..\..\User\bsp\bsp.h" 2
 N#include <stdlib.h>
 L 1 "D:\Keil\ARM\ARMCC\bin\..\include\stdlib.h" 1
 N/* stdlib.h: ANSI draft (X3J11 May 88) library header, section 4.10 */
@@ -32715,7 +32710,7 @@ N
 N#endif
 N/* end of stdlib.h */
 N
-L 31 "..\..\User\bsp\bsp.h" 2
+L 26 "..\..\User\bsp\bsp.h" 2
 N
 N#include  <stdarg.h>
 L 1 "D:\Keil\ARM\ARMCC\bin\..\include\stdarg.h" 1
@@ -32851,7 +32846,7 @@ N#endif
 N
 N/* end of stdarg.h */
 N
-L 33 "..\..\User\bsp\bsp.h" 2
+L 28 "..\..\User\bsp\bsp.h" 2
 N#include  <math.h>
 L 1 "D:\Keil\ARM\ARMCC\bin\..\include\math.h" 1
 N/*
@@ -34228,7 +34223,7 @@ N#endif /* __math_h */
 N
 N/* end of math.h */
 N
-L 34 "..\..\User\bsp\bsp.h" 2
+L 29 "..\..\User\bsp\bsp.h" 2
 N#include "RTL.h"//OS
 L 1 "..\..\RTX\inc\RTL.h" 1
 N/*----------------------------------------------------------------------------
@@ -34966,17 +34961,7 @@ N *---------------------------------------------------------------------------*/
 N
 N#endif
 N 
-L 35 "..\..\User\bsp\bsp.h" 2
-N
-N#ifndef TRUE
-N	#define TRUE  1
-N#endif
-N
-N#ifndef FALSE
-N	#define FALSE 0
-N#endif
-N
-N#define DATA_LEN 128
+L 30 "..\..\User\bsp\bsp.h" 2
 N
 N
 N/* 通过取消注释或者添加注释的方式控制是否包含底层驱动模块 */
@@ -34985,23 +34970,31 @@ L 1 "..\..\User\main.h" 1
 N#ifndef _MAIN_H_
 N#define _MAIN_H_
 N
-N//事件标志位宏定义
-N#define BIT_ALL 0xFF
-N#define REMOTE_OPEN_BIT	(1 << 3)
-N#define BUTTON_A_BIT	(1 << 1)
-N#define BUTTON_B_BIT	(1 << 2)
-N//#define READER_A_BIT	(1 << 3)
-N//#define READER_B_BIT	(1 << 4)
+N#define LORA_ADDRESS 1        // 用作lora的地址，也作为设备ID号（1-500）
 N
-Nextern OS_TID HandleTaskButton;
-Nextern os_mbx_declare (mailboxCardRX, 8);
-Xextern U32 mailboxCardRX [4 + 8];
+N
 N#endif
 N
-N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
-L 49 "..\..\User\bsp\bsp.h" 2
+N/******************************************/
+L 34 "..\..\User\bsp\bsp.h" 2
 N
-N//#include "bsp_uart.h"
+N#include "uart.h"
+L 1 "..\..\User\Uart\uart.h" 1
+N#ifndef _UART_H_
+N#define _UART_H_
+N
+N//GPS--串口1
+N#define UART1_BAUD			9600
+N#define GPS_DATA_LEN        128
+N//lora--串口3
+N#define UART3_BAUD			9600
+N#define LORA_DATA_LEN       128
+N
+N
+N
+N#endif
+N
+L 36 "..\..\User\bsp\bsp.h" 2
 N#include "bsp_timer.h"
 L 1 "..\..\User\Timer\bsp_timer.h" 1
 N/*
@@ -35064,7 +35057,7 @@ N
 N#endif
 N
 N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
-L 52 "..\..\User\bsp\bsp.h" 2
+L 37 "..\..\User\bsp\bsp.h" 2
 N#include "bsp_cpu_flash.h"
 L 1 "..\..\User\CpuFlash\bsp_cpu_flash.h" 1
 N/*
@@ -35102,9 +35095,39 @@ N
 N
 N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
 N
-L 53 "..\..\User\bsp\bsp.h" 2
+L 38 "..\..\User\bsp\bsp.h" 2
 N
-N//#include "param.h"
+N#include "param.h"
+L 1 "..\..\User\Param\param.h" 1
+N#ifndef __PARAM_H
+N#define __PARAM_H
+N
+N#define PARAM_ADDR		0			/* 参数区地址 */
+N//默认参数
+N#define VERSION 20180521 // 版本号
+N
+N#define CHANNEL 30 //lora的信道参数，410+30=440MHz(信道相同才能互相通信)
+N#define DTU_ADDRESS 0xFFFE //DTU地址
+N
+Ntypedef struct
+N{
+N    uint8_t isUpdate;//0xFF表示启动到默认区，1表示需要升级，0表示启动到app区
+N    //lora模块和DTU的通信参数
+N    uint8_t loraAddress[2];
+N    uint8_t dtuAddress[2];
+N    uint8_t channel;
+N    
+N}Param_T;
+N
+Nextern Param_T g_tParam;
+N
+Nvoid paramInit(void);//初始化参数结构体
+Nvoid LoadParam(void);
+Nvoid SaveParam(void);
+N
+N#endif
+N
+L 40 "..\..\User\bsp\bsp.h" 2
 N
 N#include "bsp_i2c_gpio.h"
 L 1 "..\..\User\IIC\bsp_i2c_gpio.h" 1
@@ -35138,7 +35161,7 @@ Nvoid i2c_NAck(void);
 Nuint8_t i2c_CheckDevice(uint8_t _Address);
 N
 N#endif
-L 57 "..\..\User\bsp\bsp.h" 2
+L 42 "..\..\User\bsp\bsp.h" 2
 N#include "bsp_eeprom_24xx.h"
 L 1 "..\..\User\IIC\bsp_eeprom_24xx.h" 1
 N/*
@@ -35206,7 +35229,7 @@ N
 N#endif
 N
 N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
-L 58 "..\..\User\bsp\bsp.h" 2
+L 43 "..\..\User\bsp\bsp.h" 2
 N
 N#include "bsp_spi_bus.h"
 L 1 "..\..\User\SPI\bsp_spi_bus.h" 1
@@ -35261,7 +35284,7 @@ N
 N#endif
 N
 N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
-L 60 "..\..\User\bsp\bsp.h" 2
+L 45 "..\..\User\bsp\bsp.h" 2
 N#include "bsp_spi_flash.h"
 L 1 "..\..\User\SPI\bsp_spi_flash.h" 1
 N/*
@@ -35314,10 +35337,31 @@ N
 N#endif
 N
 N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
-L 61 "..\..\User\bsp\bsp.h" 2
+L 46 "..\..\User\bsp\bsp.h" 2
 N
-N//#include "Wiegand.h"
-N//#include "protocal.h"
+N#include "Reader.h"
+L 1 "..\..\User\Reader\Reader.h" 1
+N#ifndef _READER_H_
+N#define	_READER_H_
+N
+N//探测器结构体
+Ntypedef struct
+N{
+N    uint8_t level;//能级信息
+N    uint32_t tStart;//1pps触发时刻
+N    uint32_t tStop;//探测器触发时刻
+N    uint8_t preciseTime[9];//前6字节表示小时，分钟，秒，后3字节表示微秒
+N}Reader_T;
+N
+Nextern Reader_T g_tReader;//提供给其他函数使用
+Nvoid ReaderInit(void); 
+N#endif
+N
+N
+L 48 "..\..\User\bsp\bsp.h" 2
+N#include "protocal.h"
+L 1 "..\..\User\Protocal\protocal.h" 1
+L 49 "..\..\User\bsp\bsp.h" 2
 N
 N#include "bsp_dwt.h"
 L 1 "..\..\User\DWT\bsp_dwt.h" 1
@@ -35347,7 +35391,7 @@ N
 N#endif
 N
 N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
-L 66 "..\..\User\bsp\bsp.h" 2
+L 51 "..\..\User\bsp\bsp.h" 2
 N#include "bsp_iwdg.h"
 L 1 "..\..\User\IWDG\bsp_iwdg.h" 1
 N/*
@@ -35379,11 +35423,10 @@ N/** 描述    : 喂独立看门狗*/
 Nvoid IWDG_Feed(void);
 N
 N#endif
-L 67 "..\..\User\bsp\bsp.h" 2
+L 52 "..\..\User\bsp\bsp.h" 2
 N
 N/* 提供给其他C文件调用的函数 */
 Nvoid bsp_Init(void);
-Nvoid bsp_Idle(void);
 N
 N#endif
 N
