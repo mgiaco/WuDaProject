@@ -41,7 +41,8 @@ void bsp_Init(void)
 
     bsp_InitDWT();//用来做精确微秒延时
     
-	//uartInit(); 	/* 初始化串口 */
+	uartInit(); 	/* 初始化串口 */ 
+    
 	bsp_InitHardTimer();    /* 硬件定时器初始化*/   
     
     bsp_InitSPIBus();	/* 配置SPI总线 */		
@@ -49,7 +50,8 @@ void bsp_Init(void)
     
     bsp_InitI2C();		/* 配置I2C总线 */
     
-    ReaderInit();		//初始化韦根信号线
+    ReaderInit();		//初始化信号线
+    AdcInit();
     
     paramInit();//读取参数
     

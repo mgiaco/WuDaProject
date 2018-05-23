@@ -35,20 +35,23 @@
 #include "uart.h"
 #include "bsp_timer.h"
 #include "bsp_cpu_flash.h"
-
-#include "param.h"
-
 #include "bsp_i2c_gpio.h"
 #include "bsp_eeprom_24xx.h"
 
 #include "bsp_spi_bus.h"
 #include "bsp_spi_flash.h"
 
+
+#include "CRC8_16.h"
+#include "param.h"
+
+
 #include "Reader.h"
 #include "protocal.h"
 
 #include "bsp_dwt.h"
 #include "bsp_iwdg.h"
+#include "adc.h"
 
 /* 提供给其他C文件调用的函数 */
 void bsp_Init(void);

@@ -726,14 +726,14 @@
           <GroupName>Uart</GroupName>
           <Files>
             <File>
-              <FileName>bsp_uart_fifo.c</FileName>
+              <FileName>uart.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\Uart\bsp_uart_fifo.c</FilePath>
+              <FilePath>..\..\User\Uart\uart.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_uart_fifo.h</FileName>
+              <FileName>uart.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\User\Uart\bsp_uart_fifo.h</FilePath>
+              <FilePath>..\..\User\Uart\uart.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -794,6 +794,21 @@
               <FileName>param.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\User\Param\param.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>CRC</GroupName>
+          <Files>
+            <File>
+              <FileName>CRC8_16.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\CRC8_16\CRC8_16.c</FilePath>
+            </File>
+            <File>
+              <FileName>CRC8_16.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\CRC8_16\CRC8_16.h</FilePath>
             </File>
           </Files>
         </Group>

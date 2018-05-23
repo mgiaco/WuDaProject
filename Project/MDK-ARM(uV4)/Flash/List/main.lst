@@ -34976,12 +34976,46 @@ N#define UART1_BAUD			9600
 N#define GPS_DATA_LEN        128
 N//lora--串口3
 N#define UART3_BAUD			9600
-N#define LORA_DATA_LEN       128
+N#define LORA_DATA_LEN       150
+N
+Ntypedef enum
+N{
+N	  at_statIdle,
+N	  at_statRecving
+N}at_stateType;
+N
+Ntypedef struct
+N{
+N    uint8_t len;
+N    uint8_t buf[GPS_DATA_LEN];
+X    uint8_t buf[128];
+N    uint8_t temp;
+N    at_stateType at_state;
+N    uint8_t atHead[2]; 
+N    uint8_t time[6];//GPS时间
+N    uint8_t status;
+N    uint8_t latitude[11];//纬度，3027.634058
+N    uint8_t longiitude[12];//经度，11427.176258
+N}Gps_T;
 N
 N
+Ntypedef struct
+N{
+N    uint8_t len;
+N    uint8_t buf[LORA_DATA_LEN];
+X    uint8_t buf[150];
+N    uint8_t temp;
+N    at_stateType at_state;
+N    uint8_t atHead[2];  
+N}Lora_T;
 N
+Nextern Gps_T g_tGps;//提供给其他函数使用
+Nextern Lora_T g_tLora;//提供给其他函数使用
+Nvoid uartInit(void);
+Nvoid LoraSendData(uint8_t *data, uint8_t len);
 N#endif
 N
+N//------------------------
 L 36 "..\..\User\bsp\bsp.h" 2
 N#include "bsp_timer.h"
 L 1 "..\..\User\Timer\bsp_timer.h" 1
@@ -35084,39 +35118,6 @@ N
 N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
 N
 L 38 "..\..\User\bsp\bsp.h" 2
-N
-N#include "param.h"
-L 1 "..\..\User\Param\param.h" 1
-N#ifndef __PARAM_H
-N#define __PARAM_H
-N
-N#define PARAM_ADDR		0			/* 参数区地址 */
-N//默认参数
-N#define VERSION 20180521 // 版本号
-N
-N#define CHANNEL 30 //lora的信道参数，410+30=440MHz(信道相同才能互相通信)
-N#define DTU_ADDRESS 0xFFFE //DTU地址
-N
-Ntypedef struct
-N{
-N    uint8_t isUpdate;//0xFF表示启动到默认区，1表示需要升级，0表示启动到app区
-N    //lora模块和DTU的通信参数
-N    uint8_t loraAddress[2];
-N    uint8_t dtuAddress[2];
-N    uint8_t channel;
-N    
-N}Param_T;
-N
-Nextern Param_T g_tParam;
-N
-Nvoid paramInit(void);//初始化参数结构体
-Nvoid LoadParam(void);
-Nvoid SaveParam(void);
-N
-N#endif
-N
-L 40 "..\..\User\bsp\bsp.h" 2
-N
 N#include "bsp_i2c_gpio.h"
 L 1 "..\..\User\IIC\bsp_i2c_gpio.h" 1
 N/*
@@ -35149,7 +35150,7 @@ Nvoid i2c_NAck(void);
 Nuint8_t i2c_CheckDevice(uint8_t _Address);
 N
 N#endif
-L 42 "..\..\User\bsp\bsp.h" 2
+L 39 "..\..\User\bsp\bsp.h" 2
 N#include "bsp_eeprom_24xx.h"
 L 1 "..\..\User\IIC\bsp_eeprom_24xx.h" 1
 N/*
@@ -35217,7 +35218,7 @@ N
 N#endif
 N
 N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
-L 43 "..\..\User\bsp\bsp.h" 2
+L 40 "..\..\User\bsp\bsp.h" 2
 N
 N#include "bsp_spi_bus.h"
 L 1 "..\..\User\SPI\bsp_spi_bus.h" 1
@@ -35272,7 +35273,7 @@ N
 N#endif
 N
 N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
-L 45 "..\..\User\bsp\bsp.h" 2
+L 42 "..\..\User\bsp\bsp.h" 2
 N#include "bsp_spi_flash.h"
 L 1 "..\..\User\SPI\bsp_spi_flash.h" 1
 N/*
@@ -35325,7 +35326,51 @@ N
 N#endif
 N
 N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
+L 43 "..\..\User\bsp\bsp.h" 2
+N
+N
+N#include "CRC8_16.h"
+L 1 "..\..\User\CRC8_16\CRC8_16.h" 1
+N#ifndef __CRC8_16_H
+N#define __CRC8_16_H
+N//#include "sys.h"	 
+N
+Nu16 Get_Crc16(u8 *puchMsg,u16 usDataLen);
+Nu8 Get_Crc8(u8 *ptr,u16 len);
+N#endif
 L 46 "..\..\User\bsp\bsp.h" 2
+N#include "param.h"
+L 1 "..\..\User\Param\param.h" 1
+N#ifndef __PARAM_H
+N#define __PARAM_H
+N
+N#define PARAM_ADDR		0			/* 参数区地址 */
+N//默认参数
+N#define VERSION 20180521 // 版本号
+N
+N#define CHANNEL 30 //lora的信道参数，410+30=440MHz(信道相同才能互相通信)
+N#define DTU_ADDRESS 0xFFFE //DTU地址
+N
+Ntypedef struct
+N{
+N    uint8_t isUpdate;//0xFF表示启动到默认区，1表示需要升级，0表示启动到app区
+N    //lora模块和DTU的通信参数
+N    uint8_t loraAddress[2];
+N    uint8_t dtuAddress[2];
+N    uint8_t channel;
+N    
+N}Param_T;
+N
+Nextern Param_T g_tParam;
+N
+Nvoid paramInit(void);//初始化参数结构体
+Nvoid LoadParam(void);
+Nvoid SaveParam(void);
+N
+N#endif
+N
+L 47 "..\..\User\bsp\bsp.h" 2
+N
 N
 N#include "Reader.h"
 L 1 "..\..\User\Reader\Reader.h" 1
@@ -35346,10 +35391,23 @@ Nvoid ReaderInit(void);
 N#endif
 N
 N
-L 48 "..\..\User\bsp\bsp.h" 2
+L 50 "..\..\User\bsp\bsp.h" 2
 N#include "protocal.h"
 L 1 "..\..\User\Protocal\protocal.h" 1
-L 49 "..\..\User\bsp\bsp.h" 2
+N#ifndef __PROTOCAL_H
+N#define __PROTOCAL_H
+N
+N/* 供外部调用的函数声明 */
+N
+N//构造命令格式
+Nvoid makeCommmand(uint8_t cmdFlag, uint8_t rw, uint8_t *data, uint8_t len);
+N//执行命令
+Nvoid processCommand(uint8_t *data, uint16_t len);
+N//发送网络数据
+Nvoid SendDataToServer(uint8_t flag, uint8_t rw, uint8_t *data, uint8_t len);
+N#endif
+N
+L 51 "..\..\User\bsp\bsp.h" 2
 N
 N#include "bsp_dwt.h"
 L 1 "..\..\User\DWT\bsp_dwt.h" 1
@@ -35379,7 +35437,7 @@ N
 N#endif
 N
 N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
-L 51 "..\..\User\bsp\bsp.h" 2
+L 53 "..\..\User\bsp\bsp.h" 2
 N#include "bsp_iwdg.h"
 L 1 "..\..\User\IWDG\bsp_iwdg.h" 1
 N/*
@@ -35411,7 +35469,18 @@ N/** 描述    : 喂独立看门狗*/
 Nvoid IWDG_Feed(void);
 N
 N#endif
-L 52 "..\..\User\bsp\bsp.h" 2
+L 54 "..\..\User\bsp\bsp.h" 2
+N#include "adc.h"
+L 1 "..\..\User\ADC\adc.h" 1
+N#ifndef __ADC_H
+N#define __ADC_H
+N
+N/* 供外部调用的函数声明 */
+Nvoid AdcInit(void);
+Nvoid GetADC(uint16_t *AdcValue);
+N#endif
+N
+L 55 "..\..\User\bsp\bsp.h" 2
 N
 N/* 提供给其他C文件调用的函数 */
 Nvoid bsp_Init(void);
@@ -35425,7 +35494,12 @@ N*******************************************************************************
 N											函数声明
 N**********************************************************************************************************
 N*/
-N//#define HEART_TIME 15//心跳包周期为15s
+N/*任务1：看门狗
+N*任务2：处理串口3的lora数据（通过事件标志组），和服务器进行命令交互
+N*
+N*
+N*
+N*/
 N
 Nstatic void AppTaskCreate (void);//创建除start任务外的其他任务
 Nstatic void AppObjCreate (void);//用来初始化邮箱和软件定时器

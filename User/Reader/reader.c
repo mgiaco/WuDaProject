@@ -1,7 +1,11 @@
 #include "bsp.h"
 
 #define  DWT_CYCCNT  *(volatile unsigned int *)0xE0001004
-    
+  
+void DetectorGPIOInit(void);
+uint8_t GetLevel(void);
+void ResetDetector(void);
+
 Reader_T g_tReader;
 static uint32_t dwtTime;
 
@@ -12,12 +16,13 @@ static uint32_t dwtTime;
 * 输出  ：无
 **********************************************************/
 void ReaderInit(void)
-{
+{   
     GPIO_InitTypeDef GPIO_InitStructure;
 	EXTI_InitTypeDef EXTI_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
-
     
+    DetectorGPIOInit();//能级引脚配置
+   
 	//信号线 PA0,1
 	/* 使能 GPIO 时钟 */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
@@ -54,11 +59,10 @@ void ReaderInit(void)
 	
 	//中断优先级，尽可能设为最高优先级
 	NVIC_InitStructure.NVIC_IRQChannel 	= EXTI1_IRQn;	//使能按键所在的外部中断通道
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x00;	//抢占优先级 
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x01;	//抢占优先级 
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority 	= 0x00;	//子优先级
 	NVIC_InitStructure.NVIC_IRQChannelCmd 	= ENABLE;	//使能外部中断通道
-	NVIC_Init(&NVIC_InitStructure); 
-    
+	NVIC_Init(&NVIC_InitStructure);     
 }
 
 //读头A的data0//光电探测器中断
@@ -69,7 +73,8 @@ void EXTI0_IRQHandler(void)
         g_tReader.tStop = DWT_CYCCNT;
         
         dwtTime = (g_tReader.tStop - g_tReader.tStart)/72;
-          
+        //TODO
+        //复制GPS时间
         //memcpy(g_tReader.preciseTime, g_tGPS.time, sizeof(g_tGPS.time));     
         g_tReader.preciseTime[6] = dwtTime>>16;
         g_tReader.preciseTime[7] = (dwtTime>>8)&0xFF;
@@ -90,3 +95,24 @@ void EXTI1_IRQHandler(void)
 		EXTI_ClearITPendingBit(EXTI_Line1);
 	}
 }
+
+//探测器引脚初始化
+void DetectorGPIOInit(void)
+{
+   //TODO 
+}
+
+//获取探测器能级
+uint8_t GetLevel(void)
+{
+    //TODO 
+    return 0;
+}
+
+//复位探测器状态
+void ResetDetector(void)
+{
+    //TODO 
+}
+    
+//---------------------------------------------------------------

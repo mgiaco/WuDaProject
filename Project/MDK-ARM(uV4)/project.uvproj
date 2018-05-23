@@ -362,7 +362,7 @@
               <MiscControls>--diag_suppress=870</MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F10X_HD</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Libraries\CMSIS\Device\ST\STM32F10x\Include;..\..\Libraries\STM32F10x_StdPeriph_Driver\inc;..\..\User\bsp;..\..\User;..\..\Libraries\CMSIS\Include;..\..\RTX\inc;..\..\RTX\portable;..\..\User\CpuFlash;..\..\User\CRC8_16;..\..\User\DS1302;..\..\User\DWT;..\..\User\IIC;..\..\User\IWDG;..\..\User\Key;..\..\User\Led;..\..\User\Net;..\..\User\Protocal;..\..\User\Reader;..\..\User\SPI;..\..\User\Timer;..\..\User\Uart;..\..\User\Param</IncludePath>
+              <IncludePath>..\..\Libraries\CMSIS\Device\ST\STM32F10x\Include;..\..\Libraries\STM32F10x_StdPeriph_Driver\inc;..\..\User\bsp;..\..\User;..\..\Libraries\CMSIS\Include;..\..\RTX\inc;..\..\RTX\portable;..\..\User\CpuFlash;..\..\User\CRC8_16;..\..\User\DS1302;..\..\User\DWT;..\..\User\IIC;..\..\User\IWDG;..\..\User\Key;..\..\User\Led;..\..\User\Net;..\..\User\Protocal;..\..\User\Reader;..\..\User\SPI;..\..\User\Timer;..\..\User\Uart;..\..\User\Param;..\..\User\ADC</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -534,6 +534,11 @@
               <FileName>stm32f10x_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_adc.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -794,6 +799,36 @@
               <FileName>param.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\User\Param\param.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>CRC</GroupName>
+          <Files>
+            <File>
+              <FileName>CRC8_16.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\CRC8_16\CRC8_16.c</FilePath>
+            </File>
+            <File>
+              <FileName>CRC8_16.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\CRC8_16\CRC8_16.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ADC</GroupName>
+          <Files>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\ADC\adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\ADC\adc.h</FilePath>
             </File>
           </Files>
         </Group>

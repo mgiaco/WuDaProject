@@ -24,6 +24,9 @@ void paramInit(void)
     {
         g_tParam.channel = CHANNEL;
     }
+    
+    //TODO:串口配置完成后，根据使用参数对lora模块进行配置，
+    //需要切换模式，串口发送配置命令
 }
 
 /*

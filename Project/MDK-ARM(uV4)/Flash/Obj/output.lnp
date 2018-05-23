@@ -17,6 +17,7 @@
 ".\flash\obj\stm32f10x_tim.o"
 ".\flash\obj\stm32f10x_iwdg.o"
 ".\flash\obj\stm32f10x_spi.o"
+".\flash\obj\stm32f10x_adc.o"
 ".\flash\obj\rt_event.o"
 ".\flash\obj\rt_list.o"
 ".\flash\obj\rt_mailbox.o"
@@ -42,6 +43,8 @@
 ".\flash\obj\bsp_dwt.o"
 ".\flash\obj\bsp_iwdg.o"
 ".\flash\obj\param.o"
+".\flash\obj\crc8_16.o"
+".\flash\obj\adc.o"
 --library_type=microlib --strict --scatter ".\Flash\Obj\output.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
