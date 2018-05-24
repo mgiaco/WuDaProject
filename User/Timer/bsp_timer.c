@@ -605,6 +605,32 @@ void bsp_StartHardTimer(uint8_t _CC, uint32_t _uiTimeOut, void * _pCallBack)
 }
 #endif
 
+//关闭正在运行的硬件定时器，配合串口接收超时使用,默认使用TIM2
+void bsp_StopHardTimer(uint8_t _CC)
+{
+    if (_CC == 1)
+    {
+        TIM_ITConfig(TIM_HARD, TIM_IT_CC1, DISABLE);	/* 禁能CC1中断 */
+
+    }
+    else if (_CC == 2)
+    {
+		TIM_ITConfig(TIM_HARD, TIM_IT_CC2, DISABLE);	/* 禁能CC2中断 */
+    }
+    else if (_CC == 3)
+    {
+        TIM_ITConfig(TIM_HARD, TIM_IT_CC3, DISABLE);	/* 禁能CC3中断 */
+    }
+    else if (_CC == 4)
+    {
+        TIM_ITConfig(TIM_HARD, TIM_IT_CC4, DISABLE);	/* 禁能CC4中断 */
+    }
+	else
+    {
+        return;
+    }
+}
+
 /*
 *********************************************************************************************************
 *	函 数 名: TIMx_IRQHandler

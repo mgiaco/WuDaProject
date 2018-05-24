@@ -1,5 +1,7 @@
 #include "bsp.h"
 
+void delayCheck(void);
+
 Gps_T g_tGps;
 Lora_T g_tLora;
 
@@ -118,6 +120,20 @@ void uartInit(void)
 	NVIC_Init(&NVIC_InitStructure);
 }
 
+
+
+//单次定时器回调函数
+//TODO:根据传入参数来清除结构体信息
+void delayCheck(void)
+{
+	g_tLora.len = 0;
+	memset(g_tLora.atHead, 0, 2);
+	g_tLora.at_state = at_statIdle;
+
+	//os_printf("Data delay, reset at_state!\r\n");
+    //GPSSendData(g_tLora.atHead, 2);
+}
+
 //USART1(GPS)中断服务程序
 void USART1_IRQHandler(void)
 {
@@ -196,6 +212,7 @@ void USART3_IRQHandler(void)
                     g_tLora.buf[1] = 0xA5;
                     g_tLora.len = 2;     
                     //TODO:打开超时定时器
+                    bsp_StartHardTimer(1, 200, (void *)delayCheck);
                 }
                 break;
             
@@ -205,7 +222,12 @@ void USART3_IRQHandler(void)
                 if((g_tLora.len > 8) && (0x5A == g_tLora.buf[g_tLora.len-2]) && (0x5A == g_tLora.buf[g_tLora.len-1]))
                 {
                     //TODO：发送事件标志，让任务来处理
-
+                    bsp_StopHardTimer(1);
+                    GPSSendData(g_tLora.buf, g_tLora.len);
+                    
+                    g_tLora.len = 0;
+	    		  	memset(g_tLora.atHead, 0, 2);
+	    		  	g_tLora.at_state = at_statIdle;
                 }
                 else if((g_tLora.len-1) == LORA_DATA_LEN)//Data full, reset at_state!
                 {
@@ -224,12 +246,24 @@ void USART3_IRQHandler(void)
 //通过串口3发送数据
 void LoraSendData(uint8_t *data, uint8_t len)
 {
-    uint8_t num;
+    uint8_t num=0;
     while(num<len)
     {
         USART_SendData(USART3, data[num]);
         num++;
         while(USART_GetFlagStatus(USART3, USART_FLAG_TC) == RESET);
+    }
+}
+
+//通过串口1发送数据
+void GPSSendData(uint8_t *data, uint8_t len)
+{
+    uint8_t num=0;
+    while(num<len)
+    {
+        USART_SendData(USART1, data[num]);
+        num++;
+        while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
     }
 }
 

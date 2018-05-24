@@ -35029,6 +35029,7 @@ Nextern Gps_T g_tGps;//提供给其他函数使用
 Nextern Lora_T g_tLora;//提供给其他函数使用
 Nvoid uartInit(void);
 Nvoid LoraSendData(uint8_t *data, uint8_t len);
+Nvoid GPSSendData(uint8_t *data, uint8_t len);
 N#endif
 N
 N//------------------------
@@ -35091,7 +35092,7 @@ N//初始化硬件定时器
 Nvoid bsp_InitHardTimer(void);
 N//可以同时开启硬件定时器的两个通道(单位是ms)
 Nvoid bsp_StartHardTimer(uint8_t _CC, uint32_t _uiTimeOut, void * _pCallBack);
-N
+Nvoid bsp_StopHardTimer(uint8_t _CC);
 N#endif
 N
 N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
@@ -36106,6 +36107,36 @@ N        return;
 N    }
 N}
 N#endif
+N
+N//关闭正在运行的硬件定时器，配合串口接收超时使用,默认使用TIM2
+Nvoid bsp_StopHardTimer(uint8_t _CC)
+N{
+N    if (_CC == 1)
+N    {
+N        TIM_ITConfig(TIM_HARD, TIM_IT_CC1, DISABLE);	/* 禁能CC1中断 */
+X        TIM_ITConfig(((TIM_TypeDef *) (((uint32_t)0x40000000) + 0x0000)), ((uint16_t)0x0002), DISABLE);	 
+N
+N    }
+N    else if (_CC == 2)
+N    {
+N		TIM_ITConfig(TIM_HARD, TIM_IT_CC2, DISABLE);	/* 禁能CC2中断 */
+X		TIM_ITConfig(((TIM_TypeDef *) (((uint32_t)0x40000000) + 0x0000)), ((uint16_t)0x0004), DISABLE);	 
+N    }
+N    else if (_CC == 3)
+N    {
+N        TIM_ITConfig(TIM_HARD, TIM_IT_CC3, DISABLE);	/* 禁能CC3中断 */
+X        TIM_ITConfig(((TIM_TypeDef *) (((uint32_t)0x40000000) + 0x0000)), ((uint16_t)0x0008), DISABLE);	 
+N    }
+N    else if (_CC == 4)
+N    {
+N        TIM_ITConfig(TIM_HARD, TIM_IT_CC4, DISABLE);	/* 禁能CC4中断 */
+X        TIM_ITConfig(((TIM_TypeDef *) (((uint32_t)0x40000000) + 0x0000)), ((uint16_t)0x0010), DISABLE);	 
+N    }
+N	else
+N    {
+N        return;
+N    }
+N}
 N
 N/*
 N*********************************************************************************************************

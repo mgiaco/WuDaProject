@@ -8,10 +8,9 @@ Project File Date:  05/23/2018
 
 <h2>Output:</h2>
 Build target 'Flash'
-compiling bsp.c...
-compiling adc.c...
+compiling protocal.c...
 linking...
-Program Size: Code=9464 RO-data=380 RW-data=156 ZI-data=6980  
+Program Size: Code=9936 RO-data=380 RW-data=156 ZI-data=6980  
 FromELF: creating hex file...
 After Build - User command #1: CopyHex_Flash.bat
 F:\LW_files\武大--激光足印探测器项目\WuDaProject\Project\MDK-ARM(uV4)>copy Flash\Obj\output.hex ..\output(mdk).hex 
@@ -20,7 +19,8 @@ F:\LW_files\武大--激光足印探测器项目\WuDaProject\Project\MDK-ARM(uV4)>copy Flash
 </pre>
 </body>
 </html>
-ing bsp_timer.c...
+ errors
+compiling bsp_timer.c...
 compiling uart.c...
 compiling bsp_cpu_flash.c...
 compiling bsp_dwt.c...
@@ -28,172 +28,13 @@ compiling bsp_iwdg.c...
 compiling param.c...
 compiling CRC8_16.c...
 compiling adc.c...
-..\..\User\ADC\adc.c(61): error:  #513: a value of type "uint16_t" cannot be assigned to an entity of type "uint16_t *"
-        AdcValue = ADC_GetConversionValue(ADC1);;
-..\..\User\ADC\adc.c(58): warning:  #550-D: parameter "AdcValue" was set but never used
-  void GetADC(uint16_t *AdcValue)
-..\..\User\ADC\adc.c: 1 warning, 1 error
+linking...
+Program Size: Code=9936 RO-data=380 RW-data=156 ZI-data=6980  
+FromELF: creating hex file...
+After Build - User command #1: CopyHex_Flash.bat
+F:\LW_files\武大--激光足印探测器项目\WuDaProject\Project\MDK-ARM(uV4)>copy Flash\Obj\output.hex ..\output(mdk).hex 
+已复制         1 个文件。
+".\Flash\Obj\output.axf" - 0 Error(s), 1 Warning(s).
+hed: 1 information, 0 warning and 1 error messages.
 ".\Flash\Obj\output.axf" - 1 Error(s), 2 Warning(s).
-Target not created
-  void GetADC(uint16 *AdcValue);
-..\..\User\IIC\bsp_i2c_gpio.c: 0 warnings, 1 error
-compiling bsp_spi_bus.c...
-..\..\User\ADC\adc.h(6): error:  #20: identifier "uint16" is undefined
-  void GetADC(uint16 *AdcValue);
-..\..\User\SPI\bsp_spi_bus.c: 0 warnings, 1 error
-compiling bsp_spi_flash.c...
-..\..\User\ADC\adc.h(6): error:  #20: identifier "uint16" is undefined
-  void GetADC(uint16 *AdcValue);
-..\..\User\SPI\bsp_spi_flash.c: 0 warnings, 1 error
-compiling protocal.c...
-..\..\User\ADC\adc.h(6): error:  #20: identifier "uint16" is undefined
-  void GetADC(uint16 *AdcValue);
-..\..\User\Protocal\protocal.c(48): warning:  #177-D: variable "ret" was declared but never referenced
-      uint8_t ret=0;
-..\..\User\Protocal\protocal.c: 1 warning, 1 error
-".\Flash\Obj\output.axf" - 9 Error(s), 1 Warning(s).
-Project build/rebuild aborted.
- LoraSendData - give arg types
-  void LoraSendData();
-..\..\User\SPI\bsp_spi_bus.c: 1 warning, 0 errors
-compiling bsp_spi_flash.c...
-..\..\User\Uart\uart.h(39): warning:  #1295-D: Deprecated declaration LoraSendData - give arg types
-  void LoraSendData();
-..\..\User\SPI\bsp_spi_flash.c: 1 warning, 0 errors
-compiling bsp_timer.c...
-..\..\User\Uart\uart.h(39): warning:  #1295-D: Deprecated declaration LoraSendData - give arg types
-  void LoraSendData();
-..\..\User\Timer\bsp_timer.c: 1 warning, 0 errors
-compiling uart.c...
-..\..\User\Uart\uart.h(39): warning:  #1295-D: Deprecated declaration LoraSendData - give arg types
-  void LoraSendData();
-..\..\User\Uart\uart.c(3): error:  #20: identifier "GpsData_T" is undefined
-  GpsData_T g_tGps;
-..\..\User\Uart\uart.c(4): error:  #20: identifier "LoraData_T" is undefined
-  LoraData_T g_tLora;
-..\..\User\Uart\uart.c(23): error:  #268: declaration may not appear after executable statement in block
-      GPIO_InitTypeDef GPIO_InitStructure;
-..\..\User\Uart\uart.c(24): error:  #268: declaration may not appear after executable statement in block
-        USART_InitTypeDef USART_InitStructure;
-..\..\User\Uart\uart.c(25): error:  #268: declaration may not appear after executable statement in block
-      NVIC_InitTypeDef NVIC_InitStructure;
-..\..\User\Uart\uart.c(156): warning:  #1-D: last line of file ends without a newline
-  //-----------------------------------------------
-..\..\User\Uart\uart.c: 2 warnings, 5 errors
-compiling bsp_cpu_flash.c...
-..\..\User\Uart\uart.h(39): warning:  #1295-D: Deprecated declaration LoraSendData - give arg types
-  void LoraSendData();
-..\..\User\CpuFlash\bsp_cpu_flash.c: 1 warning, 0 errors
-compiling bsp_dwt.c...
-..\..\User\Uart\uart.h(39): warning:  #1295-D: Deprecated declaration LoraSendData - give arg types
-  void LoraSendData();
-..\..\User\DWT\bsp_dwt.c: 1 warning, 0 errors
-compiling bsp_iwdg.c...
-..\..\User\Uart\uart.h(39): warning:  #1295-D: Deprecated declaration LoraSendData - give arg types
-  void LoraSendData();
-..\..\User\IWDG\bsp_iwdg.c: 1 warning, 0 errors
-compiling param.c...
-..\..\User\Uart\uart.h(39): warning:  #1295-D: Deprecated declaration LoraSendData - give arg types
-  void LoraSendData();
-..\..\User\Param\param.c: 1 warning, 0 errors
-".\Flash\Obj\output.axf" - 8 Error(s), 16 Warning(s).
-Target not created
-tGps;
-..\..\User\Uart\uart.c(4): error:  #20: identifier "LoraData_T" is undefined
-  LoraData_T g_tLora;
-..\..\User\Uart\uart.c(23): error:  #268: declaration may not appear after executable statement in block
-      GPIO_InitTypeDef GPIO_InitStructure;
-..\..\User\Uart\uart.c(24): error:  #268: declaration may not appear after executable statement in block
-        USART_InitTypeDef USART_InitStructure;
-..\..\User\Uart\uart.c(25): error:  #268: declaration may not appear after executable statement in block
-      NVIC_InitTypeDef NVIC_InitStructure;
-..\..\User\Uart\uart.c(156): warning:  #1-D: last line of file ends without a newline
-  //-----------------------------------------------
-..\..\User\Uart\uart.c: 3 warnings, 5 errors
-compiling bsp_cpu_flash.c...
-..\..\User\Uart\uart.h(39): warning:  #1295-D: Deprecated declaration LoraSendData - give arg types
-  void LoraSendData();
-..\..\User\Uart\uart.h(42): warning:  #1-D: last line of file ends without a newline
-  //------------------------
-..\..\User\CpuFlash\bsp_cpu_flash.c: 2 warnings, 0 errors
-compiling bsp_dwt.c...
-..\..\User\Uart\uart.h(39): warning:  #1295-D: Deprecated declaration LoraSendData - give arg types
-  void LoraSendData();
-..\..\User\Uart\uart.h(42): warning:  #1-D: last line of file ends without a newline
-  //------------------------
-..\..\User\DWT\bsp_dwt.c: 2 warnings, 0 errors
-compiling bsp_iwdg.c...
-..\..\User\Uart\uart.h(39): warning:  #1295-D: Deprecated declaration LoraSendData - give arg types
-  void LoraSendData();
-..\..\User\Uart\uart.h(42): warning:  #1-D: last line of file ends without a newline
-  //------------------------
-..\..\User\IWDG\bsp_iwdg.c: 2 warnings, 0 errors
-compiling param.c...
-..\..\User\Uart\uart.h(39): warning:  #1295-D: Deprecated declaration LoraSendData - give arg types
-  void LoraSendData();
-..\..\User\Uart\uart.h(42): warning:  #1-D: last line of file ends without a newline
-  //------------------------
-..\..\User\Param\param.c: 2 warnings, 0 errors
-".\Flash\Obj\output.axf" - 11 Error(s), 31 Warning(s).
-Target not created
-\User\Uart\uart.h(37): error:  #20: identifier "LoraData_T" is undefined
-  extern LoraData_T g_tLora;//提供给其他函数使用
-..\..\User\Uart\uart.h(39): warning:  #1295-D: Deprecated declaration LoraSendData - give arg types
-  void LoraSendData();
-..\..\User\Uart\uart.h(42): warning:  #1-D: last line of file ends without a newline
-  //------------------------
-..\..\User\Uart\uart.c(3): error:  #20: identifier "GpsData_T" is undefined
-  GpsData_T g_tGps;
-..\..\User\Uart\uart.c(4): error:  #20: identifier "LoraData_T" is undefined
-  LoraData_T g_tLora;
-..\..\User\Uart\uart.c(23): error:  #268: declaration may not appear after executable statement in block
-      GPIO_InitTypeDef GPIO_InitStructure;
-..\..\User\Uart\uart.c(24): error:  #268: declaration may not appear after executable statement in block
-        USART_InitTypeDef USART_InitStructure;
-..\..\User\Uart\uart.c(25): error:  #268: declaration may not appear after executable statement in block
-      NVIC_InitTypeDef NVIC_InitStructure;
-..\..\User\Uart\uart.c(156): warning:  #1-D: last line of file ends without a newline
-  //-----------------------------------------------
-..\..\User\Uart\uart.c: 3 warnings, 7 errors
-compiling bsp_cpu_flash.c...
-..\..\User\Uart\uart.h(36): error:  #20: identifier "GpsData_T" is undefined
-  extern GpsData_T g_tGps;//提供给其他函数使用
-..\..\User\Uart\uart.h(37): error:  #20: identifier "LoraData_T" is undefined
-  extern LoraData_T g_tLora;//提供给其他函数使用
-..\..\User\Uart\uart.h(39): warning:  #1295-D: Deprecated declaration LoraSendData - give arg types
-  void LoraSendData();
-..\..\User\Uart\uart.h(42): warning:  #1-D: last line of file ends without a newline
-  //------------------------
-..\..\User\CpuFlash\bsp_cpu_flash.c: 2 warnings, 2 errors
-compiling bsp_dwt.c...
-..\..\User\Uart\uart.h(36): error:  #20: identifier "GpsData_T" is undefined
-  extern GpsData_T g_tGps;//提供给其他函数使用
-..\..\User\Uart\uart.h(37): error:  #20: identifier "LoraData_T" is undefined
-  extern LoraData_T g_tLora;//提供给其他函数使用
-..\..\User\Uart\uart.h(39): warning:  #1295-D: Deprecated declaration LoraSendData - give arg types
-  void LoraSendData();
-..\..\User\Uart\uart.h(42): warning:  #1-D: last line of file ends without a newline
-  //------------------------
-..\..\User\DWT\bsp_dwt.c: 2 warnings, 2 errors
-compiling bsp_iwdg.c...
-..\..\User\Uart\uart.h(36): error:  #20: identifier "GpsData_T" is undefined
-  extern GpsData_T g_tGps;//提供给其他函数使用
-..\..\User\Uart\uart.h(37): error:  #20: identifier "LoraData_T" is undefined
-  extern LoraData_T g_tLora;//提供给其他函数使用
-..\..\User\Uart\uart.h(39): warning:  #1295-D: Deprecated declaration LoraSendData - give arg types
-  void LoraSendData();
-..\..\User\Uart\uart.h(42): warning:  #1-D: last line of file ends without a newline
-  //------------------------
-..\..\User\IWDG\bsp_iwdg.c: 2 warnings, 2 errors
-compiling param.c...
-..\..\User\Uart\uart.h(36): error:  #20: identifier "GpsData_T" is undefined
-  extern GpsData_T g_tGps;//提供给其他函数使用
-..\..\User\Uart\uart.h(37): error:  #20: identifier "LoraData_T" is undefined
-  extern LoraData_T g_tLora;//提供给其他函数使用
-..\..\User\Uart\uart.h(39): warning:  #1295-D: Deprecated declaration LoraSendData - give arg types
-  void LoraSendData();
-..\..\User\Uart\uart.h(42): warning:  #1-D: last line of file ends without a newline
-  //------------------------
-..\..\User\Param\param.c: 2 warnings, 2 errors
-".\Flash\Obj\output.axf" - 39 Error(s), 31 Warning(s).
 Target not created

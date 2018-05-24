@@ -5,121 +5,121 @@
                           AREA ||i.TIM2_IRQHandler||, CODE, READONLY, ALIGN=2
 
                   TIM2_IRQHandler PROC
-;;;617    #ifdef USE_TIM2
-;;;618    void TIM2_IRQHandler(void)
+;;;643    #ifdef USE_TIM2
+;;;644    void TIM2_IRQHandler(void)
 000000  b510              PUSH     {r4,lr}
-;;;619    #endif
-;;;620    
-;;;621    #ifdef USE_TIM3
-;;;622    void TIM3_IRQHandler(void)
-;;;623    #endif
-;;;624    
-;;;625    #ifdef USE_TIM4
-;;;626    void TIM4_IRQHandler(void)
-;;;627    #endif
-;;;628    
-;;;629    #ifdef USE_TIM5
-;;;630    void TIM5_IRQHandler(void)
-;;;631    #endif
-;;;632    {
-;;;633        if (TIM_GetITStatus(TIM_HARD, TIM_IT_CC1))
+;;;645    #endif
+;;;646    
+;;;647    #ifdef USE_TIM3
+;;;648    void TIM3_IRQHandler(void)
+;;;649    #endif
+;;;650    
+;;;651    #ifdef USE_TIM4
+;;;652    void TIM4_IRQHandler(void)
+;;;653    #endif
+;;;654    
+;;;655    #ifdef USE_TIM5
+;;;656    void TIM5_IRQHandler(void)
+;;;657    #endif
+;;;658    {
+;;;659        if (TIM_GetITStatus(TIM_HARD, TIM_IT_CC1))
 000002  2102              MOVS     r1,#2
 000004  0748              LSLS     r0,r1,#29
 000006  f7fffffe          BL       TIM_GetITStatus
 00000a  b158              CBZ      r0,|L1.36|
-;;;634        {
-;;;635            TIM_ClearITPendingBit(TIM_HARD, TIM_IT_CC1);
+;;;660        {
+;;;661            TIM_ClearITPendingBit(TIM_HARD, TIM_IT_CC1);
 00000c  2102              MOVS     r1,#2
 00000e  0748              LSLS     r0,r1,#29
 000010  f7fffffe          BL       TIM_ClearITPendingBit
-;;;636            TIM_ITConfig(TIM_HARD, TIM_IT_CC1, DISABLE);	/* 禁能CC1中断 */
+;;;662            TIM_ITConfig(TIM_HARD, TIM_IT_CC1, DISABLE);	/* 禁能CC1中断 */
 000014  2200              MOVS     r2,#0
 000016  2102              MOVS     r1,#2
 000018  0748              LSLS     r0,r1,#29
 00001a  f7fffffe          BL       TIM_ITConfig
-;;;637    
-;;;638            /* 先关闭中断，再执行回调函数。因为回调函数可能需要重启定时器 */
-;;;639            s_TIM_CallBack1();
+;;;663    
+;;;664            /* 先关闭中断，再执行回调函数。因为回调函数可能需要重启定时器 */
+;;;665            s_TIM_CallBack1();
 00001e  481b              LDR      r0,|L1.140|
 000020  6800              LDR      r0,[r0,#0]  ; s_TIM_CallBack1
 000022  4780              BLX      r0
                   |L1.36|
-;;;640        }
-;;;641    
-;;;642        if (TIM_GetITStatus(TIM_HARD, TIM_IT_CC2))
+;;;666        }
+;;;667    
+;;;668        if (TIM_GetITStatus(TIM_HARD, TIM_IT_CC2))
 000024  2104              MOVS     r1,#4
 000026  0708              LSLS     r0,r1,#28
 000028  f7fffffe          BL       TIM_GetITStatus
 00002c  b158              CBZ      r0,|L1.70|
-;;;643        {
-;;;644            TIM_ClearITPendingBit(TIM_HARD, TIM_IT_CC2);
+;;;669        {
+;;;670            TIM_ClearITPendingBit(TIM_HARD, TIM_IT_CC2);
 00002e  2104              MOVS     r1,#4
 000030  0708              LSLS     r0,r1,#28
 000032  f7fffffe          BL       TIM_ClearITPendingBit
-;;;645            TIM_ITConfig(TIM_HARD, TIM_IT_CC2, DISABLE);	/* 禁能CC2中断 */
+;;;671            TIM_ITConfig(TIM_HARD, TIM_IT_CC2, DISABLE);	/* 禁能CC2中断 */
 000036  2200              MOVS     r2,#0
 000038  2104              MOVS     r1,#4
 00003a  0708              LSLS     r0,r1,#28
 00003c  f7fffffe          BL       TIM_ITConfig
-;;;646    
-;;;647            /* 先关闭中断，再执行回调函数。因为回调函数可能需要重启定时器 */
-;;;648            s_TIM_CallBack2();
+;;;672    
+;;;673            /* 先关闭中断，再执行回调函数。因为回调函数可能需要重启定时器 */
+;;;674            s_TIM_CallBack2();
 000040  4813              LDR      r0,|L1.144|
 000042  6800              LDR      r0,[r0,#0]  ; s_TIM_CallBack2
 000044  4780              BLX      r0
                   |L1.70|
-;;;649        }
-;;;650    
-;;;651        if (TIM_GetITStatus(TIM_HARD, TIM_IT_CC3))
+;;;675        }
+;;;676    
+;;;677        if (TIM_GetITStatus(TIM_HARD, TIM_IT_CC3))
 000046  2108              MOVS     r1,#8
 000048  06c8              LSLS     r0,r1,#27
 00004a  f7fffffe          BL       TIM_GetITStatus
 00004e  b158              CBZ      r0,|L1.104|
-;;;652        {
-;;;653            TIM_ClearITPendingBit(TIM_HARD, TIM_IT_CC3);
+;;;678        {
+;;;679            TIM_ClearITPendingBit(TIM_HARD, TIM_IT_CC3);
 000050  2108              MOVS     r1,#8
 000052  06c8              LSLS     r0,r1,#27
 000054  f7fffffe          BL       TIM_ClearITPendingBit
-;;;654            TIM_ITConfig(TIM_HARD, TIM_IT_CC3, DISABLE);	/* 禁能CC3中断 */
+;;;680            TIM_ITConfig(TIM_HARD, TIM_IT_CC3, DISABLE);	/* 禁能CC3中断 */
 000058  2200              MOVS     r2,#0
 00005a  2108              MOVS     r1,#8
 00005c  06c8              LSLS     r0,r1,#27
 00005e  f7fffffe          BL       TIM_ITConfig
-;;;655    
-;;;656            /* 先关闭中断，再执行回调函数。因为回调函数可能需要重启定时器 */
-;;;657            s_TIM_CallBack3();
+;;;681    
+;;;682            /* 先关闭中断，再执行回调函数。因为回调函数可能需要重启定时器 */
+;;;683            s_TIM_CallBack3();
 000062  480c              LDR      r0,|L1.148|
 000064  6800              LDR      r0,[r0,#0]  ; s_TIM_CallBack3
 000066  4780              BLX      r0
                   |L1.104|
-;;;658        }
-;;;659    
-;;;660        if (TIM_GetITStatus(TIM_HARD, TIM_IT_CC4))
+;;;684        }
+;;;685    
+;;;686        if (TIM_GetITStatus(TIM_HARD, TIM_IT_CC4))
 000068  2110              MOVS     r1,#0x10
 00006a  0688              LSLS     r0,r1,#26
 00006c  f7fffffe          BL       TIM_GetITStatus
 000070  b158              CBZ      r0,|L1.138|
-;;;661        {
-;;;662            TIM_ClearITPendingBit(TIM_HARD, TIM_IT_CC4);
+;;;687        {
+;;;688            TIM_ClearITPendingBit(TIM_HARD, TIM_IT_CC4);
 000072  2110              MOVS     r1,#0x10
 000074  0688              LSLS     r0,r1,#26
 000076  f7fffffe          BL       TIM_ClearITPendingBit
-;;;663            TIM_ITConfig(TIM_HARD, TIM_IT_CC4, DISABLE);	/* 禁能CC4中断 */
+;;;689            TIM_ITConfig(TIM_HARD, TIM_IT_CC4, DISABLE);	/* 禁能CC4中断 */
 00007a  2200              MOVS     r2,#0
 00007c  2110              MOVS     r1,#0x10
 00007e  0688              LSLS     r0,r1,#26
 000080  f7fffffe          BL       TIM_ITConfig
-;;;664    
-;;;665            /* 先关闭中断，再执行回调函数。因为回调函数可能需要重启定时器 */
-;;;666            s_TIM_CallBack4();
+;;;690    
+;;;691            /* 先关闭中断，再执行回调函数。因为回调函数可能需要重启定时器 */
+;;;692            s_TIM_CallBack4();
 000084  4804              LDR      r0,|L1.152|
 000086  6800              LDR      r0,[r0,#0]  ; s_TIM_CallBack4
 000088  4780              BLX      r0
                   |L1.138|
-;;;667        }
-;;;668    }
+;;;693        }
+;;;694    }
 00008a  bd10              POP      {r4,pc}
-;;;669    
+;;;695    
                           ENDP
 
                   |L1.140|
@@ -387,6 +387,76 @@
                           DCD      s_TIM_CallBack3
                   |L3.196|
                           DCD      s_TIM_CallBack4
+
+                          AREA ||i.bsp_StopHardTimer||, CODE, READONLY, ALIGN=1
+
+                  bsp_StopHardTimer PROC
+;;;608    //关闭正在运行的硬件定时器，配合串口接收超时使用,默认使用TIM2
+;;;609    void bsp_StopHardTimer(uint8_t _CC)
+000000  b510              PUSH     {r4,lr}
+;;;610    {
+000002  4604              MOV      r4,r0
+;;;611        if (_CC == 1)
+000004  2c01              CMP      r4,#1
+000006  d105              BNE      |L4.20|
+;;;612        {
+;;;613            TIM_ITConfig(TIM_HARD, TIM_IT_CC1, DISABLE);	/* 禁能CC1中断 */
+000008  2200              MOVS     r2,#0
+00000a  2102              MOVS     r1,#2
+00000c  0780              LSLS     r0,r0,#30
+00000e  f7fffffe          BL       TIM_ITConfig
+000012  e018              B        |L4.70|
+                  |L4.20|
+;;;614    
+;;;615        }
+;;;616        else if (_CC == 2)
+000014  2c02              CMP      r4,#2
+000016  d105              BNE      |L4.36|
+;;;617        {
+;;;618    		TIM_ITConfig(TIM_HARD, TIM_IT_CC2, DISABLE);	/* 禁能CC2中断 */
+000018  2200              MOVS     r2,#0
+00001a  2104              MOVS     r1,#4
+00001c  0708              LSLS     r0,r1,#28
+00001e  f7fffffe          BL       TIM_ITConfig
+000022  e010              B        |L4.70|
+                  |L4.36|
+;;;619        }
+;;;620        else if (_CC == 3)
+000024  2c03              CMP      r4,#3
+000026  d105              BNE      |L4.52|
+;;;621        {
+;;;622            TIM_ITConfig(TIM_HARD, TIM_IT_CC3, DISABLE);	/* 禁能CC3中断 */
+000028  2200              MOVS     r2,#0
+00002a  2108              MOVS     r1,#8
+00002c  06c8              LSLS     r0,r1,#27
+00002e  f7fffffe          BL       TIM_ITConfig
+000032  e008              B        |L4.70|
+                  |L4.52|
+;;;623        }
+;;;624        else if (_CC == 4)
+000034  2c04              CMP      r4,#4
+000036  d105              BNE      |L4.68|
+;;;625        {
+;;;626            TIM_ITConfig(TIM_HARD, TIM_IT_CC4, DISABLE);	/* 禁能CC4中断 */
+000038  2200              MOVS     r2,#0
+00003a  2110              MOVS     r1,#0x10
+00003c  0688              LSLS     r0,r1,#26
+00003e  f7fffffe          BL       TIM_ITConfig
+000042  e000              B        |L4.70|
+                  |L4.68|
+;;;627        }
+;;;628    	else
+;;;629        {
+;;;630            return;
+;;;631        }
+;;;632    }
+000044  bd10              POP      {r4,pc}
+                  |L4.70|
+000046  bf00              NOP      
+000048  e7fc              B        |L4.68|
+;;;633    
+                          ENDP
+
 
                           AREA ||.data||, DATA, ALIGN=2
 

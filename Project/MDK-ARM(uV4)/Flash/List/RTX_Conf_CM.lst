@@ -35015,6 +35015,7 @@ Nextern Gps_T g_tGps;//提供给其他函数使用
 Nextern Lora_T g_tLora;//提供给其他函数使用
 Nvoid uartInit(void);
 Nvoid LoraSendData(uint8_t *data, uint8_t len);
+Nvoid GPSSendData(uint8_t *data, uint8_t len);
 N#endif
 N
 N//------------------------
@@ -35077,7 +35078,7 @@ N//初始化硬件定时器
 Nvoid bsp_InitHardTimer(void);
 N//可以同时开启硬件定时器的两个通道(单位是ms)
 Nvoid bsp_StartHardTimer(uint8_t _CC, uint32_t _uiTimeOut, void * _pCallBack);
-N
+Nvoid bsp_StopHardTimer(uint8_t _CC);
 N#endif
 N
 N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/

@@ -53,7 +53,7 @@ int32_t bsp_CheckRunTime(int32_t _LastTime);
 void bsp_InitHardTimer(void);
 //可以同时开启硬件定时器的两个通道(单位是ms)
 void bsp_StartHardTimer(uint8_t _CC, uint32_t _uiTimeOut, void * _pCallBack);
-
+void bsp_StopHardTimer(uint8_t _CC);
 #endif
 
 /***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/

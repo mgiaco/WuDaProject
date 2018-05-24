@@ -45,7 +45,8 @@ void makeCommmand(uint8_t cmdFlag, uint8_t rw, uint8_t *data, uint8_t len)
 //执行命令,写入参数时，还要把参数更新到IIC存储中
 void processCommand(uint8_t *data, uint16_t len)
 {
-    uint8_t ret=0;
+    //uint8_t ret=0;
+    
     //对于设置命令，要进行参数有效性判断
     //TODO:命令等板子基础功能测试之后再慢慢往上加
     /*0x00:搜索设备，返回基础状态信息（经纬度，电量）
