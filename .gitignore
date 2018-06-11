@@ -53,3 +53,4 @@ dkms.conf
 *.bak
 #keil output
 /Project/MDK-ARM(uV4)/Flash/
+*.bak

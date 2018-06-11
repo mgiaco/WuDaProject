@@ -1,6 +1,8 @@
 #include "bsp.h"
 
-void delayCheck(void);
+void loraDelayCheck(void);
+
+void gpsDelayCheck(void);
 
 Gps_T g_tGps;
 Lora_T g_tLora;
@@ -36,12 +38,11 @@ void uartInit(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-	/* 第3步：将USART Rx的GPIO配置为浮空输入模式
-		由于CPU复位后，GPIO缺省都是浮空输入模式，因此下面这个步骤不是必须的
-		但是，我还是建议加上便于阅读，并且防止其它地方修改了这个口线的设置参数
+	/* 第3步：将USART Rx的GPIO配置为上拉输入模式
 	*/
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	//GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;//6-11
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 	
 	/* 第4步： 配置串口硬件参数 */
@@ -76,12 +77,11 @@ void uartInit(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-	/* 第3步：将USART Rx的GPIO配置为浮空输入模式
-		由于CPU复位后，GPIO缺省都是浮空输入模式，因此下面这个步骤不是必须的
-		但是，我还是建议加上便于阅读，并且防止其它地方修改了这个口线的设置参数
+	/* 第3步：将USART Rx的GPIO配置为上拉输入模式
 	*/
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	//GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 	/* 第4步： 配置串口硬件参数 */
@@ -122,16 +122,21 @@ void uartInit(void)
 
 
 
+
 //单次定时器回调函数
-//TODO:根据传入参数来清除结构体信息
-void delayCheck(void)
+void loraDelayCheck(void)
 {
 	g_tLora.len = 0;
 	memset(g_tLora.atHead, 0, 2);
 	g_tLora.at_state = at_statIdle;
+}
 
-	//os_printf("Data delay, reset at_state!\r\n");
-    //GPSSendData(g_tLora.atHead, 2);
+//单次定时器回调函数
+void gpsDelayCheck(void)
+{
+	g_tGps.len = 0;
+	memset(g_tGps.atHead, 0, 2);
+	g_tGps.at_state = at_statIdle;
 }
 
 //USART1(GPS)中断服务程序
@@ -154,7 +159,8 @@ void USART1_IRQHandler(void)
                     g_tGps.buf[0] = 'L';
                     g_tGps.buf[1] = 'L';
                     g_tGps.len = 2;     
-                    //TODO:打开超时定时器
+                    //打开超时定时器，使用通道1
+                    bsp_StartHardTimer(1, 200, (void *)gpsDelayCheck);
                 }
                 break;
             
@@ -205,14 +211,14 @@ void USART3_IRQHandler(void)
                 g_tLora.atHead[0] = g_tLora.atHead[1];
                 g_tLora.atHead[1] = g_tLora.temp;
                 //解析GPGLL的LL，作为报文头
-                if((0xA5 == g_tGps.atHead[0]) && (0xA5 == g_tLora.atHead[1]))
+                if((0xA5 == g_tLora.atHead[0]) && (0xA5 == g_tLora.atHead[1]))
                 {
                     g_tLora.at_state = at_statRecving;
                     g_tLora.buf[0] = 0xA5;
                     g_tLora.buf[1] = 0xA5;
                     g_tLora.len = 2;     
-                    //TODO:打开超时定时器
-                    bsp_StartHardTimer(1, 200, (void *)delayCheck);
+                    //打开超时定时器，使用通道2
+                    bsp_StartHardTimer(2, 200, (void *)loraDelayCheck);
                 }
                 break;
             

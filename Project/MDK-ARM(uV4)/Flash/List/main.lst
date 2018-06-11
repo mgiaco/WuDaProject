@@ -35507,22 +35507,6 @@ Nstatic void AppObjCreate (void);//用来初始化邮箱和软件定时器
 N
 N    
 N//任务函数
-N__task void AppTaskReader(void);
-X__declspec(noreturn) void AppTaskReader(void);
-N
-N__task void AppTaskFirst(void);
-X__declspec(noreturn) void AppTaskFirst(void);
-N__task void AppTaskMulti(void);
-X__declspec(noreturn) void AppTaskMulti(void);
-N__task void AppTaskInterLock(void);
-X__declspec(noreturn) void AppTaskInterLock(void);
-N
-N__task void AppTaskKey(void);
-X__declspec(noreturn) void AppTaskKey(void);
-N__task void AppTaskButton(void);
-X__declspec(noreturn) void AppTaskButton(void);
-N__task void AppTaskNet(void);
-X__declspec(noreturn) void AppTaskNet(void);
 N__task void AppTaskStart(void);
 X__declspec(noreturn) void AppTaskStart(void);
 N
@@ -35531,53 +35515,12 @@ N*******************************************************************************
 N											 变量
 N**********************************************************************************************************
 N*/
-Nstatic uint64_t AppTaskReaderStk[512/8];   /* 任务栈 */
-N
-Nstatic uint64_t AppTaskFirstStk[512/8];   /* 任务栈 */
-Nstatic uint64_t AppTaskMultiStk[512/8];     /* 任务栈 */
-Nstatic uint64_t AppTaskInterLockStk[512/8];   /* 任务栈 */
-N
-Nstatic uint64_t AppTaskKeyStk[512/8];   /* 任务栈 */
-Nstatic uint64_t AppTaskButtonStk[512/8];   /* 任务栈 */
-Nstatic uint64_t AppTaskNetStk[512/8];     /* 任务栈 */
 Nstatic uint64_t AppTaskStartStk[512/8];   /* 任务栈 */
 N
 N/* 任务句柄 */
-NOS_TID HandleTaskReader = NULL;
-XOS_TID HandleTaskReader = 0;
-N
-NOS_TID HandleTaskFirst = NULL;
-XOS_TID HandleTaskFirst = 0;
-NOS_TID HandleTaskMulti = NULL;
-XOS_TID HandleTaskMulti = 0;
-NOS_TID HandleTaskInterLock = NULL;
-XOS_TID HandleTaskInterLock = 0;
-N
-NOS_TID HandleTaskKey = NULL;
-XOS_TID HandleTaskKey = 0;
-NOS_TID HandleTaskButton = NULL;
-XOS_TID HandleTaskButton = 0;
-NOS_TID HandleTaskNet = NULL;
-XOS_TID HandleTaskNet = 0;
 NOS_TID HandleTaskStart = NULL;
 XOS_TID HandleTaskStart = 0;
 N
-N/* 声明支持8个消息的消息邮箱 */
-Nos_mbx_declare (mailboxCardRX, 8);
-XU32 mailboxCardRX [4 + 8];
-N
-Nos_mbx_declare (mailboxCardFirst, 8);
-XU32 mailboxCardFirst [4 + 8];
-Nos_mbx_declare (mailboxCardMulti, 8);
-XU32 mailboxCardMulti [4 + 8];
-Nos_mbx_declare (mailboxCardInterLock, 8);
-XU32 mailboxCardInterLock [4 + 8];
-N
-N/* 定时器句柄 */
-NOS_ID  OneTimerA;//操作继电器A
-NOS_ID  OneTimerB;//操作继电器B
-N
-Nuint8_t FB_data;
 N
 N/*
 N*********************************************************************************************************
@@ -35602,110 +35545,6 @@ N	while(1);
 N}
 N
 N
-N/*
-N*********************************************************************************************************
-N*	函 数 名: AppTaskReader
-N*	主要功能: 处理按键开门和远程开门事件
-N*********************************************************************************************************
-N*/
-N__task void AppTaskReader(void)
-X__declspec(noreturn) void AppTaskReader(void)
-N{
-N    const uint16_t usMaxBlockTime = 100; /* 延迟周期 */
-N    while(1)
-N    {
-N        os_dly_wait(usMaxBlockTime);
-X        _os_dly_wait((U32)rt_dly_wait,usMaxBlockTime);
-N    }//end of while
-N}
-N
-N//处理首卡的任务
-N__task void AppTaskFirst(void)
-X__declspec(noreturn) void AppTaskFirst(void)
-N{
-N
-N    const uint16_t usMaxBlockTime = 100; /* 延迟周期 */
-N    while(1)
-N    {
-N           
-N        os_dly_wait(usMaxBlockTime);
-X        _os_dly_wait((U32)rt_dly_wait,usMaxBlockTime);
-N    }//end of while
-N}
-N
-N//处理多重卡的任务
-N__task void AppTaskMulti(void)
-X__declspec(noreturn) void AppTaskMulti(void)
-N{
-N
-N    const uint16_t usMaxBlockTime = 100; /* 延迟周期 */
-N    while(1)
-N    {
-N        os_dly_wait(usMaxBlockTime);
-X        _os_dly_wait((U32)rt_dly_wait,usMaxBlockTime);
-N    }//end of while
-N}
-N
-N
-N//处理互锁的任务
-N__task void AppTaskInterLock(void)
-X__declspec(noreturn) void AppTaskInterLock(void)
-N{  
-N    const uint16_t usMaxBlockTime = 100; /* 延迟周期 */
-N    while(1)
-N    {
-N        os_dly_wait(usMaxBlockTime);
-X        _os_dly_wait((U32)rt_dly_wait,usMaxBlockTime);
-N    }//end of while
-N}
-N
-N/*
-N*********************************************************************************************************
-N*	函 数 名: AppTaskButton
-N*	主要功能: 处理按键开门和远程开门事件
-N*********************************************************************************************************
-N*/
-N__task void AppTaskButton(void)
-X__declspec(noreturn) void AppTaskButton(void)
-N{
-N
-N    while(1)
-N    {
-N        
-N    }//end of while
-N}
-N
-N//按键和反馈的扫描任务
-N__task void AppTaskKey(void)
-X__declspec(noreturn) void AppTaskKey(void)
-N{
-N    while(1)
-N    {     
-N        
-N        os_dly_wait(100);
-X        _os_dly_wait((U32)rt_dly_wait,100);
-N        
-N    }//end of while
-N           
-N}
-N
-N/*
-N*********************************************************************************************************
-N*	函 数 名: AppTaskNet
-N*	功能说明: 网络处理任务，附加按键扫描,读取门吸反馈	
-N*********************************************************************************************************
-N*/
-N__task void AppTaskNet(void)
-X__declspec(noreturn) void AppTaskNet(void)
-N{
-N    while(1)
-N    {    
-N        
-N        /* os_itv_wait是周期性延迟，os_dly_wait是相对延迟。*/
-N		os_dly_wait(100);
-X		_os_dly_wait((U32)rt_dly_wait,100);
-N    }//end of while
-N}
 N
 N/*
 N*********************************************************************************************************
@@ -35745,47 +35584,7 @@ N*******************************************************************************
 N*/
 Nstatic void AppTaskCreate (void)
 N{
-N    HandleTaskReader = os_tsk_create_user(AppTaskKey,              /* 任务函数 */ 
-N                                       1,                       /* 任务优先级 */ 
-N                                       &AppTaskKeyStk,          /* 任务栈 */
-N                                       sizeof(AppTaskKeyStk));  /* 任务栈大小，单位字节数 */
-X    HandleTaskReader = _os_tsk_create((U32)rt_tsk_create,AppTaskKey,1|(sizeof(AppTaskKeyStk)<<8),&AppTaskKeyStk,0);   
 N    
-N    HandleTaskReader = os_tsk_create_user(AppTaskReader,              /* 任务函数 */ 
-N                                       6,                       /* 任务优先级 */ 
-N                                       &AppTaskReaderStk,          /* 任务栈 */
-N                                       sizeof(AppTaskReaderStk));  /* 任务栈大小，单位字节数 */
-X    HandleTaskReader = _os_tsk_create((U32)rt_tsk_create,AppTaskReader,6|(sizeof(AppTaskReaderStk)<<8),&AppTaskReaderStk,0);   
-N    
-N    HandleTaskFirst = os_tsk_create_user(AppTaskFirst,              /* 任务函数 */ 
-N                                       2,                       /* 任务优先级 */ 
-N                                       &AppTaskFirstStk,          /* 任务栈 */
-N                                       sizeof(AppTaskFirstStk));  /* 任务栈大小，单位字节数 */
-X    HandleTaskFirst = _os_tsk_create((U32)rt_tsk_create,AppTaskFirst,2|(sizeof(AppTaskFirstStk)<<8),&AppTaskFirstStk,0);   
-N    
-N    HandleTaskMulti = os_tsk_create_user(AppTaskMulti,              /* 任务函数 */ 
-N	                                   5,                       /* 任务优先级 */ 
-N	                                   &AppTaskMultiStk,          /* 任务栈 */
-N	                                   sizeof(AppTaskMultiStk));  /* 任务栈大小，单位字节数 */
-X    HandleTaskMulti = _os_tsk_create((U32)rt_tsk_create,AppTaskMulti,5|(sizeof(AppTaskMultiStk)<<8),&AppTaskMultiStk,0);   
-N    
-N	HandleTaskInterLock = os_tsk_create_user(AppTaskInterLock,              /* 任务函数 */ 
-N	                                   4,                       /* 任务优先级 */ 
-N	                                   &AppTaskInterLockStk,          /* 任务栈 */
-N	                                   sizeof(AppTaskInterLockStk));  /* 任务栈大小，单位字节数 */
-X	HandleTaskInterLock = _os_tsk_create((U32)rt_tsk_create,AppTaskInterLock,4|(sizeof(AppTaskInterLockStk)<<8),&AppTaskInterLockStk,0);   
-N    
-N    HandleTaskButton = os_tsk_create_user(AppTaskButton,              /* 任务函数 */ 
-N	                                   3,                       /* 任务优先级 */ 
-N	                                   &AppTaskButtonStk,          /* 任务栈 */
-N	                                   sizeof(AppTaskButtonStk));  /* 任务栈大小，单位字节数 */
-X    HandleTaskButton = _os_tsk_create((U32)rt_tsk_create,AppTaskButton,3|(sizeof(AppTaskButtonStk)<<8),&AppTaskButtonStk,0);   
-N    
-N	HandleTaskNet = os_tsk_create_user(AppTaskNet,              /* 任务函数 */ 
-N	                                   7,                       /* 任务优先级 */ 
-N	                                   &AppTaskNetStk,          /* 任务栈 */
-N	                                   sizeof(AppTaskNetStk));  /* 任务栈大小，单位字节数 */
-X	HandleTaskNet = _os_tsk_create((U32)rt_tsk_create,AppTaskNet,7|(sizeof(AppTaskNetStk)<<8),&AppTaskNetStk,0);   
 N}
 N
 N/*
@@ -35799,15 +35598,7 @@ N*/
 Nstatic void AppObjCreate (void)
 N{
 N	/* 创建消息邮箱 */
-N	os_mbx_init(&mailboxCardRX, sizeof(mailboxCardRX));
-X	_os_mbx_init((U32)rt_mbx_init,&mailboxCardRX,sizeof(mailboxCardRX));
-N    
-N    os_mbx_init(&mailboxCardFirst, sizeof(mailboxCardFirst));
-X    _os_mbx_init((U32)rt_mbx_init,&mailboxCardFirst,sizeof(mailboxCardFirst));
-N    os_mbx_init(&mailboxCardMulti, sizeof(mailboxCardMulti));
-X    _os_mbx_init((U32)rt_mbx_init,&mailboxCardMulti,sizeof(mailboxCardMulti));
-N    os_mbx_init(&mailboxCardInterLock, sizeof(mailboxCardInterLock));
-X    _os_mbx_init((U32)rt_mbx_init,&mailboxCardInterLock,sizeof(mailboxCardInterLock));
+N
 N}
 N
 N

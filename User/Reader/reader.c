@@ -33,8 +33,8 @@ void ReaderInit(void)
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 	/* 使能 AFIO 时钟 */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-	//读头A
-    //Data0 中断线	PA0
+
+    //光电探测器中断	PA0
 	GPIO_EXTILineConfig(GPIO_PortSourceGPIOA,GPIO_PinSource0); 
 	EXTI_InitStructure.EXTI_Line	= EXTI_Line0;
 	EXTI_InitStructure.EXTI_Mode 	= EXTI_Mode_Interrupt;	
@@ -49,7 +49,7 @@ void ReaderInit(void)
 	NVIC_InitStructure.NVIC_IRQChannelCmd 	= ENABLE;//使能外部中断通道
 	NVIC_Init(&NVIC_InitStructure); 
 	
-	//Data1 中断线  PA1
+	//光电探测器中断  PA1
 	GPIO_EXTILineConfig(GPIO_PortSourceGPIOA,GPIO_PinSource1);
 	EXTI_InitStructure.EXTI_Line	= EXTI_Line1;
 	EXTI_InitStructure.EXTI_Mode 	= EXTI_Mode_Interrupt;	
@@ -65,7 +65,7 @@ void ReaderInit(void)
 	NVIC_Init(&NVIC_InitStructure);     
 }
 
-//读头A的data0//光电探测器中断
+//光电探测器中断//优先级0
 void EXTI0_IRQHandler(void)
 {
 	if (EXTI_GetITStatus(EXTI_Line0) != RESET)
@@ -84,7 +84,7 @@ void EXTI0_IRQHandler(void)
 	}
 }
 
-//读头A的data1//1pps中断,会每秒触发一次
+//1pps中断,会每秒触发一次//优先级1
 void EXTI1_IRQHandler(void)
 {
 	if (EXTI_GetITStatus(EXTI_Line1) != RESET)
