@@ -34965,7 +34965,7 @@ L 1 "..\..\User\main.h" 1
 N#ifndef _MAIN_H_
 N#define _MAIN_H_
 N
-N#define LORA_ADDRESS 1        // 用作lora的地址，也作为设备ID号（1-500）
+N#define LORA_ADDRESS 3        // 用作lora的地址，也作为设备ID号（1-500，不能取0和FFFF）
 N
 N
 N#endif
@@ -35021,6 +35021,7 @@ Nextern Lora_T g_tLora;//提供给其他函数使用
 Nvoid uartInit(void);
 Nvoid LoraSendData(uint8_t *data, uint8_t len);
 Nvoid GPSSendData(uint8_t *data, uint8_t len);
+N
 N#endif
 N
 N//------------------------
@@ -35353,6 +35354,7 @@ N#ifndef __PARAM_H
 N#define __PARAM_H
 N
 N#define PARAM_ADDR		0			/* 参数区地址 */
+N
 N//默认参数
 N#define VERSION 20180521 // 版本号
 N
@@ -35371,10 +35373,12 @@ N}Param_T;
 N
 Nextern Param_T g_tParam;
 N
-Nvoid paramInit(void);//初始化参数结构体
+N
 Nvoid LoadParam(void);
 Nvoid SaveParam(void);
 N
+Nvoid paramInit(void);//初始化参数结构体
+Nvoid setLoraParam(void);//设置lora模块参数
 N#endif
 N
 L 47 "..\..\User\bsp\bsp.h" 2

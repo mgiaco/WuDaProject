@@ -15,31 +15,31 @@ void makeCommmand(uint8_t cmdFlag, uint8_t rw, uint8_t *data, uint8_t len)
     
     //前3个字节存放服务器的地址和信道参数
     //地址的高位在前，dtuAddress数组是低位在前
-    g_tLora.buf[0]=g_tParam.dtuAddress[1];
-    g_tLora.buf[1]=g_tParam.dtuAddress[0];
+    g_tLora.buf[0]=g_tParam.dtuAddress[0];
+    g_tLora.buf[1]=g_tParam.dtuAddress[1];
     g_tLora.buf[2]=g_tParam.channel;
     
     g_tLora.buf[3]=0xA5;
     g_tLora.buf[4]=0xA5;
     g_tLora.buf[5]=cmdFlag;
-    g_tLora.buf[6]=0x00;
-    g_tLora.buf[7]=g_tLora.buf[0];
-    g_tLora.buf[8]=g_tLora.buf[1];
-    g_tLora.buf[9]=g_tLora.buf[2];
+    g_tLora.buf[6]=0x00;//保证4字节ID号
+    g_tLora.buf[7]=g_tParam.loraAddress[0];
+    g_tLora.buf[8]=g_tParam.loraAddress[1];
+    g_tLora.buf[9]=g_tParam.channel;
     g_tLora.buf[10]=rw;
     g_tLora.buf[11]=len >> 8;
     g_tLora.buf[12]=(len & 0xFF);
     
     for(i=0; i<len;i++)
     {
-        g_tLora.buf[10+i] = data[i];
+        g_tLora.buf[13+i] = data[i];
     }
     
     crcRet = Get_Crc8(g_tLora.buf, 13+len);
     
-    g_tLora.buf[10+len+0] = crcRet;
-    g_tLora.buf[10+len+1] = 0x5A;
-    g_tLora.buf[10+len+2] = 0x5A;   
+    g_tLora.buf[13+len+0] = crcRet;
+    g_tLora.buf[13+len+1] = 0x5A;
+    g_tLora.buf[13+len+2] = 0x5A;   
 }
 
 //执行命令,写入参数时，还要把参数更新到IIC存储中

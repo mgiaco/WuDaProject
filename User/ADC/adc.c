@@ -24,7 +24,7 @@ void AdcInit(void)
 	ADC_InitStructure.ADC_NbrOfChannel = 1;
 	ADC_Init(ADC1, &ADC_InitStructure);
 
-	/* 配置ADC1 规则通道14 channel14 configuration */
+	/* 配置ADC1, 规则通道2, 规则组采样顺序1，指定 ADC 通道的采样时间值55.5周期 */
 	ADC_RegularChannelConfig(ADC1, ADC_Channel_2, 1, ADC_SampleTime_55Cycles5);
 
 	/* 使能ADC1 DMA功能 */
@@ -58,6 +58,8 @@ void AdcInit(void)
 void GetADC(uint16_t *AdcValue)
 {
 	*AdcValue = ADC_GetConversionValue(ADC1);//把采样值存在AdcValue这个指针的内存上
+    
+    ADC_SoftwareStartConvCmd(ADC1, ENABLE);	/* 软件启动下次ADC转换 */
 }
 
 

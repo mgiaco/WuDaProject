@@ -42,6 +42,7 @@ extern Lora_T g_tLora;//提供给其他函数使用
 void uartInit(void);
 void LoraSendData(uint8_t *data, uint8_t len);
 void GPSSendData(uint8_t *data, uint8_t len);
+
 #endif
 
 //------------------------

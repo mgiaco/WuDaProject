@@ -112,7 +112,7 @@ void uartInit(void)
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority 	= 0x00;//子优先级
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
-    /* 使能串口3中断t */
+    /* 使能串口3中断 */
 	NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x03;//抢占优先级 
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority 	= 0x00;//子优先级
@@ -169,7 +169,9 @@ void USART1_IRQHandler(void)
                 //检查长度和报文尾
                 if((g_tGps.len > 8) && ('\r' == g_tGps.buf[g_tGps.len-2]) && ('\n' == g_tGps.buf[g_tGps.len-1]))
                 {
-                    //TODO：直接在这里解析出经纬度和时间算了
+                    //直接在这里解析出经纬度和时间算了
+                    bsp_StopHardTimer(1);
+                    
                     if('A' == g_tGps.buf[g_tGps.len-8])//有信号时,位置有效状态是A
                     {
                         g_tGps.status = 'A';
@@ -228,8 +230,9 @@ void USART3_IRQHandler(void)
                 if((g_tLora.len > 8) && (0x5A == g_tLora.buf[g_tLora.len-2]) && (0x5A == g_tLora.buf[g_tLora.len-1]))
                 {
                     //TODO：发送事件标志，让任务来处理
-                    bsp_StopHardTimer(1);
-                    GPSSendData(g_tLora.buf, g_tLora.len);
+                    bsp_StopHardTimer(2);
+                    SendDataToServer(0x01, 0, &g_tGps.status, sizeof(g_tGps.status));
+                    
                     
                     g_tLora.len = 0;
 	    		  	memset(g_tLora.atHead, 0, 2);
@@ -255,9 +258,10 @@ void LoraSendData(uint8_t *data, uint8_t len)
     uint8_t num=0;
     while(num<len)
     {
+        //先判断再发送
+        while(USART_GetFlagStatus(USART3, USART_FLAG_TC) == RESET);
         USART_SendData(USART3, data[num]);
         num++;
-        while(USART_GetFlagStatus(USART3, USART_FLAG_TC) == RESET);
     }
 }
 
@@ -266,10 +270,10 @@ void GPSSendData(uint8_t *data, uint8_t len)
 {
     uint8_t num=0;
     while(num<len)
-    {
+    {       
+        while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
         USART_SendData(USART1, data[num]);
         num++;
-        while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
     }
 }
 

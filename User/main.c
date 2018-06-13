@@ -70,6 +70,8 @@ int main(void)
 
 __task void AppTaskStart(void)
 {
+    //test
+    uint16_t battery;
     
     /* 获取启动任务的句柄 */
 	HandleTaskStart = os_tsk_self();
@@ -77,12 +79,17 @@ __task void AppTaskStart(void)
 	AppTaskCreate();
     /* 创建任务通信机制 */
 	AppObjCreate();
+    
 	
     while(1)
     {
         IWDG_Feed();//喂狗
-        
-        os_dly_wait(15000);
+        //test
+        GetADC(&battery);
+        battery = (battery*3300/4095);
+        //SendDataToServer(0x01, 0, g_tGps.time, sizeof(g_tGps.time));
+        //os_dly_wait(15000);
+        os_dly_wait(3000);
     }
 }
 

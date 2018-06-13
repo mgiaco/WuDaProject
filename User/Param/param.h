@@ -2,6 +2,7 @@
 #define __PARAM_H
 
 #define PARAM_ADDR		0			/* 参数区地址 */
+
 //默认参数
 #define VERSION 20180521 // 版本号
 
@@ -20,9 +21,11 @@ typedef struct
 
 extern Param_T g_tParam;
 
-void paramInit(void);//初始化参数结构体
+
 void LoadParam(void);
 void SaveParam(void);
 
+void paramInit(void);//初始化参数结构体
+void setLoraParam(void);//设置lora模块参数
 #endif
 
