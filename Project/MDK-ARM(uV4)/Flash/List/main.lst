@@ -1,10 +1,7 @@
 L 1 "..\..\User\main.c"
 N/*
 N*********************************************************************************************************
-N*
-N*	模块名称 : 主程序模块。
 N*	文件名称 : main.c(任务的优先级数值越小优先级越低，这个跟uCOS相反)
-N
 N*********************************************************************************************************
 N*/
 N
@@ -34958,9 +34955,11 @@ L 1 "..\..\User\main.h" 1
 N#ifndef _MAIN_H_
 N#define _MAIN_H_
 N
-N#define LORA_ADDRESS 3        // 用作lora的地址，也作为设备ID号（1-500，不能取0和FFFF）
+N//事件标志位宏定义
+N#define BIT_ALL 0xFF
+N#define LORA_RECV_BIT	(1<<0)
 N
-N
+Nextern OS_TID HandleTaskNet;
 N#endif
 N
 N/******************************************/
@@ -35354,6 +35353,16 @@ N
 N#define CHANNEL 30 //lora的信道参数，410+30=440MHz(信道相同才能互相通信)
 N#define DTU_ADDRESS 0xFFFE //DTU地址
 N
+N//硬件引脚相关
+N#define LORA_PORT    GPIOB
+N#define RCC_LORA_PORT  (RCC_APB2Periph_GPIOB)
+N
+N#define AUX_PIN     GPIO_Pin_0
+N#define READ_AUX    GPIO_ReadInputDataBit(LORA_PORT, AUX_PIN)//读取AUX状态指示引脚电平
+N
+N#define LORA_M0_PIN	GPIO_Pin_1//LORA_M0
+N#define LORA_M1_PIN	GPIO_Pin_2//LORA_M1
+N
 Ntypedef struct
 N{
 N    uint8_t isUpdate;//0xFF表示启动到默认区，1表示需要升级，0表示启动到app区
@@ -35361,7 +35370,6 @@ N    //lora模块和DTU的通信参数
 N    uint8_t loraAddress[2];
 N    uint8_t dtuAddress[2];
 N    uint8_t channel;
-N    
 N}Param_T;
 N
 Nextern Param_T g_tParam;
@@ -35370,8 +35378,10 @@ N
 Nvoid LoadParam(void);
 Nvoid SaveParam(void);
 N
+Nvoid resetParam(void);
 Nvoid paramInit(void);//初始化参数结构体
 Nvoid setLoraParam(void);//设置lora模块参数
+Nuint8_t getAuxStatus(void);
 N#endif
 N
 L 47 "..\..\User\bsp\bsp.h" 2
@@ -35385,14 +35395,16 @@ N
 N//探测器结构体
 Ntypedef struct
 N{
-N    uint8_t level;//能级信息
 N    uint32_t tStart;//1pps触发时刻
 N    uint32_t tStop;//探测器触发时刻
-N    uint8_t preciseTime[9];//前6字节表示小时，分钟，秒，后3字节表示微秒
+N    uint8_t preciseTime[7];//前3字节表示小时，分钟，秒，后3字节表示微秒,最后一字节为能级信息
 N}Reader_T;
 N
 Nextern Reader_T g_tReader;//提供给其他函数使用
-Nvoid ReaderInit(void); 
+Nvoid ReaderInit(void);
+Nvoid DetectorInit(void);
+Nvoid ResetDetector(void);
+N
 N#endif
 N
 N
@@ -35493,38 +35505,26 @@ N
 N#endif
 N
 N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
-L 11 "..\..\User\main.c" 2
-N/*
-N**********************************************************************************************************
-N											函数声明
-N**********************************************************************************************************
-N*/
-N/*任务1：看门狗
-N*任务2：处理串口3的lora数据（通过事件标志组），和服务器进行命令交互
-N*
-N*
-N*
-N*/
+L 8 "..\..\User\main.c" 2
 N
 Nstatic void AppTaskCreate (void);//创建除start任务外的其他任务
-Nstatic void AppObjCreate (void);//用来初始化邮箱和软件定时器
 N
-N    
+N/*任务1：看门狗
+N*任务2：处理串口3的lora数据（通过事件标志组），和服务器进行命令交互
+N*/
 N//任务函数
 N__task void AppTaskStart(void);
 X__declspec(noreturn) void AppTaskStart(void);
-N
-N/*
-N**********************************************************************************************************
-N											 变量
-N**********************************************************************************************************
-N*/
+N__task void AppTaskNet(void);
+X__declspec(noreturn) void AppTaskNet(void);
+N 
 Nstatic uint64_t AppTaskStartStk[512/8];   /* 任务栈 */
-N
+Nstatic uint64_t AppTaskNetStk[512/8];     /* 任务栈 */
 N/* 任务句柄 */
 NOS_TID HandleTaskStart = NULL;
 XOS_TID HandleTaskStart = 0;
-N
+NOS_TID HandleTaskNet = NULL;
+XOS_TID HandleTaskNet = 0;
 N
 N/*
 N*********************************************************************************************************
@@ -35541,10 +35541,10 @@ N	bsp_Init();
 N    
 N	/* 创建启动任务 */
 N 	os_sys_init_user(AppTaskStart,             /* 任务函数 */
-N	                  8,                        /* 任务优先级 */
+N	                  4,                        /* 任务优先级 */
 N	                  &AppTaskStartStk,         /* 任务栈 */
 N	                  sizeof(AppTaskStartStk)); /* 任务栈大小，单位字节数 */
-X 	os_set_env(); _os_sys_init((U32)rt_sys_init,AppTaskStart,8|(sizeof(AppTaskStartStk)<<8),&AppTaskStartStk);  
+X 	os_set_env(); _os_sys_init((U32)rt_sys_init,AppTaskStart,4|(sizeof(AppTaskStartStk)<<8),&AppTaskStartStk);  
 N	while(1);
 N}
 N
@@ -35553,36 +35553,60 @@ N
 N/*
 N*********************************************************************************************************
 N*	函 数 名: AppTaskStart
-N*	主要功能: 进行心跳包和喂狗，读DS1302时间，网络状态
+N*	主要功能: 进行喂狗
 N*********************************************************************************************************
 N*/
 N
 N__task void AppTaskStart(void)
 X__declspec(noreturn) void AppTaskStart(void)
-N{
-N    //test
-N    uint16_t battery;
-N    
+N{  
 N    /* 获取启动任务的句柄 */
 N	HandleTaskStart = os_tsk_self();
 X	HandleTaskStart = _os_tsk_self((U32)rt_tsk_self);
 N    //通过start任务间接地创建其他任务
 N	AppTaskCreate();
-N    /* 创建任务通信机制 */
-N	AppObjCreate();
-N    
 N	
 N    while(1)
 N    {
-N        IWDG_Feed();//喂狗
-N        //test
-N        GetADC(&battery);
-N        battery = (battery*3300/4095);
-N        //SendDataToServer(0x01, 0, g_tGps.time, sizeof(g_tGps.time));
-N        //os_dly_wait(15000);
-N        os_dly_wait(3000);
-X        _os_dly_wait((U32)rt_dly_wait,3000);
+N        //IWDG_Feed();//喂狗
+N        os_dly_wait(15000);
+X        _os_dly_wait((U32)rt_dly_wait,15000);
 N    }
+N}
+N
+N/*
+N*********************************************************************************************************
+N*	函 数 名: AppTaskNet
+N*	功能说明: 网络处理任务，附加按键扫描,读取门吸反馈	
+N*********************************************************************************************************
+N*/
+N__task void AppTaskNet(void)
+X__declspec(noreturn) void AppTaskNet(void)
+N{
+N    uint16_t ret_flags;
+N    while(1)
+N    {
+N        //采用或等待方式;退出前bit位被清除
+N        if(os_evt_wait_or(BIT_ALL, 0xFFFF) == OS_R_EVT)
+X        if(_os_evt_wait((U32)rt_evt_wait,0xFF,0xFFFF,0) == 0x02)
+N        {
+N            ret_flags = os_evt_get();//返回值为对应的bit
+X            ret_flags = _os_evt_get((U32)rt_evt_get);
+N            
+N            switch(ret_flags)
+N            {
+N                case LORA_RECV_BIT://接收到服务端命令                 
+X                case (1<<0):
+N                    processCommand(g_tLora.buf, g_tLora.len);
+N                    break; 
+N                
+N                default:
+N                    break;
+N            }//end of switch
+N            
+N        }//end of if
+N    }
+N    
 N}
 N
 N/*
@@ -35594,23 +35618,13 @@ N*	返 回 值: 无
 N*********************************************************************************************************
 N*/
 Nstatic void AppTaskCreate (void)
-N{
-N    
-N}
-N
-N/*
-N*********************************************************************************************************
-N*	函 数 名: AppObjCreate
-N*	功能说明: 创建任务通信机制
-N*	形    参: 无
-N*	返 回 值: 无
-N*********************************************************************************************************
-N*/
-Nstatic void AppObjCreate (void)
-N{
-N	/* 创建消息邮箱 */
-N
+N{ 
+N	HandleTaskNet = os_tsk_create_user(AppTaskNet,              /* 任务函数 */ 
+N	                                   3,                       /* 任务优先级 */ 
+N	                                   &AppTaskNetStk,          /* 任务栈 */
+N	                                   sizeof(AppTaskNetStk));  /* 任务栈大小，单位字节数 */
+X	HandleTaskNet = _os_tsk_create((U32)rt_tsk_create,AppTaskNet,3|(sizeof(AppTaskNetStk)<<8),&AppTaskNetStk,0);   
 N}
 N
 N
-N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
+N/******************************************************/

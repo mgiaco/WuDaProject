@@ -67,23 +67,23 @@
                           AREA ||.bss||, DATA, NOINIT, ALIGN=3
 
                   mp_tcb
-                          %        464
+                          %        240
                   mp_stk
                           %        528
                   os_fifo
                           %        132
                   os_active_TCB
-                          %        32
+                          %        16
                   mp_tmr
                           %        28
 
                           AREA ||.constdata||, DATA, READONLY, ALIGN=2
 
                   os_maxtaskrun
-000000  0008              DCW      0x0008
+000000  0004              DCW      0x0004
 000002  0000              DCB      0x00,0x00
                   os_stackinfo
-                          DCD      0x01080200
+                          DCD      0x01040200
                   os_rrobin
                           DCD      0x00010005
                   os_trv
@@ -97,7 +97,7 @@
                   |symbol_number.13|
                           DCD      0x00000002
                   mp_tcb_size
-00001c  01cc              DCW      0x01cc
+00001c  00ec              DCW      0x00ec
 00001e  0000              DCB      0x00,0x00
                   mp_stk_size
                           DCD      0x00000210

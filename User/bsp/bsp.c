@@ -50,12 +50,15 @@ void bsp_Init(void)
     
     bsp_InitI2C();		/* 配置I2C总线 */
     
-    ReaderInit();		//初始化信号线
     AdcInit();
+    
+    DetectorInit();//初始化探测器引脚
+    ReaderInit();		//初始化信号线
+    
     
     paramInit();//读取参数
     
-    bsp_InitIwdg(0xC35);//看门狗溢出时间为20s
+    //bsp_InitIwdg(0xC35);//看门狗溢出时间为20s
     
 }
 

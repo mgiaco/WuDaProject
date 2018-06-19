@@ -2,129 +2,176 @@
 ; commandline ArmCC [--list --split_sections --debug -c --asm --interleave -o.\flash\obj\main.o --asm_dir=.\Flash\List\ --list_dir=.\Flash\List\ --depend=.\flash\obj\main.d --cpu=Cortex-M3 --apcs=interwork -O0 --diag_suppress=870 -I..\..\Libraries\CMSIS\Device\ST\STM32F10x\Include -I..\..\Libraries\STM32F10x_StdPeriph_Driver\inc -I..\..\User\bsp -I..\..\User -I..\..\Libraries\CMSIS\Include -I..\..\RTX\inc -I..\..\RTX\portable -I..\..\User\CpuFlash -I..\..\User\CRC8_16 -I..\..\User\DS1302 -I..\..\User\DWT -I..\..\User\IIC -I..\..\User\IWDG -I..\..\User\Key -I..\..\User\Led -I..\..\User\Net -I..\..\User\Protocal -I..\..\User\Reader -I..\..\User\SPI -I..\..\User\Timer -I..\..\User\Uart -I..\..\User\Param -I..\..\User\ADC -D__MICROLIB -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD --omf_browse=.\flash\obj\main.crf ..\..\User\main.c]
                           THUMB
 
-                          AREA ||i.AppObjCreate||, CODE, READONLY, ALIGN=1
-
-                  AppObjCreate PROC
-;;;116    */
-;;;117    static void AppObjCreate (void)
-000000  4770              BX       lr
-;;;118    {
-;;;119    	/* 创建消息邮箱 */
-;;;120    
-;;;121    }
-;;;122    
-                          ENDP
-
-
-                          AREA ||i.AppTaskCreate||, CODE, READONLY, ALIGN=1
+                          AREA ||i.AppTaskCreate||, CODE, READONLY, ALIGN=2
 
                   AppTaskCreate PROC
-;;;103    */
-;;;104    static void AppTaskCreate (void)
-000000  4770              BX       lr
-;;;105    {
-;;;106        
-;;;107    }
-;;;108    
+;;;106    */
+;;;107    static void AppTaskCreate (void)
+000000  2300              MOVS     r3,#0
+;;;108    { 
+;;;109    	HandleTaskNet = os_tsk_create_user(AppTaskNet,              /* 任务函数 */ 
+000002  4a04              LDR      r2,|L1.20|
+000004  4904              LDR      r1,|L1.24|
+000006  4805              LDR      r0,|L1.28|
+000008  f8dfc014          LDR      r12,|L1.32|
+00000c  df00              SVC      #0x0
+00000e  4905              LDR      r1,|L1.36|
+000010  6008              STR      r0,[r1,#0]  ; HandleTaskNet
+;;;110    	                                   3,                       /* 任务优先级 */ 
+;;;111    	                                   &AppTaskNetStk,          /* 任务栈 */
+;;;112    	                                   sizeof(AppTaskNetStk));  /* 任务栈大小，单位字节数 */
+;;;113    }
+000012  4770              BX       lr
+;;;114    
                           ENDP
 
+                  |L1.20|
+                          DCD      AppTaskNetStk
+                  |L1.24|
+                          DCD      0x00020003
+                  |L1.28|
+                          DCD      AppTaskNet
+                  |L1.32|
+                          DCD      rt_tsk_create
+                  |L1.36|
+                          DCD      HandleTaskNet
+
+                          AREA ||i.AppTaskNet||, CODE, READONLY, ALIGN=2
+
+                  AppTaskNet PROC
+;;;73     */
+;;;74     __task void AppTaskNet(void)
+000000  e016              B        |L2.48|
+                  |L2.2|
+;;;75     {
+;;;76         uint16_t ret_flags;
+;;;77         while(1)
+;;;78         {
+;;;79             //采用或等待方式;退出前bit位被清除
+;;;80             if(os_evt_wait_or(BIT_ALL, 0xFFFF) == OS_R_EVT)
+000002  2200              MOVS     r2,#0
+000004  f64f71ff          MOV      r1,#0xffff
+000008  20ff              MOVS     r0,#0xff
+00000a  f8dfc028          LDR      r12,|L2.52|
+00000e  df00              SVC      #0x0
+000010  2802              CMP      r0,#2
+000012  d10d              BNE      |L2.48|
+;;;81             {
+;;;82                 ret_flags = os_evt_get();//返回值为对应的bit
+000014  f8dfc020          LDR      r12,|L2.56|
+000018  df00              SVC      #0x0
+00001a  4604              MOV      r4,r0
+;;;83                 
+;;;84                 switch(ret_flags)
+00001c  2c01              CMP      r4,#1
+00001e  d105              BNE      |L2.44|
+;;;85                 {
+;;;86                     case LORA_RECV_BIT://接收到服务端命令                 
+;;;87                         processCommand(g_tLora.buf, g_tLora.len);
+000020  4806              LDR      r0,|L2.60|
+000022  7801              LDRB     r1,[r0,#0]  ; g_tLora
+000024  1c40              ADDS     r0,r0,#1
+000026  f7fffffe          BL       processCommand
+;;;88                         break; 
+00002a  e000              B        |L2.46|
+                  |L2.44|
+;;;89                     
+;;;90                     default:
+;;;91                         break;
+00002c  bf00              NOP      
+                  |L2.46|
+00002e  bf00              NOP                            ;88
+                  |L2.48|
+000030  e7e7              B        |L2.2|
+;;;92                 }//end of switch
+;;;93                 
+;;;94             }//end of if
+;;;95         }
+;;;96         
+;;;97     }
+;;;98     
+                          ENDP
+
+000032  0000              DCW      0x0000
+                  |L2.52|
+                          DCD      rt_evt_wait
+                  |L2.56|
+                          DCD      rt_evt_get
+                  |L2.60|
+                          DCD      g_tLora
 
                           AREA ||i.AppTaskStart||, CODE, READONLY, ALIGN=2
 
                   AppTaskStart PROC
-;;;70     
-;;;71     __task void AppTaskStart(void)
-000000  b508              PUSH     {r3,lr}
-;;;72     {
-;;;73         //test
-;;;74         uint16_t battery;
-;;;75         
-;;;76         /* 获取启动任务的句柄 */
-;;;77     	HandleTaskStart = os_tsk_self();
-000002  f8dfc040          LDR      r12,|L3.68|
-000006  df00              SVC      #0x0
-000008  490f              LDR      r1,|L3.72|
-00000a  6008              STR      r0,[r1,#0]  ; HandleTaskStart
-;;;78         //通过start任务间接地创建其他任务
-;;;79     	AppTaskCreate();
-00000c  f7fffffe          BL       AppTaskCreate
-;;;80         /* 创建任务通信机制 */
-;;;81     	AppObjCreate();
-000010  f7fffffe          BL       AppObjCreate
-;;;82         
-;;;83     	
-;;;84         while(1)
-000014  e014              B        |L3.64|
-                  |L3.22|
-;;;85         {
-;;;86             IWDG_Feed();//喂狗
-000016  f7fffffe          BL       IWDG_Feed
-;;;87             //test
-;;;88             GetADC(&battery);
-00001a  4668              MOV      r0,sp
-00001c  f7fffffe          BL       GetADC
-;;;89             battery = (battery*3300/4095);
-000020  f8bd0000          LDRH     r0,[sp,#0]
-000024  f64041e4          MOV      r1,#0xce4
-000028  4348              MULS     r0,r1,r0
-00002a  f64071ff          MOV      r1,#0xfff
-00002e  fb90f0f1          SDIV     r0,r0,r1
-000032  b280              UXTH     r0,r0
-000034  9000              STR      r0,[sp,#0]
-;;;90             //SendDataToServer(0x01, 0, g_tGps.time, sizeof(g_tGps.time));
-;;;91             //os_dly_wait(15000);
-;;;92             os_dly_wait(3000);
-000036  f64030b8          MOV      r0,#0xbb8
-00003a  f8dfc010          LDR      r12,|L3.76|
-00003e  df00              SVC      #0x0
-                  |L3.64|
-000040  e7e9              B        |L3.22|
-;;;93         }
-;;;94     }
-;;;95     
+;;;53     
+;;;54     __task void AppTaskStart(void)
+000000  f8dfc018          LDR      r12,|L3.28|
+;;;55     {  
+;;;56         /* 获取启动任务的句柄 */
+;;;57     	HandleTaskStart = os_tsk_self();
+000004  df00              SVC      #0x0
+000006  4906              LDR      r1,|L3.32|
+000008  6008              STR      r0,[r1,#0]  ; HandleTaskStart
+;;;58         //通过start任务间接地创建其他任务
+;;;59     	AppTaskCreate();
+00000a  f7fffffe          BL       AppTaskCreate
+;;;60     	
+;;;61         while(1)
+00000e  e004              B        |L3.26|
+                  |L3.16|
+;;;62         {
+;;;63             //IWDG_Feed();//喂狗
+;;;64             os_dly_wait(15000);
+000010  f6432098          MOV      r0,#0x3a98
+000014  f8dfc00c          LDR      r12,|L3.36|
+000018  df00              SVC      #0x0
+                  |L3.26|
+00001a  e7f9              B        |L3.16|
+;;;65         }
+;;;66     }
+;;;67     
                           ENDP
 
-000042  0000              DCW      0x0000
-                  |L3.68|
+                  |L3.28|
                           DCD      rt_tsk_self
-                  |L3.72|
+                  |L3.32|
                           DCD      HandleTaskStart
-                  |L3.76|
+                  |L3.36|
                           DCD      rt_dly_wait
 
                           AREA ||i.main||, CODE, READONLY, ALIGN=2
 
                   main PROC
-;;;48     */
-;;;49     int main(void) 
+;;;31     */
+;;;32     int main(void) 
 000000  f7fffffe          BL       bsp_Init
-;;;50     {	
-;;;51     	/* 初始化外设 */
-;;;52     	bsp_Init();
-;;;53         
-;;;54     	/* 创建启动任务 */
-;;;55      	os_sys_init_user(AppTaskStart,             /* 任务函数 */
+;;;33     {	
+;;;34     	/* 初始化外设 */
+;;;35     	bsp_Init();
+;;;36         
+;;;37     	/* 创建启动任务 */
+;;;38      	os_sys_init_user(AppTaskStart,             /* 任务函数 */
 000004  f7fffffe          BL       os_set_env
 000008  4a03              LDR      r2,|L4.24|
 00000a  4904              LDR      r1,|L4.28|
 00000c  4804              LDR      r0,|L4.32|
 00000e  f8dfc014          LDR      r12,|L4.36|
 000012  df00              SVC      #0x0
-;;;56     	                  8,                        /* 任务优先级 */
-;;;57     	                  &AppTaskStartStk,         /* 任务栈 */
-;;;58     	                  sizeof(AppTaskStartStk)); /* 任务栈大小，单位字节数 */
-;;;59     	while(1);
+;;;39     	                  4,                        /* 任务优先级 */
+;;;40     	                  &AppTaskStartStk,         /* 任务栈 */
+;;;41     	                  sizeof(AppTaskStartStk)); /* 任务栈大小，单位字节数 */
+;;;42     	while(1);
 000014  bf00              NOP      
                   |L4.22|
 000016  e7fe              B        |L4.22|
-;;;60     }
-;;;61     
+;;;43     }
+;;;44     
                           ENDP
 
                   |L4.24|
                           DCD      AppTaskStartStk
                   |L4.28|
-                          DCD      0x00020008
+                          DCD      0x00020004
                   |L4.32|
                           DCD      AppTaskStart
                   |L4.36|
@@ -134,10 +181,14 @@
 
                   AppTaskStartStk
                           %        512
+                  AppTaskNetStk
+                          %        512
 
                           AREA ||.data||, DATA, ALIGN=2
 
                   HandleTaskStart
+                          DCD      0x00000000
+                  HandleTaskNet
                           DCD      0x00000000
 
 ;*** Start embedded assembler ***

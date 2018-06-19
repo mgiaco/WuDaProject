@@ -16,3 +16,12 @@ C0:传输方式选择定点传输，发射功率和无线唤醒时间、FEC开关使用默认值
 
 20180613
 TODO：检查通过串口3给lora配置参数的程序，拿另外一块板子做实验，看串口输出对不对
+
+20180619
+cmdName      		operation      data
+search			 			read   				00//搜索设备
+getTimeAndLevel   read					00//获取探测器触发的精确时间和能级
+resetLevel				write					00//复位能级
+
+测试电流(GPS开启)
+待机：约140mA						连续传输(间隔1秒)：240mA（lora通信加100）

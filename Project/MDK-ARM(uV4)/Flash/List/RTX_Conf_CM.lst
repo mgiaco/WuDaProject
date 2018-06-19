@@ -34960,9 +34960,11 @@ L 1 "..\..\User\main.h" 1
 N#ifndef _MAIN_H_
 N#define _MAIN_H_
 N
-N#define LORA_ADDRESS 3        // 用作lora的地址，也作为设备ID号（1-500，不能取0和FFFF）
+N//事件标志位宏定义
+N#define BIT_ALL 0xFF
+N#define LORA_RECV_BIT	(1<<0)
 N
-N
+Nextern OS_TID HandleTaskNet;
 N#endif
 N
 N/******************************************/
@@ -35356,6 +35358,16 @@ N
 N#define CHANNEL 30 //lora的信道参数，410+30=440MHz(信道相同才能互相通信)
 N#define DTU_ADDRESS 0xFFFE //DTU地址
 N
+N//硬件引脚相关
+N#define LORA_PORT    GPIOB
+N#define RCC_LORA_PORT  (RCC_APB2Periph_GPIOB)
+N
+N#define AUX_PIN     GPIO_Pin_0
+N#define READ_AUX    GPIO_ReadInputDataBit(LORA_PORT, AUX_PIN)//读取AUX状态指示引脚电平
+N
+N#define LORA_M0_PIN	GPIO_Pin_1//LORA_M0
+N#define LORA_M1_PIN	GPIO_Pin_2//LORA_M1
+N
 Ntypedef struct
 N{
 N    uint8_t isUpdate;//0xFF表示启动到默认区，1表示需要升级，0表示启动到app区
@@ -35363,7 +35375,6 @@ N    //lora模块和DTU的通信参数
 N    uint8_t loraAddress[2];
 N    uint8_t dtuAddress[2];
 N    uint8_t channel;
-N    
 N}Param_T;
 N
 Nextern Param_T g_tParam;
@@ -35372,8 +35383,10 @@ N
 Nvoid LoadParam(void);
 Nvoid SaveParam(void);
 N
+Nvoid resetParam(void);
 Nvoid paramInit(void);//初始化参数结构体
 Nvoid setLoraParam(void);//设置lora模块参数
+Nuint8_t getAuxStatus(void);
 N#endif
 N
 L 47 "..\..\User\bsp\bsp.h" 2
@@ -35387,14 +35400,16 @@ N
 N//探测器结构体
 Ntypedef struct
 N{
-N    uint8_t level;//能级信息
 N    uint32_t tStart;//1pps触发时刻
 N    uint32_t tStop;//探测器触发时刻
-N    uint8_t preciseTime[9];//前6字节表示小时，分钟，秒，后3字节表示微秒
+N    uint8_t preciseTime[7];//前3字节表示小时，分钟，秒，后3字节表示微秒,最后一字节为能级信息
 N}Reader_T;
 N
 Nextern Reader_T g_tReader;//提供给其他函数使用
-Nvoid ReaderInit(void); 
+Nvoid ReaderInit(void);
+Nvoid DetectorInit(void);
+Nvoid ResetDetector(void);
+N
 N#endif
 N
 N
@@ -35510,7 +35525,7 @@ N//   <o>Number of concurrent running tasks <0-250>
 N//   <i> Define max. number of tasks that will run at the same time.
 N//   <i> Default: 6
 N#ifndef OS_TASKCNT
-N #define OS_TASKCNT    8
+N #define OS_TASKCNT    4
 N#endif
 N
 N//   <o>Number of tasks with user-provided stack <0-250>
@@ -35518,7 +35533,7 @@ N//   <i> Define the number of tasks that will use a bigger stack.
 N//   <i> The memory space for the stack is provided by the user.
 N//   <i> Default: 0
 N#ifndef OS_PRIVCNT
-N #define OS_PRIVCNT     8
+N #define OS_PRIVCNT     4
 N#endif
 N
 N//   <o>Task stack size [bytes] <20-4096:8><#/4>
@@ -35744,9 +35759,9 @@ N/*----------------------------------------------------------------------------
 N *      Global Variables
 N *---------------------------------------------------------------------------*/
 NU16 const os_maxtaskrun = OS_TASKCNT;
-XU16 const os_maxtaskrun = 8;
+XU16 const os_maxtaskrun = 4;
 NU32 const os_stackinfo  = (OS_STKCHECK<<24)| (OS_PRIVCNT<<16) | (OS_STKSIZE*4);
-XU32 const os_stackinfo  = (1<<24)| (8<<16) | (128*4);
+XU32 const os_stackinfo  = (1<<24)| (4<<16) | (128*4);
 NU32 const os_rrobin     = (OS_ROBIN << 16) | OS_ROBINTOUT;
 XU32 const os_rrobin     = (1 << 16) | 5;
 N#if (__CM__)
@@ -35768,12 +35783,12 @@ XU32 const os_timernum  __attribute__((used)) = (0 << 16) | 2;
 N
 N/* Memory pool for TCB allocation    */
 N_declare_box (mp_tcb, OS_TCB_SIZE, OS_TASKCNT);
-XU32 mp_tcb[(((56)+3)/4)*(8) + 3];
+XU32 mp_tcb[(((56)+3)/4)*(4) + 3];
 NU16 const mp_tcb_size = sizeof(mp_tcb);
 N
 N/* Memory pool for System stack allocation (+ os_idle_demon). */
 N_declare_box8 (mp_stk, OS_STKSIZE*4, OS_TASKCNT-OS_PRIVCNT+1);
-XU64 mp_stk[(((128*4)+7)/8)*(8-8+1) + 2];
+XU64 mp_stk[(((128*4)+7)/8)*(4-4+1) + 2];
 NU32 const mp_stk_size = sizeof(mp_stk);
 N
 N#ifndef OS_FIFOSZ
@@ -35788,7 +35803,7 @@ XU8 const os_fifo_size = 16;
 N
 N/* An array of Active task pointers. */
 Nvoid *os_active_TCB[OS_TASKCNT];
-Xvoid *os_active_TCB[8];
+Xvoid *os_active_TCB[4];
 N
 N#if (OS_TIMERCNT != 0)
 X#if (2 != 0)

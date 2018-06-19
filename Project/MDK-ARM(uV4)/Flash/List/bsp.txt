@@ -38,21 +38,23 @@
 ;;;51         bsp_InitI2C();		/* 配置I2C总线 */
 00001e  f7fffffe          BL       bsp_InitI2C
 ;;;52         
-;;;53         ReaderInit();		//初始化信号线
-000022  f7fffffe          BL       ReaderInit
-;;;54         AdcInit();
-000026  f7fffffe          BL       AdcInit
-;;;55         
-;;;56         paramInit();//读取参数
-00002a  f7fffffe          BL       paramInit
+;;;53         AdcInit();
+000022  f7fffffe          BL       AdcInit
+;;;54         
+;;;55         DetectorInit();//初始化探测器引脚
+000026  f7fffffe          BL       DetectorInit
+;;;56         ReaderInit();		//初始化信号线
+00002a  f7fffffe          BL       ReaderInit
 ;;;57         
-;;;58         bsp_InitIwdg(0xC35);//看门狗溢出时间为20s
-00002e  f6404035          MOV      r0,#0xc35
-000032  f7fffffe          BL       bsp_InitIwdg
-;;;59         
-;;;60     }
-000036  bd10              POP      {r4,pc}
-;;;61     
+;;;58         
+;;;59         paramInit();//读取参数
+00002e  f7fffffe          BL       paramInit
+;;;60         
+;;;61         //bsp_InitIwdg(0xC35);//看门狗溢出时间为20s
+;;;62         
+;;;63     }
+000032  bd10              POP      {r4,pc}
+;;;64     
                           ENDP
 
 

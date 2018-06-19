@@ -120,9 +120,6 @@ void uartInit(void)
 	NVIC_Init(&NVIC_InitStructure);
 }
 
-
-
-
 //单次定时器回调函数
 void loraDelayCheck(void)
 {
@@ -169,7 +166,7 @@ void USART1_IRQHandler(void)
                 //检查长度和报文尾
                 if((g_tGps.len > 8) && ('\r' == g_tGps.buf[g_tGps.len-2]) && ('\n' == g_tGps.buf[g_tGps.len-1]))
                 {
-                    //直接在这里解析出经纬度和时间算了
+                    //关闭超时定时器
                     bsp_StopHardTimer(1);
                     
                     if('A' == g_tGps.buf[g_tGps.len-8])//有信号时,位置有效状态是A
@@ -179,6 +176,7 @@ void USART1_IRQHandler(void)
                         memcpy(g_tGps.latitude, &g_tGps.buf[3], sizeof(g_tGps.latitude));
                         memcpy(g_tGps.longiitude, &g_tGps.buf[17], sizeof(g_tGps.longiitude));
                         memcpy(g_tGps.time, &g_tGps.buf[g_tGps.len-19], sizeof(g_tGps.time));
+                        
                     }
                     else if('V' == g_tGps.buf[g_tGps.len-8])//没有信号时,位置有效状态是V
                     {
@@ -229,10 +227,10 @@ void USART3_IRQHandler(void)
                 //检查长度和报文尾，成功则发送事件标志
                 if((g_tLora.len > 8) && (0x5A == g_tLora.buf[g_tLora.len-2]) && (0x5A == g_tLora.buf[g_tLora.len-1]))
                 {
-                    //TODO：发送事件标志，让任务来处理
-                    bsp_StopHardTimer(2);
-                    SendDataToServer(0x01, 0, &g_tGps.status, sizeof(g_tGps.status));
-                    
+                    //关闭超时定时器
+                    bsp_StopHardTimer(2); 
+                    //发送事件标志，让任务来处理
+                    isr_evt_set(LORA_RECV_BIT, HandleTaskNet);//post
                     
                     g_tLora.len = 0;
 	    		  	memset(g_tLora.atHead, 0, 2);
@@ -259,7 +257,8 @@ void LoraSendData(uint8_t *data, uint8_t len)
     while(num<len)
     {
         //先判断再发送
-        while(USART_GetFlagStatus(USART3, USART_FLAG_TC) == RESET);
+        //改用TXE判断。如果用TC判断，有时候通不过
+        while(USART_GetFlagStatus(USART3, USART_FLAG_TXE) == RESET);
         USART_SendData(USART3, data[num]);
         num++;
     }
@@ -271,7 +270,7 @@ void GPSSendData(uint8_t *data, uint8_t len)
     uint8_t num=0;
     while(num<len)
     {       
-        while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+        while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
         USART_SendData(USART1, data[num]);
         num++;
     }

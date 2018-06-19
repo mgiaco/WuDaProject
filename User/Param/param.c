@@ -1,13 +1,8 @@
 #include "bsp.h"
 
-#define LORA_PORT    GPIOB
-#define RCC_LORA_PORT  (RCC_APB2Periph_GPIOB)
-
-#define AUX_PIN     GPIO_Pin_0
-#define READ_AUX    GPIO_ReadInputDataBit(LORA_PORT, AUX_PIN)//读取AUX状态指示引脚电平
-
-#define LORA_M0_PIN	GPIO_Pin_1//LORA_M0
-#define LORA_M1_PIN	GPIO_Pin_2//LORA_M1
+/****用作lora的地址，也作为设备ID号（1-500，不能取0和FFFF）*/
+#define LORA_ADDRESS         2
+/*********************************************************/
 
 Param_T g_tParam;
 
@@ -32,6 +27,12 @@ void paramInit(void)
 {
     //初始化lora模块
     loraInit();
+    
+    //test擦除IIC flash为0xFF
+    /*
+    resetParam();
+    bsp_DelayMS(100);
+    */
     
     //先读取参数，判断是否有效？如果无效则使用宏定义的参数
     LoadParam();
@@ -86,6 +87,20 @@ void SaveParam(void)
 	ee_WriteBytes((uint8_t *)&g_tParam, PARAM_ADDR, sizeof(Param_T));
 }
 
+//重置IIC数据
+void resetParam(void)
+{
+    uint16_t i;
+    uint8_t buf[EE_PAGE_SIZE];  
+    
+    for(i = 0; i < EE_PAGE_SIZE; i++)
+	{
+		buf[i] = 0xFF;
+	}
+    
+    ee_WriteBytes(buf, 0, EE_PAGE_SIZE);
+}
+
 //设置lora模块模式，0--工作，1-参数设置
 void setLoraMode(uint8_t mode)
 {
@@ -107,8 +122,6 @@ void setLoraParam(void)
 {
     uint8_t loraParam[6];
     
-    USART_ClearFlag(USART3, USART_FLAG_TC);     /* 清发送完成标志，Transmission Complete flag */
-    
     loraParam[0]=0xC0;//参数掉电保存
     loraParam[1]=g_tParam.loraAddress[0];
     loraParam[2]=g_tParam.loraAddress[1];
@@ -124,6 +137,12 @@ void setLoraParam(void)
     //再拉低M0，M1
     setLoraMode(0);
     bsp_DelayMS(100);
+}
+
+//获取AUX引脚电平状态
+uint8_t getAuxStatus(void)
+{
+    return READ_AUX;
 }
 
 //---------------------------
