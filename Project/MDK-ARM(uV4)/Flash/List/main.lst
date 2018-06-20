@@ -34958,6 +34958,7 @@ N
 N//事件标志位宏定义
 N#define BIT_ALL 0xFF
 N#define LORA_RECV_BIT	(1<<0)
+N#define TASK_NET_BIT	(1<<1)
 N
 Nextern OS_TID HandleTaskNet;
 N#endif
@@ -35404,7 +35405,7 @@ Nextern Reader_T g_tReader;//提供给其他函数使用
 Nvoid ReaderInit(void);
 Nvoid DetectorInit(void);
 Nvoid ResetDetector(void);
-N
+Nuint8_t GetDetectorLevel(void);
 N#endif
 N
 N
@@ -35560,6 +35561,7 @@ N
 N__task void AppTaskStart(void)
 X__declspec(noreturn) void AppTaskStart(void)
 N{  
+N    uint16_t ret_flags;
 N    /* 获取启动任务的句柄 */
 N	HandleTaskStart = os_tsk_self();
 X	HandleTaskStart = _os_tsk_self((U32)rt_tsk_self);
@@ -35567,28 +35569,45 @@ N    //通过start任务间接地创建其他任务
 N	AppTaskCreate();
 N	
 N    while(1)
-N    {
-N        //IWDG_Feed();//喂狗
-N        os_dly_wait(15000);
-X        _os_dly_wait((U32)rt_dly_wait,15000);
+N    {        
+N        //采用或等待方式;退出前bit位被清除
+N        if(os_evt_wait_or(BIT_ALL, 0xFFFF) == OS_R_EVT)
+X        if(_os_evt_wait((U32)rt_evt_wait,0xFF,0xFFFF,0) == 0x02)
+N        {
+N            ret_flags = os_evt_get();//返回值为对应的bit
+X            ret_flags = _os_evt_get((U32)rt_evt_get);
+N            
+N            switch(ret_flags)
+N            {
+N                case TASK_NET_BIT://接收到任务事件标志位                 
+X                case (1<<1):
+N                    IWDG_Feed();//喂狗
+N                    break; 
+N                
+N                default:
+N                    break;
+N            }//end of switch
+N            
+N        }//end of if
 N    }
 N}
 N
 N/*
 N*********************************************************************************************************
 N*	函 数 名: AppTaskNet
-N*	功能说明: 网络处理任务，附加按键扫描,读取门吸反馈	
+N*	功能说明: 网络处理任务
 N*********************************************************************************************************
 N*/
 N__task void AppTaskNet(void)
 X__declspec(noreturn) void AppTaskNet(void)
 N{
 N    uint16_t ret_flags;
+N    const uint16_t usMaxBlockTime = 0x0FFF; /* 延迟周期,4095ms */
 N    while(1)
 N    {
 N        //采用或等待方式;退出前bit位被清除
-N        if(os_evt_wait_or(BIT_ALL, 0xFFFF) == OS_R_EVT)
-X        if(_os_evt_wait((U32)rt_evt_wait,0xFF,0xFFFF,0) == 0x02)
+N        if(os_evt_wait_or(BIT_ALL, usMaxBlockTime) == OS_R_EVT)
+X        if(_os_evt_wait((U32)rt_evt_wait,0xFF,usMaxBlockTime,0) == 0x02)
 N        {
 N            ret_flags = os_evt_get();//返回值为对应的bit
 X            ret_flags = _os_evt_get((U32)rt_evt_get);
@@ -35605,6 +35624,11 @@ N                    break;
 N            }//end of switch
 N            
 N        }//end of if
+N        
+N        //判断标志位超时后执行的操作
+N        //向看门狗任务发送事件标志位
+N        os_evt_set(TASK_NET_BIT, HandleTaskStart);//post
+X        _os_evt_set((U32)rt_evt_set,(1<<1),HandleTaskStart);
 N    }
 N    
 N}

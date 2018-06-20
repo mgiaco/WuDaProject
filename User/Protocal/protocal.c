@@ -105,16 +105,17 @@ void processCommand(uint8_t *data, uint16_t len)
         case 0x01://返回探测器触发的精确时间和能级
             if(data[7] == 0)
             {
-                memcpy(&data[10], g_tReader.preciseTime, sizeof(g_tReader.preciseTime));
-                SendDataToServer(data[2], 0, &data[10], sizeof(g_tReader.preciseTime));
+                SendDataToServer(data[2], 0, g_tReader.preciseTime, sizeof(g_tReader.preciseTime));
+                //memset(g_tReader.preciseTime, 0, sizeof(pasitionAndBattery));
             }
             break;
         
         case 0x02://复位能级
-            if(data[7] == 1)
+            if(1)
             {
-                ResetDetector();//TODO:此函数中有延时，应该在触发并读取能级后调用，不单独设置命令
-                ret = 0x55;
+                //memset(g_tReader.preciseTime, 0, sizeof(pasitionAndBattery));
+                //ResetDetector();//TODO:此函数中有延时，应该在触发并读取能级后调用，不单独设置命令
+                ret = GetDetectorLevel();
                 SendDataToServer(data[2], 1, &ret, 1);
             }
             break;
@@ -129,6 +130,7 @@ void processCommand(uint8_t *data, uint16_t len)
 void SendDataToServer(uint8_t flag, uint8_t rw, uint8_t *data, uint8_t len)
 {
     //判断AUX引脚状态，为1时（高电平）可以进行发送
+    //也可以不判断，模块内部有缓冲区，不超出就可以
     while(!getAuxStatus());
 
     makeCommmand(flag, rw, data, len);

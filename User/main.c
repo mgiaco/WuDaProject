@@ -53,31 +53,47 @@ int main(void)
 
 __task void AppTaskStart(void)
 {  
+    uint16_t ret_flags;
     /* 获取启动任务的句柄 */
 	HandleTaskStart = os_tsk_self();
     //通过start任务间接地创建其他任务
 	AppTaskCreate();
 	
     while(1)
-    {
-        //IWDG_Feed();//喂狗
-        os_dly_wait(15000);
+    {        
+        //采用或等待方式;退出前bit位被清除
+        if(os_evt_wait_or(BIT_ALL, 0xFFFF) == OS_R_EVT)
+        {
+            ret_flags = os_evt_get();//返回值为对应的bit
+            
+            switch(ret_flags)
+            {
+                case TASK_NET_BIT://接收到任务事件标志位                 
+                    IWDG_Feed();//喂狗
+                    break; 
+                
+                default:
+                    break;
+            }//end of switch
+            
+        }//end of if
     }
 }
 
 /*
 *********************************************************************************************************
 *	函 数 名: AppTaskNet
-*	功能说明: 网络处理任务，附加按键扫描,读取门吸反馈	
+*	功能说明: 网络处理任务
 *********************************************************************************************************
 */
 __task void AppTaskNet(void)
 {
     uint16_t ret_flags;
+    const uint16_t usMaxBlockTime = 0x0FFF; /* 延迟周期,4095ms */
     while(1)
     {
         //采用或等待方式;退出前bit位被清除
-        if(os_evt_wait_or(BIT_ALL, 0xFFFF) == OS_R_EVT)
+        if(os_evt_wait_or(BIT_ALL, usMaxBlockTime) == OS_R_EVT)
         {
             ret_flags = os_evt_get();//返回值为对应的bit
             
@@ -92,6 +108,10 @@ __task void AppTaskNet(void)
             }//end of switch
             
         }//end of if
+        
+        //判断标志位超时后执行的操作
+        //向看门狗任务发送事件标志位
+        os_evt_set(TASK_NET_BIT, HandleTaskStart);//post
     }
     
 }

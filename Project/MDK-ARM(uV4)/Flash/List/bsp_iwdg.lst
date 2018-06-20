@@ -34967,6 +34967,7 @@ N
 N//事件标志位宏定义
 N#define BIT_ALL 0xFF
 N#define LORA_RECV_BIT	(1<<0)
+N#define TASK_NET_BIT	(1<<1)
 N
 Nextern OS_TID HandleTaskNet;
 N#endif
@@ -35413,7 +35414,7 @@ Nextern Reader_T g_tReader;//提供给其他函数使用
 Nvoid ReaderInit(void);
 Nvoid DetectorInit(void);
 Nvoid ResetDetector(void);
-N
+Nuint8_t GetDetectorLevel(void);
 N#endif
 N
 N

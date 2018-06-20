@@ -39,8 +39,6 @@
 #define OUT8_PIN     GPIO_Pin_9
 #define READ_OUT8    GPIO_ReadInputDataBit(DETECTOR_PORT_C,OUT8_PIN)
 
-uint8_t GetDetectorLevel(void);
-
 Reader_T g_tReader;
 static uint32_t dwtTime;//两个中断之间的时间--微秒
 
@@ -116,7 +114,7 @@ void EXTI0_IRQHandler(void)
         
         dwtTime = (g_tReader.tStop - g_tReader.tStart)/72;
         //复制GPS时间，并做处理
-        g_tReader.preciseTime[0] = (g_tGps.time[0]-0x30)*10+(g_tGps.time[1]-0x30);//小时
+        g_tReader.preciseTime[0] = (g_tGps.time[0]-0x30)*10+(g_tGps.time[1]-0x30) + 8;//小时，转换成中国时区加8
         g_tReader.preciseTime[1] = (g_tGps.time[2]-0x30)*10+(g_tGps.time[3]-0x30);//分钟
         g_tReader.preciseTime[2] = (g_tGps.time[4]-0x30)*10+(g_tGps.time[5]-0x30);//秒
         //微秒
@@ -124,7 +122,10 @@ void EXTI0_IRQHandler(void)
         g_tReader.preciseTime[4] = (dwtTime>>8)&0xFF;
         g_tReader.preciseTime[5] = dwtTime&0xFF;
         //读取能级状态
-        g_tReader.preciseTime[6] = GetDetectorLevel();
+        //20180620
+    //电平读取不准确，添加延时
+    //TODO:加事件标志组，在任务中做
+        //g_tReader.preciseTime[6] = GetDetectorLevel();
         
 		EXTI_ClearITPendingBit(EXTI_Line0);	
 	}
@@ -170,6 +171,12 @@ uint8_t GetDetectorLevel(void)
 {
     //依次获取电平状态，然后合成一个数
     uint8_t level=0;
+    
+    //20180620
+    //电平读取不准确，添加延时
+    //TODO:加事件标志组，在任务中做
+    bsp_DelayMS(10);
+    
     if(READ_OUT8)
     {
         level++;

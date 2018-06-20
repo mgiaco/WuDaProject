@@ -13,7 +13,7 @@ extern Reader_T g_tReader;//提供给其他函数使用
 void ReaderInit(void);
 void DetectorInit(void);
 void ResetDetector(void);
-
+uint8_t GetDetectorLevel(void);
 #endif
 
 
