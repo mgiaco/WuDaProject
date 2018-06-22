@@ -110,7 +110,7 @@ void EXTI0_IRQHandler(void)
 {
 	if (EXTI_GetITStatus(EXTI_Line0) != RESET)
 	{		
-        g_tReader.tStop = DWT_CYCCNT;
+        g_tReader.tStop = DWT_CYCCNT;    
         
         dwtTime = (g_tReader.tStop - g_tReader.tStart)/72;
         //复制GPS时间，并做处理
@@ -123,9 +123,9 @@ void EXTI0_IRQHandler(void)
         g_tReader.preciseTime[5] = dwtTime&0xFF;
         //读取能级状态
         //20180620
-    //电平读取不准确，添加延时
-    //TODO:加事件标志组，在任务中做
-        //g_tReader.preciseTime[6] = GetDetectorLevel();
+        //电平读取不准确，添加延时
+        //加事件标志组，在任务中做
+        isr_evt_set(GET_LEVEL_BIT, HandleTaskNet);//post
         
 		EXTI_ClearITPendingBit(EXTI_Line0);	
 	}
@@ -170,57 +170,60 @@ void DetectorInit(void)
 uint8_t GetDetectorLevel(void)
 {
     //依次获取电平状态，然后合成一个数
-    uint8_t level=0;
-    
-    //20180620
-    //电平读取不准确，添加延时
-    //TODO:加事件标志组，在任务中做
-    bsp_DelayMS(10);
+    uint8_t level=0;  
     
     if(READ_OUT8)
     {
         level++;
+        
+        if(READ_OUT7)
+        {
+            level++;
+            
+            if(READ_OUT6)
+            {
+                level++;
+                
+                if(READ_OUT5)
+                {
+                    level++;
+                    
+                    if(READ_OUT4)
+                    {
+                        level++;
+                        
+                        if(READ_OUT3)
+                        {
+                            level++;
+                            
+                            if(READ_OUT2)
+                            {
+                                level++;
+                                
+                                if(READ_OUT1)
+                                {
+                                    level++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
-    if(READ_OUT7)
-    {
-        level++;
-    }
-    if(READ_OUT6)
-    {
-        level++;
-    }
-    if(READ_OUT5)
-    {
-        level++;
-    }
-    if(READ_OUT4)
-    {
-        level++;
-    }
-    if(READ_OUT3)
-    {
-        level++;
-    }
-    if(READ_OUT2)
-    {
-        level++;
-    }
-    if(READ_OUT1)
-    {
-        level++;
-    }
+    
     return level;
 }
 
 //复位探测器状态
 void ResetDetector(void)
 {
-    //置高
-    GPIO_SetBits(DETECTOR_RESET_PORT, DETECTOR_RESET_PIN);
-    //延时
-    bsp_DelayMS(100);
     //置低
     GPIO_ResetBits(DETECTOR_RESET_PORT, DETECTOR_RESET_PIN);
+    //延时
+    bsp_DelayMS(100);   
+    //置高
+    GPIO_SetBits(DETECTOR_RESET_PORT, DETECTOR_RESET_PIN);
 }
     
 //---------------------------------------------------------------

@@ -58,7 +58,8 @@ void bsp_Init(void)
     
     paramInit();//读取参数
     
-    bsp_InitIwdg(0xC35);//看门狗溢出时间为20s
+    //test
+    //bsp_InitIwdg(0xC35);//看门狗溢出时间为20s
     
 }
 

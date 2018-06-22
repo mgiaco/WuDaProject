@@ -5,11 +5,11 @@
                           AREA ||i.AppTaskCreate||, CODE, READONLY, ALIGN=2
 
                   AppTaskCreate PROC
-;;;126    */
-;;;127    static void AppTaskCreate (void)
+;;;134    */
+;;;135    static void AppTaskCreate (void)
 000000  2300              MOVS     r3,#0
-;;;128    { 
-;;;129    	HandleTaskNet = os_tsk_create_user(AppTaskNet,              /* 任务函数 */ 
+;;;136    { 
+;;;137    	HandleTaskNet = os_tsk_create_user(AppTaskNet,              /* 任务函数 */ 
 000002  4a04              LDR      r2,|L1.20|
 000004  4904              LDR      r1,|L1.24|
 000006  4805              LDR      r0,|L1.28|
@@ -17,12 +17,12 @@
 00000c  df00              SVC      #0x0
 00000e  4905              LDR      r1,|L1.36|
 000010  6008              STR      r0,[r1,#0]  ; HandleTaskNet
-;;;130    	                                   3,                       /* 任务优先级 */ 
-;;;131    	                                   &AppTaskNetStk,          /* 任务栈 */
-;;;132    	                                   sizeof(AppTaskNetStk));  /* 任务栈大小，单位字节数 */
-;;;133    }
+;;;138    	                                   3,                       /* 任务优先级 */ 
+;;;139    	                                   &AppTaskNetStk,          /* 任务栈 */
+;;;140    	                                   sizeof(AppTaskNetStk));  /* 任务栈大小，单位字节数 */
+;;;141    }
 000012  4770              BX       lr
-;;;134    
+;;;142    
                           ENDP
 
                   |L1.20|
@@ -39,80 +39,102 @@
                           AREA ||i.AppTaskNet||, CODE, READONLY, ALIGN=2
 
                   AppTaskNet PROC
-;;;88     */
-;;;89     __task void AppTaskNet(void)
+;;;89     */
+;;;90     __task void AppTaskNet(void)
 000000  bf00              NOP      
-;;;90     {
-;;;91         uint16_t ret_flags;
-;;;92         const uint16_t usMaxBlockTime = 0x0FFF; /* 延迟周期,4095ms */
-;;;93         while(1)
-000002  e01c              B        |L2.62|
+;;;91     {
+;;;92         uint16_t ret_flags;
+;;;93         const uint16_t usMaxBlockTime = 0x0FFF; /* 延迟周期,4095ms */
+;;;94         while(1)
+000002  e029              B        |L2.88|
                   |L2.4|
-;;;94         {
-;;;95             //采用或等待方式;退出前bit位被清除
-;;;96             if(os_evt_wait_or(BIT_ALL, usMaxBlockTime) == OS_R_EVT)
+;;;95         {
+;;;96             //采用或等待方式;退出前bit位被清除
+;;;97             if(os_evt_wait_or(BIT_ALL, usMaxBlockTime) == OS_R_EVT)
 000004  2200              MOVS     r2,#0
 000006  f64071ff          MOV      r1,#0xfff
 00000a  20ff              MOVS     r0,#0xff
-00000c  f8dfc030          LDR      r12,|L2.64|
+00000c  f8dfc04c          LDR      r12,|L2.92|
 000010  df00              SVC      #0x0
 000012  2802              CMP      r0,#2
-000014  d10d              BNE      |L2.50|
-;;;97             {
-;;;98                 ret_flags = os_evt_get();//返回值为对应的bit
-000016  f8dfc02c          LDR      r12,|L2.68|
+000014  d11a              BNE      |L2.76|
+;;;98             {
+;;;99                 ret_flags = os_evt_get();//返回值为对应的bit
+000016  f8dfc048          LDR      r12,|L2.96|
 00001a  df00              SVC      #0x0
 00001c  4604              MOV      r4,r0
-;;;99                 
-;;;100                switch(ret_flags)
+;;;100                
+;;;101                switch(ret_flags)
 00001e  2c01              CMP      r4,#1
-000020  d105              BNE      |L2.46|
-;;;101                {
-;;;102                    case LORA_RECV_BIT://接收到服务端命令                 
-;;;103                        processCommand(g_tLora.buf, g_tLora.len);
-000022  4809              LDR      r0,|L2.72|
-000024  7801              LDRB     r1,[r0,#0]  ; g_tLora
-000026  1c40              ADDS     r0,r0,#1
-000028  f7fffffe          BL       processCommand
-;;;104                        break; 
-00002c  e000              B        |L2.48|
-                  |L2.46|
-;;;105                    
-;;;106                    default:
-;;;107                        break;
-00002e  bf00              NOP      
-                  |L2.48|
-000030  bf00              NOP                            ;104
-                  |L2.50|
-;;;108                }//end of switch
-;;;109                
-;;;110            }//end of if
-;;;111            
-;;;112            //判断标志位超时后执行的操作
-;;;113            //向看门狗任务发送事件标志位
-;;;114            os_evt_set(TASK_NET_BIT, HandleTaskStart);//post
-000032  4806              LDR      r0,|L2.76|
-000034  6801              LDR      r1,[r0,#0]  ; HandleTaskStart
-000036  2002              MOVS     r0,#2
-000038  f8dfc014          LDR      r12,|L2.80|
-00003c  df00              SVC      #0x0
-                  |L2.62|
-00003e  e7e1              B        |L2.4|
-;;;115        }
-;;;116        
-;;;117    }
-;;;118    
+000020  d002              BEQ      |L2.40|
+000022  2c04              CMP      r4,#4
+000024  d110              BNE      |L2.72|
+000026  e005              B        |L2.52|
+                  |L2.40|
+;;;102                {
+;;;103                    case LORA_RECV_BIT://接收到服务端命令                 
+;;;104                        processCommand(g_tLora.buf, g_tLora.len);
+000028  480e              LDR      r0,|L2.100|
+00002a  7801              LDRB     r1,[r0,#0]  ; g_tLora
+00002c  1c40              ADDS     r0,r0,#1
+00002e  f7fffffe          BL       processCommand
+;;;105                        break; 
+000032  e00a              B        |L2.74|
+                  |L2.52|
+;;;106                    
+;;;107                    case GET_LEVEL_BIT://获取能级大小
+;;;108                        //先延时，等待稳定，获取到能级后复位探测器
+;;;109                        bsp_DelayMS(100);
+000034  2064              MOVS     r0,#0x64
+000036  f7fffffe          BL       bsp_DelayMS
+;;;110                        g_tReader.preciseTime[6] = GetDetectorLevel();
+00003a  f7fffffe          BL       GetDetectorLevel
+00003e  490a              LDR      r1,|L2.104|
+000040  7388              STRB     r0,[r1,#0xe]
+;;;111                        ResetDetector();
+000042  f7fffffe          BL       ResetDetector
+;;;112                        break;
+000046  e000              B        |L2.74|
+                  |L2.72|
+;;;113                    
+;;;114                    default:
+;;;115                        break;
+000048  bf00              NOP      
+                  |L2.74|
+00004a  bf00              NOP                            ;105
+                  |L2.76|
+;;;116                }//end of switch
+;;;117                
+;;;118            }//end of if
+;;;119            
+;;;120            //判断标志位超时后执行的操作
+;;;121            //向看门狗任务发送事件标志位
+;;;122            os_evt_set(TASK_NET_BIT, HandleTaskStart);//post
+00004c  4807              LDR      r0,|L2.108|
+00004e  6801              LDR      r1,[r0,#0]  ; HandleTaskStart
+000050  2002              MOVS     r0,#2
+000052  f8dfc01c          LDR      r12,|L2.112|
+000056  df00              SVC      #0x0
+                  |L2.88|
+000058  e7d4              B        |L2.4|
+;;;123        }
+;;;124        
+;;;125    }
+;;;126    
                           ENDP
 
-                  |L2.64|
+00005a  0000              DCW      0x0000
+                  |L2.92|
                           DCD      rt_evt_wait
-                  |L2.68|
+                  |L2.96|
                           DCD      rt_evt_get
-                  |L2.72|
+                  |L2.100|
                           DCD      g_tLora
-                  |L2.76|
+                  |L2.104|
+                          DCD      g_tReader
+                  |L2.108|
                           DCD      HandleTaskStart
-                  |L2.80|
+                  |L2.112|
                           DCD      rt_evt_set
 
                           AREA ||i.AppTaskStart||, CODE, READONLY, ALIGN=2
@@ -120,20 +142,20 @@
                   AppTaskStart PROC
 ;;;53     
 ;;;54     __task void AppTaskStart(void)
-000000  f8dfc038          LDR      r12,|L3.60|
+000000  f8dfc034          LDR      r12,|L3.56|
 ;;;55     {  
 ;;;56         uint16_t ret_flags;
 ;;;57         /* 获取启动任务的句柄 */
 ;;;58     	HandleTaskStart = os_tsk_self();
 000004  df00              SVC      #0x0
-000006  490e              LDR      r1,|L3.64|
+000006  490d              LDR      r1,|L3.60|
 000008  6008              STR      r0,[r1,#0]  ; HandleTaskStart
 ;;;59         //通过start任务间接地创建其他任务
 ;;;60     	AppTaskCreate();
 00000a  f7fffffe          BL       AppTaskCreate
 ;;;61     	
 ;;;62         while(1)
-00000e  e013              B        |L3.56|
+00000e  e011              B        |L3.52|
                   |L3.16|
 ;;;63         {        
 ;;;64             //采用或等待方式;退出前bit位被清除
@@ -141,50 +163,50 @@
 000010  2200              MOVS     r2,#0
 000012  f64f71ff          MOV      r1,#0xffff
 000016  20ff              MOVS     r0,#0xff
-000018  f8dfc028          LDR      r12,|L3.68|
+000018  f8dfc024          LDR      r12,|L3.64|
 00001c  df00              SVC      #0x0
 00001e  2802              CMP      r0,#2
-000020  d10a              BNE      |L3.56|
+000020  d108              BNE      |L3.52|
 ;;;66             {
 ;;;67                 ret_flags = os_evt_get();//返回值为对应的bit
-000022  f8dfc024          LDR      r12,|L3.72|
+000022  f8dfc020          LDR      r12,|L3.68|
 000026  df00              SVC      #0x0
 000028  4604              MOV      r4,r0
 ;;;68                 
 ;;;69                 switch(ret_flags)
 00002a  2c02              CMP      r4,#2
-00002c  d102              BNE      |L3.52|
+00002c  d100              BNE      |L3.48|
 ;;;70                 {
 ;;;71                     case TASK_NET_BIT://接收到任务事件标志位                 
-;;;72                         IWDG_Feed();//喂狗
-00002e  f7fffffe          BL       IWDG_Feed
-;;;73                         break; 
-000032  e000              B        |L3.54|
+;;;72                         //test
+;;;73                         //IWDG_Feed();//喂狗
+;;;74                         break;                   
+00002e  e000              B        |L3.50|
+                  |L3.48|
+;;;75                     
+;;;76                     default:
+;;;77                         break;
+000030  bf00              NOP      
+                  |L3.50|
+000032  bf00              NOP                            ;74
                   |L3.52|
-;;;74                     
-;;;75                     default:
-;;;76                         break;
-000034  bf00              NOP      
-                  |L3.54|
-000036  bf00              NOP                            ;73
-                  |L3.56|
-000038  e7ea              B        |L3.16|
-;;;77                 }//end of switch
-;;;78                 
-;;;79             }//end of if
-;;;80         }
-;;;81     }
-;;;82     
+000034  e7ec              B        |L3.16|
+;;;78                 }//end of switch
+;;;79                 
+;;;80             }//end of if
+;;;81         }
+;;;82     }
+;;;83     
                           ENDP
 
-00003a  0000              DCW      0x0000
-                  |L3.60|
+000036  0000              DCW      0x0000
+                  |L3.56|
                           DCD      rt_tsk_self
-                  |L3.64|
+                  |L3.60|
                           DCD      HandleTaskStart
-                  |L3.68|
+                  |L3.64|
                           DCD      rt_evt_wait
-                  |L3.72|
+                  |L3.68|
                           DCD      rt_evt_get
 
                           AREA ||i.main||, CODE, READONLY, ALIGN=2

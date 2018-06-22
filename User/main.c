@@ -69,8 +69,9 @@ __task void AppTaskStart(void)
             switch(ret_flags)
             {
                 case TASK_NET_BIT://接收到任务事件标志位                 
-                    IWDG_Feed();//喂狗
-                    break; 
+                    //test
+                    //IWDG_Feed();//喂狗
+                    break;                   
                 
                 default:
                     break;
@@ -102,6 +103,13 @@ __task void AppTaskNet(void)
                 case LORA_RECV_BIT://接收到服务端命令                 
                     processCommand(g_tLora.buf, g_tLora.len);
                     break; 
+                
+                case GET_LEVEL_BIT://获取能级大小
+                    //先延时，等待稳定，获取到能级后复位探测器
+                    bsp_DelayMS(100);
+                    g_tReader.preciseTime[6] = GetDetectorLevel();
+                    ResetDetector();
+                    break;
                 
                 default:
                     break;

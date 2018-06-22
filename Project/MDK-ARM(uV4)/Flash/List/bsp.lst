@@ -34971,6 +34971,7 @@ N//事件标志位宏定义
 N#define BIT_ALL 0xFF
 N#define LORA_RECV_BIT	(1<<0)
 N#define TASK_NET_BIT	(1<<1)
+N#define GET_LEVEL_BIT	(1<<2)
 N
 Nextern OS_TID HandleTaskNet;
 N#endif
@@ -35561,7 +35562,8 @@ N
 N    
 N    paramInit();//读取参数
 N    
-N    bsp_InitIwdg(0xC35);//看门狗溢出时间为20s
+N    //test
+N    //bsp_InitIwdg(0xC35);//看门狗溢出时间为20s
 N    
 N}
 N

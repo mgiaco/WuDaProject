@@ -106,7 +106,7 @@ void processCommand(uint8_t *data, uint16_t len)
             if(data[7] == 0)
             {
                 SendDataToServer(data[2], 0, g_tReader.preciseTime, sizeof(g_tReader.preciseTime));
-                //memset(g_tReader.preciseTime, 0, sizeof(pasitionAndBattery));
+                memset(g_tReader.preciseTime, 0, sizeof(g_tReader.preciseTime));
             }
             break;
         

@@ -34969,6 +34969,7 @@ N//事件标志位宏定义
 N#define BIT_ALL 0xFF
 N#define LORA_RECV_BIT	(1<<0)
 N#define TASK_NET_BIT	(1<<1)
+N#define GET_LEVEL_BIT	(1<<2)
 N
 Nextern OS_TID HandleTaskNet;
 N#endif

@@ -1,7 +1,7 @@
 #include "bsp.h"
 
 /****用作lora的地址，也作为设备ID号（1-500，不能取0和FFFF）*/
-#define LORA_ADDRESS         1
+#define LORA_ADDRESS         2
 /*********************************************************/
 
 Param_T g_tParam;
@@ -29,8 +29,8 @@ void paramInit(void)
     loraInit();
     
     //test擦除IIC flash为0xFF
-    resetParam();
-    bsp_DelayMS(100);
+//    resetParam();
+//    bsp_DelayMS(100);
     
     
     //先读取参数，判断是否有效？如果无效则使用宏定义的参数
