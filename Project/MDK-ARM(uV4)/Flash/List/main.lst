@@ -35509,6 +35509,7 @@ N
 N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
 L 8 "..\..\User\main.c" 2
 N
+N#define READ_LEVEL_DELAY 5//读取能级的延时秒数
 Nstatic void AppTaskCreate (void);//创建除start任务外的其他任务
 N
 N/*任务1：看门狗
@@ -35527,6 +35528,9 @@ NOS_TID HandleTaskStart = NULL;
 XOS_TID HandleTaskStart = 0;
 NOS_TID HandleTaskNet = NULL;
 XOS_TID HandleTaskNet = 0;
+N
+N/* 定时器句柄 */
+NOS_ID  OneTimerA;//定时器A
 N
 N/*
 N*********************************************************************************************************
@@ -35626,7 +35630,8 @@ X                case (1<<2):
 N                    //先延时，等待稳定，获取到能级后复位探测器
 N                    bsp_DelayMS(100);
 N                    g_tReader.preciseTime[6] = GetDetectorLevel();
-N                    ResetDetector();
+N                    OneTimerA = os_tmr_create(1000 * READ_LEVEL_DELAY, 0);
+X                    OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * 5,0);
 N                    break;
 N                
 N                default:

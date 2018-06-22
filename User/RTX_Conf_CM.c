@@ -186,7 +186,12 @@ void os_tmr_call (U16 info) {
   
   switch(info)
   {
-
+      case 0:
+          ResetDetector();    
+          break;
+      
+      default:
+          break;
   }
 }
 

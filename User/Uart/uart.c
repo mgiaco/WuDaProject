@@ -181,6 +181,8 @@ void USART1_IRQHandler(void)
                     else if('V' == g_tGps.buf[g_tGps.len-8])//没有信号时,位置有效状态是V
                     {
                         g_tGps.status = 'V';
+                        memset(g_tGps.latitude, 0, sizeof(g_tGps.latitude));
+                        memset(g_tGps.longiitude, 0, sizeof(g_tGps.longiitude));
                     }
                 }
                 else if((g_tGps.len-1) == GPS_DATA_LEN)//Data full, reset at_state!

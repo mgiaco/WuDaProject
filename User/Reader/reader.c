@@ -1,9 +1,6 @@
 #include "bsp.h"
 
 #define  DWT_CYCCNT  *(volatile unsigned int *)0xE0001004
-    
-#define DETECTOR_RESET_PORT    GPIOA
-#define DETECTOR_RESET_PIN	 GPIO_Pin_3//PA3，高电平有效
 
 //20180619：现在的能级不是按编码二进制方式来算的
 //从OUT8开始，高电平个数即为能级
@@ -63,9 +60,9 @@ void ReaderInit(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
     //设置PA3
-    GPIO_InitStructure.GPIO_Pin  = DETECTOR_RESET_PIN;
+    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_3;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;	/* 推挽输出模式 */	
-	GPIO_Init(DETECTOR_RESET_PORT, &GPIO_InitStructure);
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
     
     
 	/* 使能 AFIO 时钟 */
@@ -219,11 +216,11 @@ uint8_t GetDetectorLevel(void)
 void ResetDetector(void)
 {
     //置低
-    GPIO_ResetBits(DETECTOR_RESET_PORT, DETECTOR_RESET_PIN);
+    GPIO_ResetBits(GPIOA, GPIO_Pin_3);
     //延时
     bsp_DelayMS(100);   
     //置高
-    GPIO_SetBits(DETECTOR_RESET_PORT, DETECTOR_RESET_PIN);
+    GPIO_SetBits(GPIOA, GPIO_Pin_3);
 }
     
 //---------------------------------------------------------------

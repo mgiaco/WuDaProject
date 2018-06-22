@@ -35549,8 +35549,8 @@ N	uartInit(); 	/* 初始化串口 */
 N    
 N	bsp_InitHardTimer();    /* 硬件定时器初始化*/   
 N    
-N    bsp_InitSPIBus();	/* 配置SPI总线 */		
-N	bsp_InitSFlash();	/* 初始化SPI 串行Flash */
+N//  bsp_InitSPIBus();	/* 配置SPI总线 */		
+N//	bsp_InitSFlash();	/* 初始化SPI 串行Flash */
 N    
 N    bsp_InitI2C();		/* 配置I2C总线 */
 N    

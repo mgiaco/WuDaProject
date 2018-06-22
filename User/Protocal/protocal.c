@@ -53,7 +53,7 @@ void processCommand(uint8_t *data, uint16_t len)
     //TODO:命令等板子基础功能测试之后再慢慢往上加
     /*0x00:搜索设备，返回基础状态信息（经纬度，电量）
     *0x01:返回探测器触发的精确时间和能级
-    *0x02:复位能级
+    *
     以下命令后期再加入。
     *擦除iic flash
     *配置本地地址
@@ -110,14 +110,6 @@ void processCommand(uint8_t *data, uint16_t len)
             }
             break;
         
-        case 0x02://复位能级
-            if(1)
-            {
-                //memset(g_tReader.preciseTime, 0, sizeof(pasitionAndBattery));
-                //ResetDetector();//TODO:此函数中有延时，应该在触发并读取能级后调用，不单独设置命令
-                ret = GetDetectorLevel();
-                SendDataToServer(data[2], 1, &ret, 1);
-            }
             break;
         
         default:

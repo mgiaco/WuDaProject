@@ -5,18 +5,18 @@
                           AREA ||i.os_error||, CODE, READONLY, ALIGN=1
 
                   os_error PROC
-;;;195    
-;;;196    void os_error (U32 err_code) {
+;;;200    
+;;;201    void os_error (U32 err_code) {
 000000  bf00              NOP      
                   |L1.2|
-;;;197      /* This function is called when a runtime error is detected. Parameter */
-;;;198      /* 'err_code' holds the runtime error code (defined in RTL.H).         */
-;;;199    
-;;;200      /* HERE: include optional code to be executed on runtime error. */
-;;;201      for (;;);
+;;;202      /* This function is called when a runtime error is detected. Parameter */
+;;;203      /* 'err_code' holds the runtime error code (defined in RTL.H).         */
+;;;204    
+;;;205      /* HERE: include optional code to be executed on runtime error. */
+;;;206      for (;;);
 000002  e7fe              B        |L1.2|
-;;;202    }
-;;;203    
+;;;207    }
+;;;208    
                           ENDP
 
 
@@ -44,7 +44,8 @@
                   os_tmr_call PROC
 ;;;177    
 ;;;178    void os_tmr_call (U16 info) {
-000000  bf00              NOP      
+000000  b510              PUSH     {r4,lr}
+000002  4604              MOV      r4,r0
 ;;;179      /* This function is called when the user timer has expired. Parameter   */
 ;;;180      /* 'info' holds the value, defined when the timer was created.          */
 ;;;181    
@@ -54,13 +55,24 @@
 ;;;185      */
 ;;;186      
 ;;;187      switch(info)
-000002  bf00              NOP      
+000004  b914              CBNZ     r4,|L3.12|
 ;;;188      {
-;;;189    
-;;;190      }
-;;;191    }
-000004  4770              BX       lr
-;;;192    
+;;;189          case 0:
+;;;190              ResetDetector();    
+000006  f7fffffe          BL       ResetDetector
+;;;191              break;
+00000a  e000              B        |L3.14|
+                  |L3.12|
+;;;192          
+;;;193          default:
+;;;194              break;
+00000c  bf00              NOP      
+                  |L3.14|
+00000e  bf00              NOP                            ;191
+;;;195      }
+;;;196    }
+000010  bd10              POP      {r4,pc}
+;;;197    
                           ENDP
 
 

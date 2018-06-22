@@ -6,6 +6,7 @@
 
 #include "bsp.h"			/* 底层硬件驱动 */
 
+#define READ_LEVEL_DELAY 5//读取能级的延时秒数
 static void AppTaskCreate (void);//创建除start任务外的其他任务
 
 /*任务1：看门狗
@@ -20,6 +21,9 @@ static uint64_t AppTaskNetStk[512/8];     /* 任务栈 */
 /* 任务句柄 */
 OS_TID HandleTaskStart = NULL;
 OS_TID HandleTaskNet = NULL;
+
+/* 定时器句柄 */
+OS_ID  OneTimerA;//定时器A
 
 /*
 *********************************************************************************************************
@@ -108,7 +112,7 @@ __task void AppTaskNet(void)
                     //先延时，等待稳定，获取到能级后复位探测器
                     bsp_DelayMS(100);
                     g_tReader.preciseTime[6] = GetDetectorLevel();
-                    ResetDetector();
+                    OneTimerA = os_tmr_create(1000 * READ_LEVEL_DELAY, 0);
                     break;
                 
                 default:
