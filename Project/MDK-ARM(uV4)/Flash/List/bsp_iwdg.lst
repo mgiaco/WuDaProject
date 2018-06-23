@@ -34964,6 +34964,13 @@ L 1 "..\..\User\main.h" 1
 N#ifndef _MAIN_H_
 N#define _MAIN_H_
 N
+N//运行时的状态
+Ntypedef struct
+N{
+N    uint8_t isTriggered;//探测器是否触发
+N    uint8_t readTimes;//读取能级次数
+N}RunInfo_T;
+N
 N//事件标志位宏定义
 N#define BIT_ALL 0xFF
 N#define LORA_RECV_BIT	(1<<0)
@@ -34971,6 +34978,7 @@ N#define TASK_NET_BIT	(1<<1)
 N#define GET_LEVEL_BIT	(1<<2)
 N
 Nextern OS_TID HandleTaskNet;
+Nextern RunInfo_T g_tRunInfo;
 N#endif
 N
 N/******************************************/

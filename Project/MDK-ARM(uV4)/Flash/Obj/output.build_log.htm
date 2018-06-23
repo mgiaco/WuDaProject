@@ -8,18 +8,18 @@ Project File Date:  05/23/2018
 
 <h2>Output:</h2>
 Build target 'Flash'
+compiling main.c...
 linking...
-Program Size: Code=10556 RO-data=380 RW-data=124 ZI-data=3452  
+Program Size: Code=10728 RO-data=380 RW-data=132 ZI-data=3964  
 FromELF: creating hex file...
 After Build - User command #1: CopyHex_Flash.bat
 F:\LW_files\武大--激光足印探测器项目\WuDaProject\Project\MDK-ARM(uV4)>copy Flash\Obj\output.hex ..\output(mdk).hex 
 已复制         1 个文件。
 ".\Flash\Obj\output.axf" - 0 Error(s), 0 Warning(s).
-</pre>
-</body>
-</html>
- "F:\\LW_files\\武大--激光足印探测器项目\\WuDaProject\\Project\\MDK-ARM(uV4)\\Flash\\Obj\\output.axf" 
-Set JLink Project File to "F:\LW_files\武大--激光足印探测器项目\WuDaProject\Project\MDK-ARM(uV4)\JLinkSettings.ini"
+钅縗WuDaProject\Project\MDK-ARM(uV4)>copy Flash\Obj\output.hex ..\output(mdk).hex 
+已复制         1 个文件。
+".\Flash\Obj\output.axf" - 0 Error(s), 1 Warning(s).
+ject File to "F:\LW_files\武大--激光足印探测器项目\WuDaProject\Project\MDK-ARM(uV4)\JLinkSettings.ini"
 * JLink Info: Device "STM32F103RE" selected (512 KB flash, 64 KB RAM).
  
 JLink info:
@@ -30,39 +30,11 @@ Hardware: V8.00
 S/N : 791950130 
 Feature(s) : RDI,FlashDL,FlashBP,JFlash,GDBFull 
  
-* JLink Info: Found SWD-DP with ID 0x1BA01477
-* JLink Info: Found SWD-DP with ID 0x1BA01477
-* JLink Info: Found Cortex-M3 r1p1, Little endian.
-* JLink Info: FPUnit: 6 code (BP) slots and 2 literal slots
-* JLink Info: TPIU fitted.
-* JLink Info: ETM fitted.
-ROMTableAddr = 0xE00FF003
- 
-Target info:
-------------
-Device: STM32F103RE
-VTarget = 3.313V
-State of Pins: 
-TCK: 0, TDI: 0, TDO: 0, TMS: 1, TRES: 1, TRST: 0
-Hardware-Breakpoints: 6
-Software-Breakpoints: 8192
-Watchpoints:          4
-JTAG speed: 2000 kHz
- 
-Erase Done.
-Programming Done.
-Verify OK.
-ogramming Done.
-Verify OK.
-er\main.c" - 0 Error(s), 0 Warning(s).
-..
-linking...
-Program Size: Code=11392 RO-data=380 RW-data=124 ZI-data=3476  
-FromELF: creating hex file...
-After Build - User command #1: CopyHex_Flash.bat
-F:\LW_files\武大--激光足印探测器项目\WuDaProject\Project\MDK-ARM(uV4)>copy Flash\Obj\output.hex ..\output(mdk).hex 
-已复制         1 个文件。
-".\Flash\Obj\output.axf" - 0 Error(s), 2 Warning(s).
+* JLink Info: STM32F1xxx: Can not attach to CPU. Trying connect under reset.
+**JLink Warning: RESET (pin 15) high, but should be low. Please check target hardware.
+***JLink Error: Supply voltage too low (1 Volt is required, Measured: 0.0 Volt).
+Please check target power.
+Error: Flash Download failed  -  Target DLL has been cancelled
 Load "F:\\LW_files\\武大--激光足印探测器项目\\WuDaProject\\Project\\MDK-ARM(uV4)\\Flash\\Obj\\output.axf" 
 Set JLink Project File to "F:\LW_files\武大--激光足印探测器项目\WuDaProject\Project\MDK-ARM(uV4)\JLinkSettings.ini"
 * JLink Info: Device "STM32F103RE" selected (512 KB flash, 64 KB RAM).
@@ -86,7 +58,39 @@ ROMTableAddr = 0xE00FF003
 Target info:
 ------------
 Device: STM32F103RE
-VTarget = 3.293V
+VTarget = 3.319V
+State of Pins: 
+TCK: 0, TDI: 0, TDO: 0, TMS: 1, TRES: 1, TRST: 0
+Hardware-Breakpoints: 6
+Software-Breakpoints: 8192
+Watchpoints:          4
+JTAG speed: 2000 kHz
+ 
+Erase Done.
+Programming Done.
+Verify OK.
+ flash, 64 KB RAM).
+ 
+JLink info:
+------------
+DLL: V4.80g, compiled Feb 13 2014 20:50:02
+Firmware: J-Link ARM V8 compiled Nov 28 2014 13:44:46
+Hardware: V8.00
+S/N : 791950130 
+Feature(s) : RDI,FlashDL,FlashBP,JFlash,GDBFull 
+ 
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: Found Cortex-M3 r1p1, Little endian.
+* JLink Info: FPUnit: 6 code (BP) slots and 2 literal slots
+* JLink Info: TPIU fitted.
+* JLink Info: ETM fitted.
+ROMTableAddr = 0xE00FF003
+ 
+Target info:
+------------
+Device: STM32F103RE
+VTarget = 3.313V
 State of Pins: 
 TCK: 0, TDI: 0, TDO: 0, TMS: 1, TRES: 1, TRST: 0
 Hardware-Breakpoints: 6

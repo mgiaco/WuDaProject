@@ -6,7 +6,7 @@
 
 #include "bsp.h"			/* 底层硬件驱动 */
 
-#define READ_LEVEL_DELAY 5//读取能级的延时秒数
+#define READ_LEVEL_DELAY 3//读取能级的延时秒数
 static void AppTaskCreate (void);//创建除start任务外的其他任务
 
 /*任务1：看门狗
@@ -15,15 +15,21 @@ static void AppTaskCreate (void);//创建除start任务外的其他任务
 //任务函数
 __task void AppTaskStart(void);
 __task void AppTaskNet(void);
+__task void AppTaskMonitor(void);
  
 static uint64_t AppTaskStartStk[512/8];   /* 任务栈 */
 static uint64_t AppTaskNetStk[512/8];     /* 任务栈 */
+static uint64_t AppTaskMonitorStk[512/8];     /* 任务栈 */
 /* 任务句柄 */
 OS_TID HandleTaskStart = NULL;
 OS_TID HandleTaskNet = NULL;
+OS_TID HandleTaskMonitor = NULL;
 
 /* 定时器句柄 */
 OS_ID  OneTimerA;//定时器A
+
+RunInfo_T g_tRunInfo;
+
 
 /*
 *********************************************************************************************************
@@ -109,10 +115,12 @@ __task void AppTaskNet(void)
                     break; 
                 
                 case GET_LEVEL_BIT://获取能级大小
-                    //先延时，等待稳定，获取到能级后复位探测器
-                    bsp_DelayMS(100);
-                    g_tReader.preciseTime[6] = GetDetectorLevel();
-                    OneTimerA = os_tmr_create(1000 * READ_LEVEL_DELAY, 0);
+                    //先延时，等待稳定，获取到能级后复位探测器     
+                    if(g_tRunInfo.isTriggered == 1)//避免重复触发
+                    {
+                        g_tRunInfo.isTriggered = 0;
+                        OneTimerA = os_tmr_create(1000 * READ_LEVEL_DELAY, 0);
+                    }
                     break;
                 
                 default:
@@ -124,8 +132,36 @@ __task void AppTaskNet(void)
         //判断标志位超时后执行的操作
         //向看门狗任务发送事件标志位
         os_evt_set(TASK_NET_BIT, HandleTaskStart);//post
-    }
-    
+    }  
+}
+
+/*
+*********************************************************************************************************
+*	函 数 名: AppTaskMonitor
+*	功能说明: 监测任务
+*********************************************************************************************************
+*/
+__task void AppTaskMonitor(void)
+{
+    const uint16_t usMaxBlockTime = 3000; /* 延迟周期,3000s */
+    while(1)
+    {
+        if(GetDetectorLevel() == 0)
+        {
+            g_tRunInfo.readTimes = 0;
+        }
+        else if(g_tRunInfo.isTriggered == 0)
+        {
+            g_tRunInfo.readTimes++;
+        }
+        
+        if(g_tRunInfo.readTimes == 3)
+        {
+            ResetDetector();
+        }
+        
+        os_dly_wait(usMaxBlockTime);
+    }  
 }
 
 /*
@@ -142,7 +178,11 @@ static void AppTaskCreate (void)
 	                                   3,                       /* 任务优先级 */ 
 	                                   &AppTaskNetStk,          /* 任务栈 */
 	                                   sizeof(AppTaskNetStk));  /* 任务栈大小，单位字节数 */
+    
+    HandleTaskMonitor = os_tsk_create_user(AppTaskMonitor,              /* 任务函数 */ 
+	                                   2,                       /* 任务优先级 */ 
+	                                   &AppTaskMonitorStk,          /* 任务栈 */
+	                                   sizeof(AppTaskMonitorStk));  /* 任务栈大小，单位字节数 */
 }
-
 
 /******************************************************/

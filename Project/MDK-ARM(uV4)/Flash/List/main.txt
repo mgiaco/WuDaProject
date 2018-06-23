@@ -5,255 +5,343 @@
                           AREA ||i.AppTaskCreate||, CODE, READONLY, ALIGN=2
 
                   AppTaskCreate PROC
-;;;138    */
-;;;139    static void AppTaskCreate (void)
+;;;174    */
+;;;175    static void AppTaskCreate (void)
 000000  2300              MOVS     r3,#0
-;;;140    { 
-;;;141    	HandleTaskNet = os_tsk_create_user(AppTaskNet,              /* 任务函数 */ 
-000002  4a04              LDR      r2,|L1.20|
-000004  4904              LDR      r1,|L1.24|
-000006  4805              LDR      r0,|L1.28|
-000008  f8dfc014          LDR      r12,|L1.32|
+;;;176    { 
+;;;177    	HandleTaskNet = os_tsk_create_user(AppTaskNet,              /* 任务函数 */ 
+000002  4a09              LDR      r2,|L1.40|
+000004  4909              LDR      r1,|L1.44|
+000006  480a              LDR      r0,|L1.48|
+000008  f8dfc028          LDR      r12,|L1.52|
 00000c  df00              SVC      #0x0
-00000e  4905              LDR      r1,|L1.36|
+00000e  490a              LDR      r1,|L1.56|
 000010  6008              STR      r0,[r1,#0]  ; HandleTaskNet
-;;;142    	                                   3,                       /* 任务优先级 */ 
-;;;143    	                                   &AppTaskNetStk,          /* 任务栈 */
-;;;144    	                                   sizeof(AppTaskNetStk));  /* 任务栈大小，单位字节数 */
-;;;145    }
-000012  4770              BX       lr
-;;;146    
+;;;178    	                                   3,                       /* 任务优先级 */ 
+;;;179    	                                   &AppTaskNetStk,          /* 任务栈 */
+;;;180    	                                   sizeof(AppTaskNetStk));  /* 任务栈大小，单位字节数 */
+;;;181        
+;;;182        HandleTaskMonitor = os_tsk_create_user(AppTaskMonitor,              /* 任务函数 */ 
+000012  2300              MOVS     r3,#0
+000014  4a09              LDR      r2,|L1.60|
+000016  f04f1102          MOV      r1,#0x20002
+00001a  4809              LDR      r0,|L1.64|
+00001c  f8dfc014          LDR      r12,|L1.52|
+000020  df00              SVC      #0x0
+000022  4908              LDR      r1,|L1.68|
+000024  6008              STR      r0,[r1,#0]  ; HandleTaskMonitor
+;;;183    	                                   2,                       /* 任务优先级 */ 
+;;;184    	                                   &AppTaskMonitorStk,          /* 任务栈 */
+;;;185    	                                   sizeof(AppTaskMonitorStk));  /* 任务栈大小，单位字节数 */
+;;;186    }
+000026  4770              BX       lr
+;;;187    
                           ENDP
 
-                  |L1.20|
+                  |L1.40|
                           DCD      AppTaskNetStk
-                  |L1.24|
+                  |L1.44|
                           DCD      0x00020003
-                  |L1.28|
+                  |L1.48|
                           DCD      AppTaskNet
-                  |L1.32|
+                  |L1.52|
                           DCD      rt_tsk_create
-                  |L1.36|
+                  |L1.56|
                           DCD      HandleTaskNet
+                  |L1.60|
+                          DCD      AppTaskMonitorStk
+                  |L1.64|
+                          DCD      AppTaskMonitor
+                  |L1.68|
+                          DCD      HandleTaskMonitor
+
+                          AREA ||i.AppTaskMonitor||, CODE, READONLY, ALIGN=2
+
+                  AppTaskMonitor PROC
+;;;143    */
+;;;144    __task void AppTaskMonitor(void)
+000000  bf00              NOP      
+;;;145    {
+;;;146        const uint16_t usMaxBlockTime = 3000; /* 延迟周期,3000s */
+;;;147        while(1)
+000002  e019              B        |L2.56|
+                  |L2.4|
+;;;148        {
+;;;149            if(GetDetectorLevel() == 0)
+000004  f7fffffe          BL       GetDetectorLevel
+000008  b918              CBNZ     r0,|L2.18|
+;;;150            {
+;;;151                g_tRunInfo.readTimes = 0;
+00000a  2000              MOVS     r0,#0
+00000c  490b              LDR      r1,|L2.60|
+00000e  7048              STRB     r0,[r1,#1]
+000010  e007              B        |L2.34|
+                  |L2.18|
+;;;152            }
+;;;153            else if(g_tRunInfo.isTriggered == 0)
+000012  480a              LDR      r0,|L2.60|
+000014  7800              LDRB     r0,[r0,#0]  ; g_tRunInfo
+000016  b920              CBNZ     r0,|L2.34|
+;;;154            {
+;;;155                g_tRunInfo.readTimes++;
+000018  4808              LDR      r0,|L2.60|
+00001a  7840              LDRB     r0,[r0,#1]  ; g_tRunInfo
+00001c  1c40              ADDS     r0,r0,#1
+00001e  4907              LDR      r1,|L2.60|
+000020  7048              STRB     r0,[r1,#1]
+                  |L2.34|
+;;;156            }
+;;;157            
+;;;158            if(g_tRunInfo.readTimes == 3)
+000022  4806              LDR      r0,|L2.60|
+000024  7840              LDRB     r0,[r0,#1]  ; g_tRunInfo
+000026  2803              CMP      r0,#3
+000028  d101              BNE      |L2.46|
+;;;159            {
+;;;160                ResetDetector();
+00002a  f7fffffe          BL       ResetDetector
+                  |L2.46|
+;;;161            }
+;;;162            
+;;;163            os_dly_wait(usMaxBlockTime);
+00002e  f64030b8          MOV      r0,#0xbb8
+000032  f8dfc00c          LDR      r12,|L2.64|
+000036  df00              SVC      #0x0
+                  |L2.56|
+000038  e7e4              B        |L2.4|
+;;;164        }  
+;;;165    }
+;;;166    
+                          ENDP
+
+00003a  0000              DCW      0x0000
+                  |L2.60|
+                          DCD      g_tRunInfo
+                  |L2.64|
+                          DCD      rt_dly_wait
 
                           AREA ||i.AppTaskNet||, CODE, READONLY, ALIGN=2
 
                   AppTaskNet PROC
-;;;93     */
-;;;94     __task void AppTaskNet(void)
+;;;99     */
+;;;100    __task void AppTaskNet(void)
 000000  bf00              NOP      
-;;;95     {
-;;;96         uint16_t ret_flags;
-;;;97         const uint16_t usMaxBlockTime = 0x0FFF; /* 延迟周期,4095ms */
-;;;98         while(1)
-000002  e02f              B        |L2.100|
-                  |L2.4|
-;;;99         {
-;;;100            //采用或等待方式;退出前bit位被清除
-;;;101            if(os_evt_wait_or(BIT_ALL, usMaxBlockTime) == OS_R_EVT)
+;;;101    {
+;;;102        uint16_t ret_flags;
+;;;103        const uint16_t usMaxBlockTime = 0x0FFF; /* 延迟周期,4095ms */
+;;;104        while(1)
+000002  e02f              B        |L3.100|
+                  |L3.4|
+;;;105        {
+;;;106            //采用或等待方式;退出前bit位被清除
+;;;107            if(os_evt_wait_or(BIT_ALL, usMaxBlockTime) == OS_R_EVT)
 000004  2200              MOVS     r2,#0
 000006  f64071ff          MOV      r1,#0xfff
 00000a  20ff              MOVS     r0,#0xff
-00000c  f8dfc058          LDR      r12,|L2.104|
+00000c  f8dfc058          LDR      r12,|L3.104|
 000010  df00              SVC      #0x0
 000012  2802              CMP      r0,#2
-000014  d120              BNE      |L2.88|
-;;;102            {
-;;;103                ret_flags = os_evt_get();//返回值为对应的bit
-000016  f8dfc054          LDR      r12,|L2.108|
+000014  d120              BNE      |L3.88|
+;;;108            {
+;;;109                ret_flags = os_evt_get();//返回值为对应的bit
+000016  f8dfc054          LDR      r12,|L3.108|
 00001a  df00              SVC      #0x0
 00001c  4604              MOV      r4,r0
-;;;104                
-;;;105                switch(ret_flags)
+;;;110                
+;;;111                switch(ret_flags)
 00001e  2c01              CMP      r4,#1
-000020  d002              BEQ      |L2.40|
+000020  d002              BEQ      |L3.40|
 000022  2c04              CMP      r4,#4
-000024  d116              BNE      |L2.84|
-000026  e005              B        |L2.52|
-                  |L2.40|
-;;;106                {
-;;;107                    case LORA_RECV_BIT://接收到服务端命令                 
-;;;108                        processCommand(g_tLora.buf, g_tLora.len);
-000028  4811              LDR      r0,|L2.112|
+000024  d116              BNE      |L3.84|
+000026  e005              B        |L3.52|
+                  |L3.40|
+;;;112                {
+;;;113                    case LORA_RECV_BIT://接收到服务端命令                 
+;;;114                        processCommand(g_tLora.buf, g_tLora.len);
+000028  4811              LDR      r0,|L3.112|
 00002a  7801              LDRB     r1,[r0,#0]  ; g_tLora
 00002c  1c40              ADDS     r0,r0,#1
 00002e  f7fffffe          BL       processCommand
-;;;109                        break; 
-000032  e010              B        |L2.86|
-                  |L2.52|
-;;;110                    
-;;;111                    case GET_LEVEL_BIT://获取能级大小
-;;;112                        //先延时，等待稳定，获取到能级后复位探测器
-;;;113                        bsp_DelayMS(100);
-000034  2064              MOVS     r0,#0x64
-000036  f7fffffe          BL       bsp_DelayMS
-;;;114                        g_tReader.preciseTime[6] = GetDetectorLevel();
-00003a  f7fffffe          BL       GetDetectorLevel
-00003e  490d              LDR      r1,|L2.116|
-000040  7388              STRB     r0,[r1,#0xe]
-;;;115                        OneTimerA = os_tmr_create(1000 * READ_LEVEL_DELAY, 0);
+;;;115                        break; 
+000032  e010              B        |L3.86|
+                  |L3.52|
+;;;116                    
+;;;117                    case GET_LEVEL_BIT://获取能级大小
+;;;118                        //先延时，等待稳定，获取到能级后复位探测器     
+;;;119                        if(g_tRunInfo.isTriggered == 1)//避免重复触发
+000034  480f              LDR      r0,|L3.116|
+000036  7800              LDRB     r0,[r0,#0]  ; g_tRunInfo
+000038  2801              CMP      r0,#1
+00003a  d10a              BNE      |L3.82|
+;;;120                        {
+;;;121                            g_tRunInfo.isTriggered = 0;
+00003c  2000              MOVS     r0,#0
+00003e  490d              LDR      r1,|L3.116|
+000040  7008              STRB     r0,[r1,#0]
+;;;122                            OneTimerA = os_tmr_create(1000 * READ_LEVEL_DELAY, 0);
 000042  2100              MOVS     r1,#0
-000044  f2413088          MOV      r0,#0x1388
-000048  f8dfc02c          LDR      r12,|L2.120|
+000044  f64030b8          MOV      r0,#0xbb8
+000048  f8dfc02c          LDR      r12,|L3.120|
 00004c  df00              SVC      #0x0
-00004e  490b              LDR      r1,|L2.124|
+00004e  490b              LDR      r1,|L3.124|
 000050  6008              STR      r0,[r1,#0]  ; OneTimerA
-;;;116                        break;
-000052  e000              B        |L2.86|
-                  |L2.84|
-;;;117                    
-;;;118                    default:
-;;;119                        break;
+                  |L3.82|
+;;;123                        }
+;;;124                        break;
+000052  e000              B        |L3.86|
+                  |L3.84|
+;;;125                    
+;;;126                    default:
+;;;127                        break;
 000054  bf00              NOP      
-                  |L2.86|
-000056  bf00              NOP                            ;109
-                  |L2.88|
-;;;120                }//end of switch
-;;;121                
-;;;122            }//end of if
-;;;123            
-;;;124            //判断标志位超时后执行的操作
-;;;125            //向看门狗任务发送事件标志位
-;;;126            os_evt_set(TASK_NET_BIT, HandleTaskStart);//post
-000058  4809              LDR      r0,|L2.128|
+                  |L3.86|
+000056  bf00              NOP                            ;115
+                  |L3.88|
+;;;128                }//end of switch
+;;;129                
+;;;130            }//end of if
+;;;131            
+;;;132            //判断标志位超时后执行的操作
+;;;133            //向看门狗任务发送事件标志位
+;;;134            os_evt_set(TASK_NET_BIT, HandleTaskStart);//post
+000058  4809              LDR      r0,|L3.128|
 00005a  6801              LDR      r1,[r0,#0]  ; HandleTaskStart
 00005c  2002              MOVS     r0,#2
-00005e  f8dfc024          LDR      r12,|L2.132|
+00005e  f8dfc024          LDR      r12,|L3.132|
 000062  df00              SVC      #0x0
-                  |L2.100|
-000064  e7ce              B        |L2.4|
-;;;127        }
-;;;128        
-;;;129    }
-;;;130    
+                  |L3.100|
+000064  e7ce              B        |L3.4|
+;;;135        }  
+;;;136    }
+;;;137    
                           ENDP
 
 000066  0000              DCW      0x0000
-                  |L2.104|
+                  |L3.104|
                           DCD      rt_evt_wait
-                  |L2.108|
+                  |L3.108|
                           DCD      rt_evt_get
-                  |L2.112|
+                  |L3.112|
                           DCD      g_tLora
-                  |L2.116|
-                          DCD      g_tReader
-                  |L2.120|
+                  |L3.116|
+                          DCD      g_tRunInfo
+                  |L3.120|
                           DCD      rt_tmr_create
-                  |L2.124|
+                  |L3.124|
                           DCD      OneTimerA
-                  |L2.128|
+                  |L3.128|
                           DCD      HandleTaskStart
-                  |L2.132|
+                  |L3.132|
                           DCD      rt_evt_set
 
                           AREA ||i.AppTaskStart||, CODE, READONLY, ALIGN=2
 
                   AppTaskStart PROC
-;;;57     
-;;;58     __task void AppTaskStart(void)
-000000  f8dfc034          LDR      r12,|L3.56|
-;;;59     {  
-;;;60         uint16_t ret_flags;
-;;;61         /* 获取启动任务的句柄 */
-;;;62     	HandleTaskStart = os_tsk_self();
+;;;63     
+;;;64     __task void AppTaskStart(void)
+000000  f8dfc034          LDR      r12,|L4.56|
+;;;65     {  
+;;;66         uint16_t ret_flags;
+;;;67         /* 获取启动任务的句柄 */
+;;;68     	HandleTaskStart = os_tsk_self();
 000004  df00              SVC      #0x0
-000006  490d              LDR      r1,|L3.60|
+000006  490d              LDR      r1,|L4.60|
 000008  6008              STR      r0,[r1,#0]  ; HandleTaskStart
-;;;63         //通过start任务间接地创建其他任务
-;;;64     	AppTaskCreate();
+;;;69         //通过start任务间接地创建其他任务
+;;;70     	AppTaskCreate();
 00000a  f7fffffe          BL       AppTaskCreate
-;;;65     	
-;;;66         while(1)
-00000e  e011              B        |L3.52|
-                  |L3.16|
-;;;67         {        
-;;;68             //采用或等待方式;退出前bit位被清除
-;;;69             if(os_evt_wait_or(BIT_ALL, 0xFFFF) == OS_R_EVT)
+;;;71     	
+;;;72         while(1)
+00000e  e011              B        |L4.52|
+                  |L4.16|
+;;;73         {        
+;;;74             //采用或等待方式;退出前bit位被清除
+;;;75             if(os_evt_wait_or(BIT_ALL, 0xFFFF) == OS_R_EVT)
 000010  2200              MOVS     r2,#0
 000012  f64f71ff          MOV      r1,#0xffff
 000016  20ff              MOVS     r0,#0xff
-000018  f8dfc024          LDR      r12,|L3.64|
+000018  f8dfc024          LDR      r12,|L4.64|
 00001c  df00              SVC      #0x0
 00001e  2802              CMP      r0,#2
-000020  d108              BNE      |L3.52|
-;;;70             {
-;;;71                 ret_flags = os_evt_get();//返回值为对应的bit
-000022  f8dfc020          LDR      r12,|L3.68|
+000020  d108              BNE      |L4.52|
+;;;76             {
+;;;77                 ret_flags = os_evt_get();//返回值为对应的bit
+000022  f8dfc020          LDR      r12,|L4.68|
 000026  df00              SVC      #0x0
 000028  4604              MOV      r4,r0
-;;;72                 
-;;;73                 switch(ret_flags)
+;;;78                 
+;;;79                 switch(ret_flags)
 00002a  2c02              CMP      r4,#2
-00002c  d100              BNE      |L3.48|
-;;;74                 {
-;;;75                     case TASK_NET_BIT://接收到任务事件标志位                 
-;;;76                         //test
-;;;77                         //IWDG_Feed();//喂狗
-;;;78                         break;                   
-00002e  e000              B        |L3.50|
-                  |L3.48|
-;;;79                     
-;;;80                     default:
-;;;81                         break;
+00002c  d100              BNE      |L4.48|
+;;;80                 {
+;;;81                     case TASK_NET_BIT://接收到任务事件标志位                 
+;;;82                         //test
+;;;83                         //IWDG_Feed();//喂狗
+;;;84                         break;                   
+00002e  e000              B        |L4.50|
+                  |L4.48|
+;;;85                     
+;;;86                     default:
+;;;87                         break;
 000030  bf00              NOP      
-                  |L3.50|
-000032  bf00              NOP                            ;78
-                  |L3.52|
-000034  e7ec              B        |L3.16|
-;;;82                 }//end of switch
-;;;83                 
-;;;84             }//end of if
-;;;85         }
-;;;86     }
-;;;87     
+                  |L4.50|
+000032  bf00              NOP                            ;84
+                  |L4.52|
+000034  e7ec              B        |L4.16|
+;;;88                 }//end of switch
+;;;89                 
+;;;90             }//end of if
+;;;91         }
+;;;92     }
+;;;93     
                           ENDP
 
 000036  0000              DCW      0x0000
-                  |L3.56|
+                  |L4.56|
                           DCD      rt_tsk_self
-                  |L3.60|
+                  |L4.60|
                           DCD      HandleTaskStart
-                  |L3.64|
+                  |L4.64|
                           DCD      rt_evt_wait
-                  |L3.68|
+                  |L4.68|
                           DCD      rt_evt_get
 
                           AREA ||i.main||, CODE, READONLY, ALIGN=2
 
                   main PROC
-;;;35     */
-;;;36     int main(void) 
+;;;41     */
+;;;42     int main(void) 
 000000  f7fffffe          BL       bsp_Init
-;;;37     {	
-;;;38     	/* 初始化外设 */
-;;;39     	bsp_Init();
-;;;40         
-;;;41     	/* 创建启动任务 */
-;;;42      	os_sys_init_user(AppTaskStart,             /* 任务函数 */
+;;;43     {	
+;;;44     	/* 初始化外设 */
+;;;45     	bsp_Init();
+;;;46         
+;;;47     	/* 创建启动任务 */
+;;;48      	os_sys_init_user(AppTaskStart,             /* 任务函数 */
 000004  f7fffffe          BL       os_set_env
-000008  4a03              LDR      r2,|L4.24|
-00000a  4904              LDR      r1,|L4.28|
-00000c  4804              LDR      r0,|L4.32|
-00000e  f8dfc014          LDR      r12,|L4.36|
+000008  4a03              LDR      r2,|L5.24|
+00000a  4904              LDR      r1,|L5.28|
+00000c  4804              LDR      r0,|L5.32|
+00000e  f8dfc014          LDR      r12,|L5.36|
 000012  df00              SVC      #0x0
-;;;43     	                  4,                        /* 任务优先级 */
-;;;44     	                  &AppTaskStartStk,         /* 任务栈 */
-;;;45     	                  sizeof(AppTaskStartStk)); /* 任务栈大小，单位字节数 */
-;;;46     	while(1);
+;;;49     	                  4,                        /* 任务优先级 */
+;;;50     	                  &AppTaskStartStk,         /* 任务栈 */
+;;;51     	                  sizeof(AppTaskStartStk)); /* 任务栈大小，单位字节数 */
+;;;52     	while(1);
 000014  bf00              NOP      
-                  |L4.22|
-000016  e7fe              B        |L4.22|
-;;;47     }
-;;;48     
+                  |L5.22|
+000016  e7fe              B        |L5.22|
+;;;53     }
+;;;54     
                           ENDP
 
-                  |L4.24|
+                  |L5.24|
                           DCD      AppTaskStartStk
-                  |L4.28|
+                  |L5.28|
                           DCD      0x00020004
-                  |L4.32|
+                  |L5.32|
                           DCD      AppTaskStart
-                  |L4.36|
+                  |L5.36|
                           DCD      rt_sys_init
 
                           AREA ||.bss||, DATA, NOINIT, ALIGN=3
@@ -262,6 +350,8 @@
                           %        512
                   AppTaskNetStk
                           %        512
+                  AppTaskMonitorStk
+                          %        512
 
                           AREA ||.data||, DATA, ALIGN=2
 
@@ -269,8 +359,12 @@
                           DCD      0x00000000
                   HandleTaskNet
                           DCD      0x00000000
+                  HandleTaskMonitor
+                          DCD      0x00000000
                   OneTimerA
                           DCD      0x00000000
+                  g_tRunInfo
+000010  0000              DCB      0x00,0x00
 
 ;*** Start embedded assembler ***
 

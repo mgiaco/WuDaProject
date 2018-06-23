@@ -2,6 +2,8 @@
 
 #define  DWT_CYCCNT  *(volatile unsigned int *)0xE0001004
 
+#define DELAY_MS 200//延时毫秒数
+
 //20180619：现在的能级不是按编码二进制方式来算的
 //从OUT8开始，高电平个数即为能级
 //0UT1--4对应PB12--15
@@ -99,7 +101,16 @@ void ReaderInit(void)
 	NVIC_Init(&NVIC_InitStructure);   
 
     //探测器复位引脚初始化，每次上电执行
-    ResetDetector();
+    
+    //延时
+//    bsp_DelayMS(5*DELAY_MS);
+//    //置高
+//    GPIO_SetBits(GPIOA, GPIO_Pin_3);
+//    //延时
+//    bsp_DelayMS(DELAY_MS);
+//    //置低
+//    GPIO_ResetBits(GPIOA, GPIO_Pin_3);
+    
 }
 
 //光电探测器中断//优先级0
@@ -108,6 +119,10 @@ void EXTI0_IRQHandler(void)
 	if (EXTI_GetITStatus(EXTI_Line0) != RESET)
 	{		
         g_tReader.tStop = DWT_CYCCNT;    
+        
+        g_tRunInfo.isTriggered = 1;
+        
+        memset(g_tReader.preciseTime, 0, sizeof(g_tReader.preciseTime));
         
         dwtTime = (g_tReader.tStop - g_tReader.tStart)/72;
         //复制GPS时间，并做处理
@@ -215,12 +230,13 @@ uint8_t GetDetectorLevel(void)
 //复位探测器状态
 void ResetDetector(void)
 {
-    //置低
-    GPIO_ResetBits(GPIOA, GPIO_Pin_3);
-    //延时
-    bsp_DelayMS(100);   
     //置高
     GPIO_SetBits(GPIOA, GPIO_Pin_3);
+    //延时
+    bsp_DelayMS(DELAY_MS);
+    //置低
+    GPIO_ResetBits(GPIOA, GPIO_Pin_3);
+  
 }
     
 //---------------------------------------------------------------

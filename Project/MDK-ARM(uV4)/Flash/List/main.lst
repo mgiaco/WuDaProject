@@ -34955,6 +34955,13 @@ L 1 "..\..\User\main.h" 1
 N#ifndef _MAIN_H_
 N#define _MAIN_H_
 N
+N//运行时的状态
+Ntypedef struct
+N{
+N    uint8_t isTriggered;//探测器是否触发
+N    uint8_t readTimes;//读取能级次数
+N}RunInfo_T;
+N
 N//事件标志位宏定义
 N#define BIT_ALL 0xFF
 N#define LORA_RECV_BIT	(1<<0)
@@ -34962,6 +34969,7 @@ N#define TASK_NET_BIT	(1<<1)
 N#define GET_LEVEL_BIT	(1<<2)
 N
 Nextern OS_TID HandleTaskNet;
+Nextern RunInfo_T g_tRunInfo;
 N#endif
 N
 N/******************************************/
@@ -35509,7 +35517,7 @@ N
 N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
 L 8 "..\..\User\main.c" 2
 N
-N#define READ_LEVEL_DELAY 5//读取能级的延时秒数
+N#define READ_LEVEL_DELAY 3//读取能级的延时秒数
 Nstatic void AppTaskCreate (void);//创建除start任务外的其他任务
 N
 N/*任务1：看门狗
@@ -35520,17 +35528,25 @@ N__task void AppTaskStart(void);
 X__declspec(noreturn) void AppTaskStart(void);
 N__task void AppTaskNet(void);
 X__declspec(noreturn) void AppTaskNet(void);
+N__task void AppTaskMonitor(void);
+X__declspec(noreturn) void AppTaskMonitor(void);
 N 
 Nstatic uint64_t AppTaskStartStk[512/8];   /* 任务栈 */
 Nstatic uint64_t AppTaskNetStk[512/8];     /* 任务栈 */
+Nstatic uint64_t AppTaskMonitorStk[512/8];     /* 任务栈 */
 N/* 任务句柄 */
 NOS_TID HandleTaskStart = NULL;
 XOS_TID HandleTaskStart = 0;
 NOS_TID HandleTaskNet = NULL;
 XOS_TID HandleTaskNet = 0;
+NOS_TID HandleTaskMonitor = NULL;
+XOS_TID HandleTaskMonitor = 0;
 N
 N/* 定时器句柄 */
 NOS_ID  OneTimerA;//定时器A
+N
+NRunInfo_T g_tRunInfo;
+N
 N
 N/*
 N*********************************************************************************************************
@@ -35627,11 +35643,13 @@ N                    break;
 N                
 N                case GET_LEVEL_BIT://获取能级大小
 X                case (1<<2):
-N                    //先延时，等待稳定，获取到能级后复位探测器
-N                    bsp_DelayMS(100);
-N                    g_tReader.preciseTime[6] = GetDetectorLevel();
-N                    OneTimerA = os_tmr_create(1000 * READ_LEVEL_DELAY, 0);
-X                    OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * 5,0);
+N                    //先延时，等待稳定，获取到能级后复位探测器     
+N                    if(g_tRunInfo.isTriggered == 1)//避免重复触发
+N                    {
+N                        g_tRunInfo.isTriggered = 0;
+N                        OneTimerA = os_tmr_create(1000 * READ_LEVEL_DELAY, 0);
+X                        OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * 3,0);
+N                    }
 N                    break;
 N                
 N                default:
@@ -35644,8 +35662,38 @@ N        //判断标志位超时后执行的操作
 N        //向看门狗任务发送事件标志位
 N        os_evt_set(TASK_NET_BIT, HandleTaskStart);//post
 X        _os_evt_set((U32)rt_evt_set,(1<<1),HandleTaskStart);
-N    }
-N    
+N    }  
+N}
+N
+N/*
+N*********************************************************************************************************
+N*	函 数 名: AppTaskMonitor
+N*	功能说明: 监测任务
+N*********************************************************************************************************
+N*/
+N__task void AppTaskMonitor(void)
+X__declspec(noreturn) void AppTaskMonitor(void)
+N{
+N    const uint16_t usMaxBlockTime = 3000; /* 延迟周期,3000s */
+N    while(1)
+N    {
+N        if(GetDetectorLevel() == 0)
+N        {
+N            g_tRunInfo.readTimes = 0;
+N        }
+N        else if(g_tRunInfo.isTriggered == 0)
+N        {
+N            g_tRunInfo.readTimes++;
+N        }
+N        
+N        if(g_tRunInfo.readTimes == 3)
+N        {
+N            ResetDetector();
+N        }
+N        
+N        os_dly_wait(usMaxBlockTime);
+X        _os_dly_wait((U32)rt_dly_wait,usMaxBlockTime);
+N    }  
 N}
 N
 N/*
@@ -35663,7 +35711,12 @@ N	                                   3,                       /* 任务优先级 */
 N	                                   &AppTaskNetStk,          /* 任务栈 */
 N	                                   sizeof(AppTaskNetStk));  /* 任务栈大小，单位字节数 */
 X	HandleTaskNet = _os_tsk_create((U32)rt_tsk_create,AppTaskNet,3|(sizeof(AppTaskNetStk)<<8),&AppTaskNetStk,0);   
+N    
+N    HandleTaskMonitor = os_tsk_create_user(AppTaskMonitor,              /* 任务函数 */ 
+N	                                   2,                       /* 任务优先级 */ 
+N	                                   &AppTaskMonitorStk,          /* 任务栈 */
+N	                                   sizeof(AppTaskMonitorStk));  /* 任务栈大小，单位字节数 */
+X    HandleTaskMonitor = _os_tsk_create((U32)rt_tsk_create,AppTaskMonitor,2|(sizeof(AppTaskMonitorStk)<<8),&AppTaskMonitorStk,0);   
 N}
-N
 N
 N/******************************************************/

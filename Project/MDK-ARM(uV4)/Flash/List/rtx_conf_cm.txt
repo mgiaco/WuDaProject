@@ -5,18 +5,18 @@
                           AREA ||i.os_error||, CODE, READONLY, ALIGN=1
 
                   os_error PROC
-;;;200    
-;;;201    void os_error (U32 err_code) {
+;;;201    
+;;;202    void os_error (U32 err_code) {
 000000  bf00              NOP      
                   |L1.2|
-;;;202      /* This function is called when a runtime error is detected. Parameter */
-;;;203      /* 'err_code' holds the runtime error code (defined in RTL.H).         */
-;;;204    
-;;;205      /* HERE: include optional code to be executed on runtime error. */
-;;;206      for (;;);
+;;;203      /* This function is called when a runtime error is detected. Parameter */
+;;;204      /* 'err_code' holds the runtime error code (defined in RTL.H).         */
+;;;205    
+;;;206      /* HERE: include optional code to be executed on runtime error. */
+;;;207      for (;;);
 000002  e7fe              B        |L1.2|
-;;;207    }
-;;;208    
+;;;208    }
+;;;209    
                           ENDP
 
 
@@ -39,7 +39,7 @@
                           ENDP
 
 
-                          AREA ||i.os_tmr_call||, CODE, READONLY, ALIGN=1
+                          AREA ||i.os_tmr_call||, CODE, READONLY, ALIGN=2
 
                   os_tmr_call PROC
 ;;;177    
@@ -55,26 +55,33 @@
 ;;;185      */
 ;;;186      
 ;;;187      switch(info)
-000004  b914              CBNZ     r4,|L3.12|
+000004  b934              CBNZ     r4,|L3.20|
 ;;;188      {
 ;;;189          case 0:
-;;;190              ResetDetector();    
-000006  f7fffffe          BL       ResetDetector
-;;;191              break;
-00000a  e000              B        |L3.14|
-                  |L3.12|
-;;;192          
-;;;193          default:
-;;;194              break;
-00000c  bf00              NOP      
-                  |L3.14|
-00000e  bf00              NOP                            ;191
-;;;195      }
-;;;196    }
-000010  bd10              POP      {r4,pc}
-;;;197    
+;;;190              g_tReader.preciseTime[6] = GetDetectorLevel();
+000006  f7fffffe          BL       GetDetectorLevel
+00000a  4904              LDR      r1,|L3.28|
+00000c  7388              STRB     r0,[r1,#0xe]
+;;;191              ResetDetector();    
+00000e  f7fffffe          BL       ResetDetector
+;;;192              break;
+000012  e000              B        |L3.22|
+                  |L3.20|
+;;;193          
+;;;194          default:
+;;;195              break;
+000014  bf00              NOP      
+                  |L3.22|
+000016  bf00              NOP                            ;192
+;;;196      }
+;;;197    }
+000018  bd10              POP      {r4,pc}
+;;;198    
                           ENDP
 
+00001a  0000              DCW      0x0000
+                  |L3.28|
+                          DCD      g_tReader
 
                           AREA ||.bss||, DATA, NOINIT, ALIGN=3
 
@@ -106,7 +113,7 @@
                   ||__tagsym$$used||
                           DCD      0x000003e8
                   os_timernum
-                  |symbol_number.13|
+                  |symbol_number.14|
                           DCD      0x00000002
                   mp_tcb_size
 00001c  00ec              DCW      0x00ec

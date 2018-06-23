@@ -187,6 +187,7 @@ void os_tmr_call (U16 info) {
   switch(info)
   {
       case 0:
+          g_tReader.preciseTime[6] = GetDetectorLevel();
           ResetDetector();    
           break;
       
