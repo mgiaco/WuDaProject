@@ -35,7 +35,8 @@ void makeCommmand(uint8_t cmdFlag, uint8_t rw, uint8_t *data, uint8_t len)
         g_tLora.buf[13+i] = data[i];
     }
     
-    crcRet = Get_Crc8(g_tLora.buf, 13+len);
+    //crcRet = Get_Crc8(g_tLora.buf, 13+len);
+    crcRet = 0xFF;
     
     g_tLora.buf[13+len+0] = crcRet;//校验位
     g_tLora.buf[13+len+1] = 0x5A;//报文尾
@@ -92,6 +93,10 @@ void processCommand(uint8_t *data, uint16_t len)
                 pasitionAndBattery[7] = (g_tGps.longiitude[6]-0x30)*10+(g_tGps.longiitude[7]-0x30);
                 pasitionAndBattery[8] = (g_tGps.longiitude[8]-0x30)*10+(g_tGps.longiitude[9]-0x30);
                 pasitionAndBattery[9] = (g_tGps.longiitude[10]-0x30)*10+(g_tGps.longiitude[11]-0x30);
+                if(pasitionAndBattery[9] == 0xF0)//没有信号时，全部为0
+                {
+                    memset(pasitionAndBattery, 0, sizeof(pasitionAndBattery)-2);
+                }
                 //获取电压
                 GetADC(&battery);
                 battery = battery*3300*2/4095;
@@ -99,13 +104,19 @@ void processCommand(uint8_t *data, uint16_t len)
                 pasitionAndBattery[11] = (battery & 0xFF);
                 
                 SendDataToServer(data[2], 0, pasitionAndBattery, sizeof(pasitionAndBattery));
+                
+                os_evt_set(GET_LEVEL_BIT, HandleTaskNet);//post
             }
             break;
         
         case 0x01://返回探测器触发的精确时间和能级
             if(data[7] == 0)
             {
+                //20180625取消自动复位，防止误触发
+                g_tReader.preciseTime[6] = GetDetectorLevel();
                 SendDataToServer(data[2], 0, g_tReader.preciseTime, sizeof(g_tReader.preciseTime));
+                
+                os_evt_set(GET_LEVEL_BIT, HandleTaskNet);//post
             }
             break;
         

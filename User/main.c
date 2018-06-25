@@ -19,7 +19,7 @@ __task void AppTaskMonitor(void);
  
 static uint64_t AppTaskStartStk[512/8];   /* 任务栈 */
 static uint64_t AppTaskNetStk[512/8];     /* 任务栈 */
-static uint64_t AppTaskMonitorStk[512/8];     /* 任务栈 */
+//static uint64_t AppTaskMonitorStk[512/8];     /* 任务栈 */
 /* 任务句柄 */
 OS_TID HandleTaskStart = NULL;
 OS_TID HandleTaskNet = NULL;
@@ -115,12 +115,8 @@ __task void AppTaskNet(void)
                     break; 
                 
                 case GET_LEVEL_BIT://获取能级大小
-                    //先延时，等待稳定，获取到能级后复位探测器     
-                    if(g_tRunInfo.isTriggered == 1)//避免重复触发
-                    {
-                        g_tRunInfo.isTriggered = 0;
-                        OneTimerA = os_tmr_create(1000 * READ_LEVEL_DELAY, 0);
-                    }
+                    //先延时，等待稳定，获取到能级后复位探测器
+                    ResetDetector();
                     break;
                 
                 default:
@@ -146,18 +142,18 @@ __task void AppTaskMonitor(void)
     const uint16_t usMaxBlockTime = 3000; /* 延迟周期,3000s */
     while(1)
     {
-        if(GetDetectorLevel() == 0)
+        //若没有触发，但有能级，此时需要处理
+        if(g_tRunInfo.isTriggered == 0)
         {
-            g_tRunInfo.readTimes = 0;
-        }
-        else if(g_tRunInfo.isTriggered == 0)
-        {
-            g_tRunInfo.readTimes++;
-        }
-        
-        if(g_tRunInfo.readTimes == 3)
-        {
-            ResetDetector();
+            if(GetDetectorLevel() != 0)
+            {
+                g_tRunInfo.readTimes++;
+            }
+            
+            if(g_tRunInfo.readTimes == 3)
+            {
+                ResetDetector();
+            }
         }
         
         os_dly_wait(usMaxBlockTime);
@@ -179,10 +175,10 @@ static void AppTaskCreate (void)
 	                                   &AppTaskNetStk,          /* 任务栈 */
 	                                   sizeof(AppTaskNetStk));  /* 任务栈大小，单位字节数 */
     
-    HandleTaskMonitor = os_tsk_create_user(AppTaskMonitor,              /* 任务函数 */ 
-	                                   2,                       /* 任务优先级 */ 
-	                                   &AppTaskMonitorStk,          /* 任务栈 */
-	                                   sizeof(AppTaskMonitorStk));  /* 任务栈大小，单位字节数 */
+//    HandleTaskMonitor = os_tsk_create_user(AppTaskMonitor,              /* 任务函数 */ 
+//	                                   2,                       /* 任务优先级 */ 
+//	                                   &AppTaskMonitorStk,          /* 任务栈 */
+//	                                   sizeof(AppTaskMonitorStk));  /* 任务栈大小，单位字节数 */
 }
 
 /******************************************************/

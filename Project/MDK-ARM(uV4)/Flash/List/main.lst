@@ -35533,7 +35533,7 @@ X__declspec(noreturn) void AppTaskMonitor(void);
 N 
 Nstatic uint64_t AppTaskStartStk[512/8];   /* 任务栈 */
 Nstatic uint64_t AppTaskNetStk[512/8];     /* 任务栈 */
-Nstatic uint64_t AppTaskMonitorStk[512/8];     /* 任务栈 */
+N//static uint64_t AppTaskMonitorStk[512/8];     /* 任务栈 */
 N/* 任务句柄 */
 NOS_TID HandleTaskStart = NULL;
 XOS_TID HandleTaskStart = 0;
@@ -35643,13 +35643,8 @@ N                    break;
 N                
 N                case GET_LEVEL_BIT://获取能级大小
 X                case (1<<2):
-N                    //先延时，等待稳定，获取到能级后复位探测器     
-N                    if(g_tRunInfo.isTriggered == 1)//避免重复触发
-N                    {
-N                        g_tRunInfo.isTriggered = 0;
-N                        OneTimerA = os_tmr_create(1000 * READ_LEVEL_DELAY, 0);
-X                        OneTimerA = _os_tmr_create((U32)rt_tmr_create,1000 * 3,0);
-N                    }
+N                    //先延时，等待稳定，获取到能级后复位探测器
+N                    ResetDetector();
 N                    break;
 N                
 N                default:
@@ -35677,18 +35672,18 @@ N{
 N    const uint16_t usMaxBlockTime = 3000; /* 延迟周期,3000s */
 N    while(1)
 N    {
-N        if(GetDetectorLevel() == 0)
+N        //若没有触发，但有能级，此时需要处理
+N        if(g_tRunInfo.isTriggered == 0)
 N        {
-N            g_tRunInfo.readTimes = 0;
-N        }
-N        else if(g_tRunInfo.isTriggered == 0)
-N        {
-N            g_tRunInfo.readTimes++;
-N        }
-N        
-N        if(g_tRunInfo.readTimes == 3)
-N        {
-N            ResetDetector();
+N            if(GetDetectorLevel() != 0)
+N            {
+N                g_tRunInfo.readTimes++;
+N            }
+N            
+N            if(g_tRunInfo.readTimes == 3)
+N            {
+N                ResetDetector();
+N            }
 N        }
 N        
 N        os_dly_wait(usMaxBlockTime);
@@ -35712,11 +35707,10 @@ N	                                   &AppTaskNetStk,          /* 任务栈 */
 N	                                   sizeof(AppTaskNetStk));  /* 任务栈大小，单位字节数 */
 X	HandleTaskNet = _os_tsk_create((U32)rt_tsk_create,AppTaskNet,3|(sizeof(AppTaskNetStk)<<8),&AppTaskNetStk,0);   
 N    
-N    HandleTaskMonitor = os_tsk_create_user(AppTaskMonitor,              /* 任务函数 */ 
-N	                                   2,                       /* 任务优先级 */ 
-N	                                   &AppTaskMonitorStk,          /* 任务栈 */
-N	                                   sizeof(AppTaskMonitorStk));  /* 任务栈大小，单位字节数 */
-X    HandleTaskMonitor = _os_tsk_create((U32)rt_tsk_create,AppTaskMonitor,2|(sizeof(AppTaskMonitorStk)<<8),&AppTaskMonitorStk,0);   
+N//    HandleTaskMonitor = os_tsk_create_user(AppTaskMonitor,              /* 任务函数 */ 
+N//	                                   2,                       /* 任务优先级 */ 
+N//	                                   &AppTaskMonitorStk,          /* 任务栈 */
+N//	                                   sizeof(AppTaskMonitorStk));  /* 任务栈大小，单位字节数 */
 N}
 N
 N/******************************************************/

@@ -103,13 +103,13 @@ void ReaderInit(void)
     //探测器复位引脚初始化，每次上电执行
     
     //延时
-//    bsp_DelayMS(5*DELAY_MS);
-//    //置高
-//    GPIO_SetBits(GPIOA, GPIO_Pin_3);
-//    //延时
-//    bsp_DelayMS(DELAY_MS);
-//    //置低
-//    GPIO_ResetBits(GPIOA, GPIO_Pin_3);
+    bsp_DelayMS(5*DELAY_MS);
+    //置高
+    GPIO_SetBits(GPIOA, GPIO_Pin_3);
+    //延时
+    bsp_DelayMS(DELAY_MS);
+    //置低
+    GPIO_ResetBits(GPIOA, GPIO_Pin_3);
     
 }
 
@@ -119,8 +119,6 @@ void EXTI0_IRQHandler(void)
 	if (EXTI_GetITStatus(EXTI_Line0) != RESET)
 	{		
         g_tReader.tStop = DWT_CYCCNT;    
-        
-        g_tRunInfo.isTriggered = 1;
         
         memset(g_tReader.preciseTime, 0, sizeof(g_tReader.preciseTime));
         
@@ -132,12 +130,12 @@ void EXTI0_IRQHandler(void)
         //微秒
         g_tReader.preciseTime[3] = dwtTime>>16;
         g_tReader.preciseTime[4] = (dwtTime>>8)&0xFF;
-        g_tReader.preciseTime[5] = dwtTime&0xFF;
-        //读取能级状态
-        //20180620
-        //电平读取不准确，添加延时
-        //加事件标志组，在任务中做
-        isr_evt_set(GET_LEVEL_BIT, HandleTaskNet);//post
+        g_tReader.preciseTime[5] = dwtTime&0xFF;      
+
+        if(g_tReader.preciseTime[0] == 0xF8)//没有信号时，全部为0
+        {
+            memset(g_tReader.preciseTime, 0, sizeof(g_tReader.preciseTime)-1);
+        }
         
 		EXTI_ClearITPendingBit(EXTI_Line0);	
 	}
