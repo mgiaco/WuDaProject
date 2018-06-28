@@ -35371,7 +35371,6 @@ N
 N//默认参数
 N#define VERSION 20180521 // 版本号
 N
-N#define CHANNEL 30 //lora的信道参数，410+30=440MHz(信道相同才能互相通信)
 N#define DTU_ADDRESS 0xFFFE //DTU地址
 N
 N//硬件引脚相关

@@ -16,7 +16,7 @@ void makeCommmand(uint8_t cmdFlag, uint8_t rw, uint8_t *data, uint8_t len)
     //前3个字节存放服务器的地址和信道参数
     //地址的高位在前，dtuAddress数组是低位在前
     g_tLora.buf[0]=g_tParam.dtuAddress[0];//dtu地址高8位
-    g_tLora.buf[1]=g_tParam.dtuAddress[1];//dtu地址高8位
+    g_tLora.buf[1]=g_tParam.dtuAddress[1];//dtu地址低8位
     g_tLora.buf[2]=g_tParam.channel;//lora信道
     
     g_tLora.buf[3]=0xA5;//报文头
@@ -139,7 +139,7 @@ void SendDataToServer(uint8_t flag, uint8_t rw, uint8_t *data, uint8_t len)
 {
     //判断AUX引脚状态，为1时（高电平）可以进行发送
     //也可以不判断，模块内部有缓冲区，不超出就可以
-    while(!getAuxStatus());
+    //while(!getAuxStatus());
 
     makeCommmand(flag, rw, data, len);
     LoraSendData(g_tLora.buf, 13+len+3);//在断网情况下调用发送会延时
