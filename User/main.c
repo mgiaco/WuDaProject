@@ -114,8 +114,8 @@ __task void AppTaskNet(void)
                     processCommand(g_tLora.buf, g_tLora.len);
                     break; 
                 
-                case GET_LEVEL_BIT://获取能级大小
-                    //先延时，等待稳定，获取到能级后复位探测器
+                case REAET_LEVEL_BIT://复位能级
+                    //复位能级
                     ResetDetector();
                     break;
                 

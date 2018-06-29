@@ -147,8 +147,8 @@
 000032  e003              B        |L3.60|
                   |L3.52|
 ;;;116                    
-;;;117                    case GET_LEVEL_BIT://获取能级大小
-;;;118                        //先延时，等待稳定，获取到能级后复位探测器
+;;;117                    case REAET_LEVEL_BIT://复位能级
+;;;118                        //复位能级
 ;;;119                        ResetDetector();
 000034  f7fffffe          BL       ResetDetector
 ;;;120                        break;

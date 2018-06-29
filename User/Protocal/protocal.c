@@ -76,7 +76,7 @@ void processCommand(uint8_t *data, uint16_t len)
     //判断命令号
     switch(data[2])
     {
-        case 0x00://搜索设备
+        case 0x00://搜索设备，也用作
             if(data[7] == 0)
             {
                 //纬度
@@ -103,9 +103,7 @@ void processCommand(uint8_t *data, uint16_t len)
                 pasitionAndBattery[10] = battery >> 8;
                 pasitionAndBattery[11] = (battery & 0xFF);
                 
-                SendDataToServer(data[2], 0, pasitionAndBattery, sizeof(pasitionAndBattery));
-                
-                os_evt_set(GET_LEVEL_BIT, HandleTaskNet);//post
+                SendDataToServer(data[2], 0, pasitionAndBattery, sizeof(pasitionAndBattery));              
             }
             break;
         
@@ -115,17 +113,13 @@ void processCommand(uint8_t *data, uint16_t len)
                 //20180625取消自动复位，防止误触发
                 g_tReader.preciseTime[6] = GetDetectorLevel();
                 SendDataToServer(data[2], 0, g_tReader.preciseTime, sizeof(g_tReader.preciseTime));
-                
-                os_evt_set(GET_LEVEL_BIT, HandleTaskNet);//post
             }
             break;
-        
-        case 0x02://test
-            if(data[7] == 0)
-            {
-                ret = GetDetectorLevel();
-                SendDataToServer(data[2], 1, &ret, 1);
-            }
+            
+        case 0x02://能级复位
+            ret=0x55;
+            os_evt_set(REAET_LEVEL_BIT, HandleTaskNet);//post
+            SendDataToServer(data[2], 1, &ret, 1);
             break;
         
         default:

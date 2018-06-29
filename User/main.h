@@ -12,7 +12,7 @@ typedef struct
 #define BIT_ALL 0xFF
 #define LORA_RECV_BIT	(1<<0)
 #define TASK_NET_BIT	(1<<1)
-#define GET_LEVEL_BIT	(1<<2)
+#define REAET_LEVEL_BIT	(1<<2)
 
 extern OS_TID HandleTaskNet;
 extern RunInfo_T g_tRunInfo;
