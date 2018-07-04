@@ -42,6 +42,7 @@ void sf_ReadBuffer(uint8_t * _pBuf, uint32_t _uiReadAddr, uint32_t _uiSize);
 void sf_EraseSector(uint32_t _uiSectorAddr);
 void sf_exWrite8Bytes(uint8_t* _pBuf, uint32_t _uiWriteAddr);//8字节
 void sf_exWriteOnePage(uint8_t* _pBuf, uint32_t _uiWriteAddr);//256字节
+void sf_exWrite_128(uint8_t* _pBuf, uint32_t _uiWriteAddr);//128字节
 void sf_PageWrite(uint8_t * _pBuf, uint32_t _uiWriteAddr, uint16_t _usSize);
 void storeRecord(uint8_t *id, uint8_t reader);//函数内部自己获取时间和写入地址
 

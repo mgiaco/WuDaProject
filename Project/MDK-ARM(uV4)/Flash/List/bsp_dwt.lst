@@ -35369,7 +35369,7 @@ N
 N#define PARAM_ADDR		0			/* 参数区地址 */
 N
 N//默认参数
-N#define VERSION 20180521 // 版本号
+N#define VERSION 0x00 // 版本号
 N
 N#define DTU_ADDRESS 0xFFFE //DTU地址
 N

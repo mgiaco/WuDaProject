@@ -4,8 +4,6 @@
 #define PARAM_ADDR		0			/* 参数区地址 */
 
 //默认参数
-#define VERSION 20180521 // 版本号
-
 #define DTU_ADDRESS 0xFFFE //DTU地址
 
 //硬件引脚相关

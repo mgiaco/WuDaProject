@@ -1,8 +1,12 @@
 #include "bsp.h"
 
 /****用作lora的地址，也作为设备ID号（1-500，不能取0和FFFF）*/
-#define LORA_ADDRESS         2
-#define CHANNEL             30 //lora的信道参数，410+30=440MHz(信道相同才能互相通信)
+#define LORA_ADDRESS 1
+/***********************************************************/
+
+//lora的信道参数和版本号，410+30=440MHz(信道相同才能互相通信)
+#define VERSION 0x00 // 版本号
+#define CHANNEL 30 
 /*********************************************************/
 
 Param_T g_tParam;

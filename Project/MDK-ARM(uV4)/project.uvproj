@@ -75,7 +75,7 @@
           </BeforeMake>
           <AfterMake>
             <RunUserProg1>1</RunUserProg1>
-            <RunUserProg2>0</RunUserProg2>
+            <RunUserProg2>1</RunUserProg2>
             <UserProg1Name>CopyHex_Flash.bat</UserProg1Name>
             <UserProg2Name>fromelf.exe --bin -o ./Flash/Obj/output.bin  ./Flash/Obj/output.axf</UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>

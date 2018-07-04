@@ -49,7 +49,6 @@ void processCommand(uint8_t *data, uint16_t len)
     static uint8_t ret;
     static uint16_t battery;
     static uint8_t pasitionAndBattery[12];//5字节纬度，5字节经度，2字节电量
-    
     //对于设置命令，要进行参数有效性判断
     //TODO:命令等板子基础功能测试之后再慢慢往上加
     /*0x00:搜索设备，返回基础状态信息（经纬度，电量）
@@ -119,6 +118,35 @@ void processCommand(uint8_t *data, uint16_t len)
         case 0x02://能级复位
             ret=0x55;
             os_evt_set(REAET_LEVEL_BIT, HandleTaskNet);//post
+            SendDataToServer(data[2], 1, &ret, 1);
+            break;
+        
+        case 0x1E://升级文件
+            //length的2位用来表示第几包
+            //spi分配前256k字节,(0--255)
+            //20180704实际用不到这么多，考虑到传输时间问题，
+            //现在的bin大小为12K，所以上限改为16K,共16*1024/128=128包
+            //4096/128=32;
+            if(data[9]%32 == 0)
+            {
+                sf_EraseSector(data[9]*1024);//扇区擦除4k字节
+            }
+            sf_PageWrite(&data[10], data[9]*128, 128);//按照每包128字节大小顺序写入spi flash
+            ret = 0x55;
+            SendDataToServer(data[2], 1, &ret, 1);
+            break;
+        
+        case 0x21://重启（并升级）
+            ret = 0x55;
+            SendDataToServer(data[2], 1, &ret, 1);
+            //改写升级标志
+            ee_WriteOneBytes(1, 0);//1表示需要升级,0表示在iic的首地址
+            //调用系统复位指令   
+            MCU_Reset();
+            break;
+        
+        case 0x24://读取版本信息
+            ret=VERSION;
             SendDataToServer(data[2], 1, &ret, 1);
             break;
         
