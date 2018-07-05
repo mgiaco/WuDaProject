@@ -1,8 +1,9 @@
 #ifndef __PARAM_H
 #define __PARAM_H
 
-#define PARAM_ADDR		0			/* 参数区地址 */
+#define VERSION 0x01 // 版本号
 
+#define PARAM_ADDR		0			/* 参数区地址 */
 //默认参数
 #define DTU_ADDRESS 0xFFFE //DTU地址
 

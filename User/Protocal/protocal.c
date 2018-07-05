@@ -1,5 +1,7 @@
 #include "bsp.h"
 
+#define UPDATE_DATA_LENGTH 64
+
 //软复位
 void MCU_Reset(void)
 {
@@ -76,43 +78,37 @@ void processCommand(uint8_t *data, uint16_t len)
     switch(data[2])
     {
         case 0x00://搜索设备，也用作
-            if(data[7] == 0)
+            //纬度
+            pasitionAndBattery[0] = (g_tGps.latitude[0]-0x30)*10+(g_tGps.latitude[1]-0x30);
+            pasitionAndBattery[1] = (g_tGps.latitude[2]-0x30)*10+(g_tGps.latitude[3]-0x30);
+            //跳过中间的小数点
+            pasitionAndBattery[2] = (g_tGps.latitude[5]-0x30)*10+(g_tGps.latitude[6]-0x30);
+            pasitionAndBattery[3] = (g_tGps.latitude[7]-0x30)*10+(g_tGps.latitude[8]-0x30);
+            pasitionAndBattery[4] = (g_tGps.latitude[9]-0x30)*10+(g_tGps.latitude[10]-0x30);
+            //经度
+            pasitionAndBattery[5] = (g_tGps.longiitude[0]-0x30)*100+(g_tGps.longiitude[1]-0x30)*10+(g_tGps.longiitude[2]-0x30);
+            pasitionAndBattery[6] = (g_tGps.longiitude[3]-0x30)*10+(g_tGps.longiitude[4]-0x30);
+            //跳过中间的小数点
+            pasitionAndBattery[7] = (g_tGps.longiitude[6]-0x30)*10+(g_tGps.longiitude[7]-0x30);
+            pasitionAndBattery[8] = (g_tGps.longiitude[8]-0x30)*10+(g_tGps.longiitude[9]-0x30);
+            pasitionAndBattery[9] = (g_tGps.longiitude[10]-0x30)*10+(g_tGps.longiitude[11]-0x30);
+            if(pasitionAndBattery[9] == 0xF0)//没有信号时，全部为0
             {
-                //纬度
-                pasitionAndBattery[0] = (g_tGps.latitude[0]-0x30)*10+(g_tGps.latitude[1]-0x30);
-                pasitionAndBattery[1] = (g_tGps.latitude[2]-0x30)*10+(g_tGps.latitude[3]-0x30);
-                //跳过中间的小数点
-                pasitionAndBattery[2] = (g_tGps.latitude[5]-0x30)*10+(g_tGps.latitude[6]-0x30);
-                pasitionAndBattery[3] = (g_tGps.latitude[7]-0x30)*10+(g_tGps.latitude[8]-0x30);
-                pasitionAndBattery[4] = (g_tGps.latitude[9]-0x30)*10+(g_tGps.latitude[10]-0x30);
-                //经度
-                pasitionAndBattery[5] = (g_tGps.longiitude[0]-0x30)*100+(g_tGps.longiitude[1]-0x30)*10+(g_tGps.longiitude[2]-0x30);
-                pasitionAndBattery[6] = (g_tGps.longiitude[3]-0x30)*10+(g_tGps.longiitude[4]-0x30);
-                //跳过中间的小数点
-                pasitionAndBattery[7] = (g_tGps.longiitude[6]-0x30)*10+(g_tGps.longiitude[7]-0x30);
-                pasitionAndBattery[8] = (g_tGps.longiitude[8]-0x30)*10+(g_tGps.longiitude[9]-0x30);
-                pasitionAndBattery[9] = (g_tGps.longiitude[10]-0x30)*10+(g_tGps.longiitude[11]-0x30);
-                if(pasitionAndBattery[9] == 0xF0)//没有信号时，全部为0
-                {
-                    memset(pasitionAndBattery, 0, sizeof(pasitionAndBattery)-2);
-                }
-                //获取电压
-                GetADC(&battery);
-                battery = battery*3300*2/4095;
-                pasitionAndBattery[10] = battery >> 8;
-                pasitionAndBattery[11] = (battery & 0xFF);
-                
-                SendDataToServer(data[2], 0, pasitionAndBattery, sizeof(pasitionAndBattery));              
+                memset(pasitionAndBattery, 0, sizeof(pasitionAndBattery)-2);
             }
+            //获取电压
+            GetADC(&battery);
+            battery = battery*3300*2/4095;
+            pasitionAndBattery[10] = battery >> 8;
+            pasitionAndBattery[11] = (battery & 0xFF);
+            
+            SendDataToServer(data[2], 0, pasitionAndBattery, sizeof(pasitionAndBattery));              
             break;
         
         case 0x01://返回探测器触发的精确时间和能级
-            if(data[7] == 0)
-            {
-                //20180625取消自动复位，防止误触发
-                g_tReader.preciseTime[6] = GetDetectorLevel();
-                SendDataToServer(data[2], 0, g_tReader.preciseTime, sizeof(g_tReader.preciseTime));
-            }
+            //20180625取消自动复位，防止误触发
+            g_tReader.preciseTime[6] = GetDetectorLevel();
+            SendDataToServer(data[2], 0, g_tReader.preciseTime, sizeof(g_tReader.preciseTime));
             break;
             
         case 0x02://能级复位
@@ -125,20 +121,20 @@ void processCommand(uint8_t *data, uint16_t len)
             //length的2位用来表示第几包
             //spi分配前256k字节,(0--255)
             //20180704实际用不到这么多，考虑到传输时间问题，
-            //现在的bin大小为12K，所以上限改为16K,共16*1024/128=128包
-            //4096/128=32;
-            if(data[9]%32 == 0)
+            //现在的bin大小为12K，所以上限改为16K,共16*1024/64=256包
+            //4096/64=64;
+            if(data[9]%(4*1024/UPDATE_DATA_LENGTH) == 0)//64包加起来为4K
             {
-                sf_EraseSector(data[9]*1024);//扇区擦除4k字节
+                sf_EraseSector(data[9]*UPDATE_DATA_LENGTH);//扇区擦除4k字节
             }
-            sf_PageWrite(&data[10], data[9]*128, 128);//按照每包128字节大小顺序写入spi flash
+            sf_exWrite_64(&data[10], data[9]*UPDATE_DATA_LENGTH);//按照每包UPDATE_DATA_LENGTH字节大小顺序写入spi flash
             ret = 0x55;
             SendDataToServer(data[2], 1, &ret, 1);
             break;
         
         case 0x21://重启（并升级）
             ret = 0x55;
-            SendDataToServer(data[2], 1, &ret, 1);
+            SendDataToServer(data[2], 0, &ret, 1);
             //改写升级标志
             ee_WriteOneBytes(1, 0);//1表示需要升级,0表示在iic的首地址
             //调用系统复位指令   
@@ -147,7 +143,7 @@ void processCommand(uint8_t *data, uint16_t len)
         
         case 0x24://读取版本信息
             ret=VERSION;
-            SendDataToServer(data[2], 1, &ret, 1);
+            SendDataToServer(data[2], 0, &ret, 1);
             break;
         
         default:

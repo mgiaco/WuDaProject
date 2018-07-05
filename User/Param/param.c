@@ -4,8 +4,7 @@
 #define LORA_ADDRESS 1
 /***********************************************************/
 
-//lora的信道参数和版本号，410+30=440MHz(信道相同才能互相通信)
-#define VERSION 0x00 // 版本号
+//lora的信道参数，410+30=440MHz(信道相同才能互相通信)
 #define CHANNEL 30 
 /*********************************************************/
 
@@ -129,6 +128,7 @@ void setLoraParam(void)
     loraParam[0]=0xC0;//参数掉电保存
     loraParam[1]=g_tParam.loraAddress[0];
     loraParam[2]=g_tParam.loraAddress[1];
+    //loraParam[3]=0x1C;//9.6K
     loraParam[3]=0x1A;//串口速率默认9600，空速默认2.4K
     loraParam[4]=g_tParam.channel;//信道为30,410+30=440MHz
     loraParam[5]=0xC0;//传输方式选择定点传输，发射功率和无线唤醒时间、FEC开关使用默认值

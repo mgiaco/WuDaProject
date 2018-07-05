@@ -445,10 +445,10 @@
 ;;;222      /* Reset the RCC clock configuration to the default reset state(for debug purpose) */
 ;;;223      /* Set HSION bit */
 ;;;224      RCC->CR |= (uint32_t)0x00000001;
-000002  4813              LDR      r0,|L4.80|
+000002  4812              LDR      r0,|L4.76|
 000004  6800              LDR      r0,[r0,#0]
 000006  f0400001          ORR      r0,r0,#1
-00000a  4911              LDR      r1,|L4.80|
+00000a  4910              LDR      r1,|L4.76|
 00000c  6008              STR      r0,[r1,#0]
 ;;;225    
 ;;;226      /* Reset SW, HPRE, PPRE1, PPRE2, ADCPRE and MCO bits */
@@ -456,9 +456,9 @@
 ;;;228      RCC->CFGR &= (uint32_t)0xF8FF0000;
 00000e  4608              MOV      r0,r1
 000010  6840              LDR      r0,[r0,#4]
-000012  4910              LDR      r1,|L4.84|
+000012  490f              LDR      r1,|L4.80|
 000014  4008              ANDS     r0,r0,r1
-000016  490e              LDR      r1,|L4.80|
+000016  490d              LDR      r1,|L4.76|
 000018  6048              STR      r0,[r1,#4]
 ;;;229    #else
 ;;;230      RCC->CFGR &= (uint32_t)0xF0FF0000;
@@ -468,9 +468,9 @@
 ;;;234      RCC->CR &= (uint32_t)0xFEF6FFFF;
 00001a  4608              MOV      r0,r1
 00001c  6800              LDR      r0,[r0,#0]
-00001e  490e              LDR      r1,|L4.88|
+00001e  490d              LDR      r1,|L4.84|
 000020  4008              ANDS     r0,r0,r1
-000022  490b              LDR      r1,|L4.80|
+000022  490a              LDR      r1,|L4.76|
 000024  6008              STR      r0,[r1,#0]
 ;;;235    
 ;;;236      /* Reset HSEBYP bit */
@@ -524,22 +524,23 @@
 ;;;273      SCB->VTOR = SRAM_BASE | VECT_TAB_OFFSET; /* Vector Table Relocation in Internal SRAM. */
 ;;;274    #else
 ;;;275      SCB->VTOR = FLASH_BASE | VECT_TAB_OFFSET; /* Vector Table Relocation in Internal FLASH. */
-000044  f04f6000          MOV      r0,#0x8000000
-000048  4904              LDR      r1,|L4.92|
-00004a  6008              STR      r0,[r1,#0]
+000044  4804              LDR      r0,|L4.88|
+000046  4905              LDR      r1,|L4.92|
+000048  6008              STR      r0,[r1,#0]
 ;;;276    #endif 
 ;;;277    }
-00004c  bd10              POP      {r4,pc}
+00004a  bd10              POP      {r4,pc}
 ;;;278    
                           ENDP
 
-00004e  0000              DCW      0x0000
-                  |L4.80|
+                  |L4.76|
                           DCD      0x40021000
-                  |L4.84|
+                  |L4.80|
                           DCD      0xf8ff0000
-                  |L4.88|
+                  |L4.84|
                           DCD      0xfef6ffff
+                  |L4.88|
+                          DCD      0x08004000
                   |L4.92|
                           DCD      0xe000ed08
 

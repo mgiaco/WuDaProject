@@ -35346,6 +35346,8 @@ Nvoid sf_ReadBuffer(uint8_t * _pBuf, uint32_t _uiReadAddr, uint32_t _uiSize);
 Nvoid sf_EraseSector(uint32_t _uiSectorAddr);
 Nvoid sf_exWrite8Bytes(uint8_t* _pBuf, uint32_t _uiWriteAddr);//8字节
 Nvoid sf_exWriteOnePage(uint8_t* _pBuf, uint32_t _uiWriteAddr);//256字节
+Nvoid sf_exWrite_128(uint8_t* _pBuf, uint32_t _uiWriteAddr);//128字节
+Nvoid sf_exWrite_64(uint8_t* _pBuf, uint32_t _uiWriteAddr);//128字节
 Nvoid sf_PageWrite(uint8_t * _pBuf, uint32_t _uiWriteAddr, uint16_t _usSize);
 Nvoid storeRecord(uint8_t *id, uint8_t reader);//函数内部自己获取时间和写入地址
 N
@@ -35370,11 +35372,10 @@ L 1 "..\..\User\Param\param.h" 1
 N#ifndef __PARAM_H
 N#define __PARAM_H
 N
+N#define VERSION 0x01 // 版本号
+N
 N#define PARAM_ADDR		0			/* 参数区地址 */
-N
 N//默认参数
-N#define VERSION 0x00 // 版本号
-N
 N#define DTU_ADDRESS 0xFFFE //DTU地址
 N
 N//硬件引脚相关
@@ -36381,7 +36382,7 @@ N	sf_SetCS(1);								/* 禁止片选 */
 N
 N	sf_WaitForWriteEnd();						/* 等待串行Flash内部写操作完成 */
 N
-N	_uiWriteAddr += 256;
+N	_uiWriteAddr += _usWriteSize;
 N
 N    /* 进入写保护状态 */
 N	sf_SetCS(0);
@@ -36392,6 +36393,70 @@ N
 N	sf_WaitForWriteEnd();							/* 等待串行Flash内部写操作完成 */
 N}
 N
+N//在指定地址依次写入128字节数据
+Nvoid sf_exWrite_128(uint8_t* _pBuf, uint32_t _uiWriteAddr)
+N{
+N    uint16_t i;
+N    uint16_t _usWriteSize = 128;
+N    sf_WriteEnable();								/* 发送写使能命令 */
 N
+N	sf_SetCS(0);									/* 使能片选 */
+N	bsp_spiWrite1(0x02);								/* 页编程 */
+N	bsp_spiWrite1((_uiWriteAddr & 0xFF0000) >> 16);	/* 发送扇区地址的高8bit */
+N	bsp_spiWrite1((_uiWriteAddr & 0xFF00) >> 8);		/* 发送扇区地址中间8bit */
+N	bsp_spiWrite1(_uiWriteAddr & 0xFF);				/* 发送扇区地址低8bit */
+N
+N	for (i = 0; i < _usWriteSize; i++)
+N	{
+N		bsp_spiWrite1(*_pBuf++);					/* 发送数据 */
+N	}
+N
+N	sf_SetCS(1);								/* 禁止片选 */
+N
+N	sf_WaitForWriteEnd();						/* 等待串行Flash内部写操作完成 */
+N
+N	_uiWriteAddr += _usWriteSize;
+N
+N    /* 进入写保护状态 */
+N	sf_SetCS(0);
+N	bsp_spiWrite1(CMD_DISWR);
+X	bsp_spiWrite1(0x04);
+N	sf_SetCS(1);
+N
+N	sf_WaitForWriteEnd();							/* 等待串行Flash内部写操作完成 */
+N}
+N
+N//在指定地址依次写入64字节数据
+Nvoid sf_exWrite_64(uint8_t* _pBuf, uint32_t _uiWriteAddr)
+N{
+N    uint16_t i;
+N    uint16_t _usWriteSize = 64;
+N    sf_WriteEnable();								/* 发送写使能命令 */
+N
+N	sf_SetCS(0);									/* 使能片选 */
+N	bsp_spiWrite1(0x02);								/* 页编程 */
+N	bsp_spiWrite1((_uiWriteAddr & 0xFF0000) >> 16);	/* 发送扇区地址的高8bit */
+N	bsp_spiWrite1((_uiWriteAddr & 0xFF00) >> 8);		/* 发送扇区地址中间8bit */
+N	bsp_spiWrite1(_uiWriteAddr & 0xFF);				/* 发送扇区地址低8bit */
+N
+N	for (i = 0; i < _usWriteSize; i++)
+N	{
+N		bsp_spiWrite1(*_pBuf++);					/* 发送数据 */
+N	}
+N
+N	sf_SetCS(1);								/* 禁止片选 */
+N
+N	sf_WaitForWriteEnd();						/* 等待串行Flash内部写操作完成 */
+N
+N	_uiWriteAddr += _usWriteSize;
+N
+N    /* 进入写保护状态 */
+N	sf_SetCS(0);
+N	bsp_spiWrite1(CMD_DISWR);
+X	bsp_spiWrite1(0x04);
+N	sf_SetCS(1);
+N
+N	sf_WaitForWriteEnd();							/* 等待串行Flash内部写操作完成 */
+N}
 N
 N/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/

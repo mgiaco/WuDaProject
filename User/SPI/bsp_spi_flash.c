@@ -879,5 +879,36 @@ void sf_exWrite_128(uint8_t* _pBuf, uint32_t _uiWriteAddr)
 	sf_WaitForWriteEnd();							/* 等待串行Flash内部写操作完成 */
 }
 
+//在指定地址依次写入64字节数据
+void sf_exWrite_64(uint8_t* _pBuf, uint32_t _uiWriteAddr)
+{
+    uint16_t i;
+    uint16_t _usWriteSize = 64;
+    sf_WriteEnable();								/* 发送写使能命令 */
+
+	sf_SetCS(0);									/* 使能片选 */
+	bsp_spiWrite1(0x02);								/* 页编程 */
+	bsp_spiWrite1((_uiWriteAddr & 0xFF0000) >> 16);	/* 发送扇区地址的高8bit */
+	bsp_spiWrite1((_uiWriteAddr & 0xFF00) >> 8);		/* 发送扇区地址中间8bit */
+	bsp_spiWrite1(_uiWriteAddr & 0xFF);				/* 发送扇区地址低8bit */
+
+	for (i = 0; i < _usWriteSize; i++)
+	{
+		bsp_spiWrite1(*_pBuf++);					/* 发送数据 */
+	}
+
+	sf_SetCS(1);								/* 禁止片选 */
+
+	sf_WaitForWriteEnd();						/* 等待串行Flash内部写操作完成 */
+
+	_uiWriteAddr += _usWriteSize;
+
+    /* 进入写保护状态 */
+	sf_SetCS(0);
+	bsp_spiWrite1(CMD_DISWR);
+	sf_SetCS(1);
+
+	sf_WaitForWriteEnd();							/* 等待串行Flash内部写操作完成 */
+}
 
 /***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/

@@ -35336,6 +35336,8 @@ Nvoid sf_ReadBuffer(uint8_t * _pBuf, uint32_t _uiReadAddr, uint32_t _uiSize);
 Nvoid sf_EraseSector(uint32_t _uiSectorAddr);
 Nvoid sf_exWrite8Bytes(uint8_t* _pBuf, uint32_t _uiWriteAddr);//8字节
 Nvoid sf_exWriteOnePage(uint8_t* _pBuf, uint32_t _uiWriteAddr);//256字节
+Nvoid sf_exWrite_128(uint8_t* _pBuf, uint32_t _uiWriteAddr);//128字节
+Nvoid sf_exWrite_64(uint8_t* _pBuf, uint32_t _uiWriteAddr);//128字节
 Nvoid sf_PageWrite(uint8_t * _pBuf, uint32_t _uiWriteAddr, uint16_t _usSize);
 Nvoid storeRecord(uint8_t *id, uint8_t reader);//函数内部自己获取时间和写入地址
 N
@@ -35360,11 +35362,10 @@ L 1 "..\..\User\Param\param.h" 1
 N#ifndef __PARAM_H
 N#define __PARAM_H
 N
+N#define VERSION 0x01 // 版本号
+N
 N#define PARAM_ADDR		0			/* 参数区地址 */
-N
 N//默认参数
-N#define VERSION 0x00 // 版本号
-N
 N#define DTU_ADDRESS 0xFFFE //DTU地址
 N
 N//硬件引脚相关

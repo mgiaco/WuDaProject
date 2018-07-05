@@ -1638,25 +1638,175 @@
 ;;;838    	sf_WaitForWriteEnd();						/* 等待串行Flash内部写操作完成 */
 00004c  f7fffffe          BL       sf_WaitForWriteEnd
 ;;;839    
-;;;840    	_uiWriteAddr += 256;
-000050  f5047480          ADD      r4,r4,#0x100
+;;;840    	_uiWriteAddr += _usWriteSize;
+000050  443c              ADD      r4,r4,r7
 ;;;841    
 ;;;842        /* 进入写保护状态 */
 ;;;843    	sf_SetCS(0);
-000054  2000              MOVS     r0,#0
-000056  f7fffffe          BL       sf_SetCS
+000052  2000              MOVS     r0,#0
+000054  f7fffffe          BL       sf_SetCS
 ;;;844    	bsp_spiWrite1(CMD_DISWR);
-00005a  2004              MOVS     r0,#4
-00005c  f7fffffe          BL       bsp_spiWrite1
+000058  2004              MOVS     r0,#4
+00005a  f7fffffe          BL       bsp_spiWrite1
 ;;;845    	sf_SetCS(1);
-000060  2001              MOVS     r0,#1
-000062  f7fffffe          BL       sf_SetCS
+00005e  2001              MOVS     r0,#1
+000060  f7fffffe          BL       sf_SetCS
 ;;;846    
 ;;;847    	sf_WaitForWriteEnd();							/* 等待串行Flash内部写操作完成 */
-000066  f7fffffe          BL       sf_WaitForWriteEnd
+000064  f7fffffe          BL       sf_WaitForWriteEnd
 ;;;848    }
-00006a  e8bd81f0          POP      {r4-r8,pc}
+000068  e8bd81f0          POP      {r4-r8,pc}
 ;;;849    
+                          ENDP
+
+
+                          AREA ||i.sf_exWrite_128||, CODE, READONLY, ALIGN=1
+
+                  sf_exWrite_128 PROC
+;;;850    //在指定地址依次写入128字节数据
+;;;851    void sf_exWrite_128(uint8_t* _pBuf, uint32_t _uiWriteAddr)
+000000  e92d41f0          PUSH     {r4-r8,lr}
+;;;852    {
+000004  4605              MOV      r5,r0
+000006  460c              MOV      r4,r1
+;;;853        uint16_t i;
+;;;854        uint16_t _usWriteSize = 128;
+000008  2780              MOVS     r7,#0x80
+;;;855        sf_WriteEnable();								/* 发送写使能命令 */
+00000a  f7fffffe          BL       sf_WriteEnable
+;;;856    
+;;;857    	sf_SetCS(0);									/* 使能片选 */
+00000e  2000              MOVS     r0,#0
+000010  f7fffffe          BL       sf_SetCS
+;;;858    	bsp_spiWrite1(0x02);								/* 页编程 */
+000014  2002              MOVS     r0,#2
+000016  f7fffffe          BL       bsp_spiWrite1
+;;;859    	bsp_spiWrite1((_uiWriteAddr & 0xFF0000) >> 16);	/* 发送扇区地址的高8bit */
+00001a  f3c44007          UBFX     r0,r4,#16,#8
+00001e  f7fffffe          BL       bsp_spiWrite1
+;;;860    	bsp_spiWrite1((_uiWriteAddr & 0xFF00) >> 8);		/* 发送扇区地址中间8bit */
+000022  f3c42007          UBFX     r0,r4,#8,#8
+000026  f7fffffe          BL       bsp_spiWrite1
+;;;861    	bsp_spiWrite1(_uiWriteAddr & 0xFF);				/* 发送扇区地址低8bit */
+00002a  b2e0              UXTB     r0,r4
+00002c  f7fffffe          BL       bsp_spiWrite1
+;;;862    
+;;;863    	for (i = 0; i < _usWriteSize; i++)
+000030  2600              MOVS     r6,#0
+000032  e005              B        |L20.64|
+                  |L20.52|
+;;;864    	{
+;;;865    		bsp_spiWrite1(*_pBuf++);					/* 发送数据 */
+000034  f8150b01          LDRB     r0,[r5],#1
+000038  f7fffffe          BL       bsp_spiWrite1
+00003c  1c70              ADDS     r0,r6,#1              ;863
+00003e  b286              UXTH     r6,r0                 ;863
+                  |L20.64|
+000040  42be              CMP      r6,r7                 ;863
+000042  dbf7              BLT      |L20.52|
+;;;866    	}
+;;;867    
+;;;868    	sf_SetCS(1);								/* 禁止片选 */
+000044  2001              MOVS     r0,#1
+000046  f7fffffe          BL       sf_SetCS
+;;;869    
+;;;870    	sf_WaitForWriteEnd();						/* 等待串行Flash内部写操作完成 */
+00004a  f7fffffe          BL       sf_WaitForWriteEnd
+;;;871    
+;;;872    	_uiWriteAddr += _usWriteSize;
+00004e  443c              ADD      r4,r4,r7
+;;;873    
+;;;874        /* 进入写保护状态 */
+;;;875    	sf_SetCS(0);
+000050  2000              MOVS     r0,#0
+000052  f7fffffe          BL       sf_SetCS
+;;;876    	bsp_spiWrite1(CMD_DISWR);
+000056  2004              MOVS     r0,#4
+000058  f7fffffe          BL       bsp_spiWrite1
+;;;877    	sf_SetCS(1);
+00005c  2001              MOVS     r0,#1
+00005e  f7fffffe          BL       sf_SetCS
+;;;878    
+;;;879    	sf_WaitForWriteEnd();							/* 等待串行Flash内部写操作完成 */
+000062  f7fffffe          BL       sf_WaitForWriteEnd
+;;;880    }
+000066  e8bd81f0          POP      {r4-r8,pc}
+;;;881    
+                          ENDP
+
+
+                          AREA ||i.sf_exWrite_64||, CODE, READONLY, ALIGN=1
+
+                  sf_exWrite_64 PROC
+;;;882    //在指定地址依次写入64字节数据
+;;;883    void sf_exWrite_64(uint8_t* _pBuf, uint32_t _uiWriteAddr)
+000000  e92d41f0          PUSH     {r4-r8,lr}
+;;;884    {
+000004  4605              MOV      r5,r0
+000006  460c              MOV      r4,r1
+;;;885        uint16_t i;
+;;;886        uint16_t _usWriteSize = 64;
+000008  2740              MOVS     r7,#0x40
+;;;887        sf_WriteEnable();								/* 发送写使能命令 */
+00000a  f7fffffe          BL       sf_WriteEnable
+;;;888    
+;;;889    	sf_SetCS(0);									/* 使能片选 */
+00000e  2000              MOVS     r0,#0
+000010  f7fffffe          BL       sf_SetCS
+;;;890    	bsp_spiWrite1(0x02);								/* 页编程 */
+000014  2002              MOVS     r0,#2
+000016  f7fffffe          BL       bsp_spiWrite1
+;;;891    	bsp_spiWrite1((_uiWriteAddr & 0xFF0000) >> 16);	/* 发送扇区地址的高8bit */
+00001a  f3c44007          UBFX     r0,r4,#16,#8
+00001e  f7fffffe          BL       bsp_spiWrite1
+;;;892    	bsp_spiWrite1((_uiWriteAddr & 0xFF00) >> 8);		/* 发送扇区地址中间8bit */
+000022  f3c42007          UBFX     r0,r4,#8,#8
+000026  f7fffffe          BL       bsp_spiWrite1
+;;;893    	bsp_spiWrite1(_uiWriteAddr & 0xFF);				/* 发送扇区地址低8bit */
+00002a  b2e0              UXTB     r0,r4
+00002c  f7fffffe          BL       bsp_spiWrite1
+;;;894    
+;;;895    	for (i = 0; i < _usWriteSize; i++)
+000030  2600              MOVS     r6,#0
+000032  e005              B        |L21.64|
+                  |L21.52|
+;;;896    	{
+;;;897    		bsp_spiWrite1(*_pBuf++);					/* 发送数据 */
+000034  f8150b01          LDRB     r0,[r5],#1
+000038  f7fffffe          BL       bsp_spiWrite1
+00003c  1c70              ADDS     r0,r6,#1              ;895
+00003e  b286              UXTH     r6,r0                 ;895
+                  |L21.64|
+000040  42be              CMP      r6,r7                 ;895
+000042  dbf7              BLT      |L21.52|
+;;;898    	}
+;;;899    
+;;;900    	sf_SetCS(1);								/* 禁止片选 */
+000044  2001              MOVS     r0,#1
+000046  f7fffffe          BL       sf_SetCS
+;;;901    
+;;;902    	sf_WaitForWriteEnd();						/* 等待串行Flash内部写操作完成 */
+00004a  f7fffffe          BL       sf_WaitForWriteEnd
+;;;903    
+;;;904    	_uiWriteAddr += _usWriteSize;
+00004e  443c              ADD      r4,r4,r7
+;;;905    
+;;;906        /* 进入写保护状态 */
+;;;907    	sf_SetCS(0);
+000050  2000              MOVS     r0,#0
+000052  f7fffffe          BL       sf_SetCS
+;;;908    	bsp_spiWrite1(CMD_DISWR);
+000056  2004              MOVS     r0,#4
+000058  f7fffffe          BL       bsp_spiWrite1
+;;;909    	sf_SetCS(1);
+00005c  2001              MOVS     r0,#1
+00005e  f7fffffe          BL       sf_SetCS
+;;;910    
+;;;911    	sf_WaitForWriteEnd();							/* 等待串行Flash内部写操作完成 */
+000062  f7fffffe          BL       sf_WaitForWriteEnd
+;;;912    }
+000066  e8bd81f0          POP      {r4-r8,pc}
+;;;913    
                           ENDP
 
 
