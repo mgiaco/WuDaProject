@@ -35367,7 +35367,7 @@ L 1 "..\..\User\Param\param.h" 1
 N#ifndef __PARAM_H
 N#define __PARAM_H
 N
-N#define VERSION 0x01 // 版本号
+N#define VERSION 0x05 // 版本号
 N
 N#define PARAM_ADDR		0			/* 参数区地址 */
 N//默认参数

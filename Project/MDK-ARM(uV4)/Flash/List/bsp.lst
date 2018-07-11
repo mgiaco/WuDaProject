@@ -35369,7 +35369,7 @@ L 1 "..\..\User\Param\param.h" 1
 N#ifndef __PARAM_H
 N#define __PARAM_H
 N
-N#define VERSION 0x01 // 版本号
+N#define VERSION 0x05 // 版本号
 N
 N#define PARAM_ADDR		0			/* 参数区地址 */
 N//默认参数
@@ -35557,7 +35557,7 @@ N	uartInit(); 	/* 初始化串口 */
 N    
 N	bsp_InitHardTimer();    /* 硬件定时器初始化*/   
 N    
-N  bsp_InitSPIBus();	/* 配置SPI总线 */		
+N    bsp_InitSPIBus();	/* 配置SPI总线 */		
 N	bsp_InitSFlash();	/* 初始化SPI 串行Flash */
 N    
 N    bsp_InitI2C();		/* 配置I2C总线 */

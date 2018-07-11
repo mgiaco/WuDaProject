@@ -51,10 +51,11 @@ void processCommand(uint8_t *data, uint16_t len)
     static uint8_t ret;
     static uint16_t battery;
     static uint8_t pasitionAndBattery[12];//5字节纬度，5字节经度，2字节电量
+    static uint16_t updateCounts;//升级包计数
     //对于设置命令，要进行参数有效性判断
-    //TODO:命令等板子基础功能测试之后再慢慢往上加
     /*0x00:搜索设备，返回基础状态信息（经纬度，电量）
     *0x01:返回探测器触发的精确时间和能级
+    *0x02:复位探测器
     *
     以下命令后期再加入。
     *擦除iic flash
@@ -128,17 +129,28 @@ void processCommand(uint8_t *data, uint16_t len)
                 sf_EraseSector(data[9]*UPDATE_DATA_LENGTH);//扇区擦除4k字节
             }
             sf_exWrite_64(&data[10], data[9]*UPDATE_DATA_LENGTH);//按照每包UPDATE_DATA_LENGTH字节大小顺序写入spi flash
+            updateCounts=data[9];
             ret = 0x55;
             SendDataToServer(data[2], 1, &ret, 1);
             break;
         
         case 0x21://重启（并升级）
-            ret = 0x55;
-            SendDataToServer(data[2], 0, &ret, 1);
-            //改写升级标志
-            ee_WriteOneBytes(1, 0);//1表示需要升级,0表示在iic的首地址
-            //调用系统复位指令   
-            MCU_Reset();
+            if(updateCounts==0xFF)
+            {
+                ret = 0x55;
+                SendDataToServer(data[2], 0, &ret, 1);
+                //改写升级标志
+                ee_WriteOneBytes(1, 0);//1表示需要升级,0表示在iic的首地址          
+                //延时3秒，等待数据传输到服务器后再重启，待测试
+                bsp_DelayMS(3000);
+                //调用系统复位指令   
+                MCU_Reset();
+            }
+            else
+            {
+                ret = 0xAA;
+                SendDataToServer(data[2], 0, &ret, 1);
+            }
             break;
         
         case 0x24://读取版本信息

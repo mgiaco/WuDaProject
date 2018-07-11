@@ -1,7 +1,7 @@
 #include "bsp.h"
 
 /****用作lora的地址，也作为设备ID号（1-500，不能取0和FFFF）*/
-#define LORA_ADDRESS 1
+#define LORA_ADDRESS 2
 /***********************************************************/
 
 //lora的信道参数，410+30=440MHz(信道相同才能互相通信)
@@ -33,9 +33,10 @@ void paramInit(void)
     loraInit();
     
     //test擦除IIC flash为0xFF
-//    resetParam();
-//    bsp_DelayMS(100);
-    
+    #if 1
+    resetParam();
+    bsp_DelayMS(100);
+    #endif
     
     //先读取参数，判断是否有效？如果无效则使用宏定义的参数
     LoadParam();
@@ -57,6 +58,9 @@ void paramInit(void)
     {
         g_tParam.channel = CHANNEL;
     }
+    
+    //20180710,把参数存入iic flash.升级时使用相同的bin文件，程序读取iic的id号
+    SaveParam();
     
     //串口配置完成后，根据使用参数对lora模块进行配置，
     //需要切换模式，串口发送配置命令

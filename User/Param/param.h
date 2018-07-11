@@ -1,7 +1,7 @@
 #ifndef __PARAM_H
 #define __PARAM_H
 
-#define VERSION 0x01 // 版本号
+#define VERSION 0x05 // 版本号
 
 #define PARAM_ADDR		0			/* 参数区地址 */
 //默认参数

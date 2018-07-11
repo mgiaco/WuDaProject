@@ -45,7 +45,7 @@ void bsp_Init(void)
     
 	bsp_InitHardTimer();    /* 硬件定时器初始化*/   
     
-  bsp_InitSPIBus();	/* 配置SPI总线 */		
+    bsp_InitSPIBus();	/* 配置SPI总线 */		
 	bsp_InitSFlash();	/* 初始化SPI 串行Flash */
     
     bsp_InitI2C();		/* 配置I2C总线 */
