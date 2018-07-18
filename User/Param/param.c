@@ -32,11 +32,7 @@ void paramInit(void)
     //初始化lora模块
     loraInit();
     
-    //test擦除IIC flash为0xFF
-    #if 1
-    resetParam();
-    bsp_DelayMS(100);
-    #endif
+
     
     //先读取参数，判断是否有效？如果无效则使用宏定义的参数
     LoadParam();

@@ -4,7 +4,7 @@
 <h1>礦ision Build Log</h1>
 <h2>Project:</h2>
 F:\LW_files\武大--激光足印探测器项目\WuDaProject\Project\MDK-ARM(uV4)\project.uvproj
-Project File Date:  07/11/2018
+Project File Date:  07/17/2018
 
 <h2>Output:</h2>
 Build target 'Flash'
@@ -26,7 +26,7 @@ compiling param.c...
 compiling CRC8_16.c...
 compiling adc.c...
 linking...
-Program Size: Code=12156 RO-data=380 RW-data=136 ZI-data=3472  
+Program Size: Code=12112 RO-data=380 RW-data=136 ZI-data=3472  
 FromELF: creating hex file...
 After Build - User command #1: fromelf.exe --bin -o ./Flash/Obj/output.bin  ./Flash/Obj/output.axf
 After Build - User command #2: CopyHex_Flash.bat
@@ -35,15 +35,10 @@ F:\LW_files\武大--激光足印探测器项目\WuDaProject\Project\MDK-ARM(uV4)>copy Flash
 F:\LW_files\武大--激光足印探测器项目\WuDaProject\Project\MDK-ARM(uV4)>copy Flash\Obj\output.bin ..\output(mdk).bin 
 已复制         1 个文件。
 ".\Flash\Obj\output.axf" - 0 Error(s), 0 Warning(s).
-Load "F:\\LW_files\\武大--激光足印探测器项目\\WuDaProject\\Project\\MDK-ARM(uV4)\\Flash\\Obj\\output.axf" 
-Set JLink Project File to "F:\LW_files\武大--激光足印探测器项目\WuDaProject\Project\MDK-ARM(uV4)\JLinkSettings.ini"
-* JLink Info: Device "STM32F103RE" selected (512 KB flash, 64 KB RAM).
- 
-JLink info:
-------------
-DLL: V4.80g, compiled Feb 13 2014 20:50:02
-Firmware: J-Link ARM V8 compiled Nov 28 2014 13:44:46
-Hardware: V8.00
+</pre>
+</body>
+</html>
+re: V8.00
 S/N : 791950130 
 Feature(s) : RDI,FlashDL,FlashBP,JFlash,GDBFull 
  
@@ -60,7 +55,7 @@ Target info:
 Device: STM32F103RE
 VTarget = 3.293V
 State of Pins: 
-TCK: 0, TDI: 0, TDO: 0, TMS: 1, TRES: 1, TRST: 0
+TCK: 0, TDI: 0, TDO: 0, TMS: 1, TRES: 1, TRST: 1
 Hardware-Breakpoints: 6
 Software-Breakpoints: 8192
 Watchpoints:          4
@@ -69,37 +64,56 @@ JTAG speed: 2000 kHz
 Erase Done.
 Programming Done.
 Verify OK.
-</pre>
-</body>
-</html>
-with ID 0x1BA01477
-* JLink Info: Found Cortex-M3 r1p1, Little endian.
-* JLink Info: FPUnit: 6 code (BP) slots and 2 literal slots
-* JLink Info: TPIU fitted.
-* JLink Info: ETM fitted.
-ROMTableAddr = 0xE00FF003
+**JLink Error: Supply voltage too low (1 Volt is required, Measured: 0.0 Volt).
+Please check target power.
+Error: Flash Download failed  -  Target DLL has been cancelled
+Load "F:\\LW_files\\武大--激光足印探测器项目\\WuDaProject\\Project\\MDK-ARM(uV4)\\Flash\\Obj\\output.axf" 
+Set JLink Project File to "F:\LW_files\武大--激光足印探测器项目\WuDaProject\Project\MDK-ARM(uV4)\JLinkSettings.ini"
+* JLink Info: Device "STM32F103RE" selected (512 KB flash, 64 KB RAM).
  
-Target info:
+JLink info:
 ------------
-Device: STM32F103RE
-VTarget = 3.293V
-State of Pins: 
-TCK: 0, TDI: 0, TDO: 0, TMS: 1, TRES: 1, TRST: 0
-Hardware-Breakpoints: 6
-Software-Breakpoints: 8192
-Watchpoints:          4
-JTAG speed: 2000 kHz
+DLL: V4.80g, compiled Feb 13 2014 20:50:02
+Firmware: J-Link ARM V8 compiled Nov 28 2014 13:44:46
+Hardware: V8.00
+S/N : 791950130 
+Feature(s) : RDI,FlashDL,FlashBP,JFlash,GDBFull 
  
-Erase Done.
-Programming Done.
-Verify OK.
-kpoints: 6
-Software-Breakpoints: 8192
-Watchpoints:          4
-JTAG speed: 2000 kHz
+* JLink Info: STM32F1xxx: Can not attach to CPU. Trying connect under reset.
+**JLink Warning: RESET (pin 15) high, but should be low. Please check target hardware.
+***JLink Error: Supply voltage too low (1 Volt is required, Measured: 0.0 Volt).
+Please check target power.
+Error: Flash Download failed  -  Target DLL has been cancelled
+Load "F:\\LW_files\\武大--激光足印探测器项目\\WuDaProject\\Project\\MDK-ARM(uV4)\\Flash\\Obj\\output.axf" 
+Set JLink Project File to "F:\LW_files\武大--激光足印探测器项目\WuDaProject\Project\MDK-ARM(uV4)\JLinkSettings.ini"
+* JLink Info: Device "STM32F103RE" selected (512 KB flash, 64 KB RAM).
  
-Erase Done.
-Programming Done.
-Verify OK.
-mming Done.
-Verify OK.
+JLink info:
+------------
+DLL: V4.80g, compiled Feb 13 2014 20:50:02
+Firmware: J-Link ARM V8 compiled Nov 28 2014 13:44:46
+Hardware: V8.00
+S/N : 791950130 
+Feature(s) : RDI,FlashDL,FlashBP,JFlash,GDBFull 
+ 
+* JLink Info: STM32F1xxx: Can not attach to CPU. Trying connect under reset.
+**JLink Warning: RESET (pin 15) high, but should be low. Please check target hardware.
+***JLink Error: Supply voltage too low (1 Volt is required, Measured: 0.0 Volt).
+Please check target power.
+Error: Flash Download failed  -  Target DLL has been cancelled
+Load "F:\\LW_files\\武大--激光足印探测器项目\\WuDaProject\\Project\\MDK-ARM(uV4)\\Flash\\Obj\\output.axf" 
+Set JLink Project File to "F:\LW_files\武大--激光足印探测器项目\WuDaProject\Project\MDK-ARM(uV4)\JLinkSettings.ini"
+* JLink Info: Device "STM32F103RE" selected (512 KB flash, 64 KB RAM).
+ 
+JLink info:
+------------
+DLL: V4.80g, compiled Feb 13 2014 20:50:02
+Firmware: J-Link ARM V8 compiled Nov 28 2014 13:44:46
+Hardware: V8.00
+S/N : 791950130 
+Feature(s) : RDI,FlashDL,FlashBP,JFlash,GDBFull 
+ 
+* JLink Info: STM32F1xxx: Can not attach to CPU. Trying connect under reset.
+***JLink Error: Supply voltage too low (1 Volt is required, Measured: 0.3 Volt).
+Please check target power.
+Error: Flash Download failed  -  Target DLL has been cancelled
